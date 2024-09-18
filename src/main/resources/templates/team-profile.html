@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+        <div layout:fragment="content">
+        <h1 th:text="${teamName}"></h1>
+        <h2>Флаги</h2>
+        <th:block th:each="flag : ${flags}">
+        <h3 th:text="${flag.name}"></h3>
+        </th:block>
+        <h2>Состав</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>ФИО игрока</th>
+                </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="player : ${players}">
+                <tr>
+                    <td th:text="${player.id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId}, player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+        <h2>Турниры</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Название турнира</th>
+                    <th>Результат</th>
+                    <th>Состав команды</th>
+                </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="tournament : ${tournaments}">
+                <tr>
+                    <td th:text="${tournament.id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref" th:text="${tournament.getName()}"></a></td>
+                    <td>28/36</td>
+                    <td>
+                    <ul>
+                    <th:block th:each="player : ${tournament.players}">
+                        <li><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId},player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></li>
+                    </th:block>
+                    </ul>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+        <h2>Трансферы</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Игрок</th>
+                    <th>Старая команда</th>
+                    <th>Новая команда</th>
+                    <th>Дата трансфера</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="transfer : ${transfers}">
+                <tr>
+                    <td th:text="${transfer.getId()}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId},player_id=${transfer.player.id})}" class="name-ref" th:text="${transfer.getPlayer().getFullName()}"></a></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${transfer.oldTeam.id})}" class="name-ref" th:text="${transfer.getOldTeam().getTeamName()}"></a></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${transfer.newTeam.id})}" class="name-ref" th:text="${transfer.getNewTeam().getTeamName()}"></a></td>
+                    <td th:text="${transfer.transferDate}"></td>
+                    <td th:text="${transfer.comments}"></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

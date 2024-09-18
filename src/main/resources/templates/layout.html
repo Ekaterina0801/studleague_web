@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <title>Имя розы</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo_item">
+        <i class="bx bx-menu" id="sidebarOpen"></i>
+        <img src="images/logo.png" alt="Логотип">Рейтинг
+    </div>
+
+    <div class="navbar_content">
+        <img src="images/profile.jpg" alt="Профиль" class="profile" />
+        <a href="/leagues/{league_id}/results" class="nav_link results-link">
+            <span class="navlink_icon">
+                <i class="bx bxs-magic-wand"></i>
+            </span>
+            <span class="navlink">Результаты</span>
+        </a>
+        <a href="/leagues/{league_id}/teams" class="nav_link teams-link">
+            <span class="navlink_icon">
+                <i class="bx bxs-magic-wand"></i>
+            </span>
+            <span class="navlink">Команды</span>
+        </a>
+        <a href="/leagues/{league_id}/tournaments" class="nav_link tournaments-link">
+            <span class="navlink_icon">
+                <i class="bx bxs-magic-wand"></i>
+            </span>
+            <span class="navlink">Турниры</span>
+        </a>
+    </div>
+</nav>
+<!-- sidebar -->
+<nav class="sidebar">
+    <div class="menu_content">
+        <ul class="menu_items">
+        </ul>
+        <ul class="menu_items">
+            <div class="menu_title menu_editor"></div>
+            <th:block th:each="league : ${leagues}">
+                <li class="item">
+                    <a th:href="@{/leagues/{leagueId}/tournaments(leagueId=${league.id})}" class="nav_link league-link" th:data-league-id="${league.id}">
+                <span class="navlink_icon">
+                    <i class="bx bxs-magic-wand"></i>
+                </span>
+                        <span class="navlink" th:text="${league.name}"></span>
+                    </a>
+                </li>
+            </th:block>
+        </ul>
+        <div class="bottom_content">
+            <div class="bottom expand_sidebar">
+                <span> Expand</span>
+                <i class='bx bx-log-in'></i>
+            </div>
+            <div class="bottom collapse_sidebar">
+                <span> Collapse</span>
+                <i class='bx bx-log-out'></i>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="main_content">
+    <div layout:fragment="content"></div>
+
+</div>
+</body>
+</html>

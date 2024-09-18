@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div layout:fragment="content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Id с сайта</th>
+                    <th>Название</th>
+                    <th>Дата начала турнира</th>
+                    <th>Дата завершения турнира</th>
+                    <th>Результаты</th>
+                </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="tournament : ${tournaments}">
+                <tr>
+                    <td>1</td>
+                    <td><a href="#" class="name-ref" th:text="${tournament.getIdSite()}"></a></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}(league_id=${leagueId}, tournament_id=${tournaments.id})" class="name-ref" th:text="${tournament.getName()}"></a></td>
+                    <td th:text="${tournament.getDateOfStart()}"></td>
+                    <td th:text="${tournament.getDateOfEnd()}"></td>
+                    <td><a href="#" class="name-ref">Результаты</a></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
