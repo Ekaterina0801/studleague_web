@@ -55,4 +55,18 @@ public class ControversialServiceImpl implements ControversialService {
         return controversialDao.getControversialByTeamId(team_id);
     }
 
+    @Override
+    @Transactional
+    public HashMap<Integer, Controversial> getControversialByTournament(int tournament_id)
+    {
+        return controversialDao.getControversialByTournamentId(tournament_id);
+    }
+
+    @Override
+    @Transactional
+    public List<Controversial> getControversialByTournamentList(int tournament_id)
+    {
+        return controversialDao.getControversialByTournamentId(tournament_id).values().stream().toList();
+    }
+
 }

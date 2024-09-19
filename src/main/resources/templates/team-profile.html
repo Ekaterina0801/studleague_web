@@ -37,14 +37,16 @@
                 </tr>
             </thead>
             <tbody>
-            <th:block th:each="tournament : ${tournaments}">
+            <th:block th:each="number : ${numbers}">
                 <tr>
-                    <td th:text="${tournament.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref" th:text="${tournament.getName()}"></a></td>
-                    <td>28/36</td>
+                    <td th:text="${tournaments[number-1].id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/results(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref" th:text="${tournaments[number-1].name}"></a></td>
+                    <div th:if="${number<=results.size()}">
+                    <td th:text="${results[number-1].totalScore} + '/' + ${results[number-1].countQuestions}"></td>
                     <td>
+                    </div>
                     <ul>
-                    <th:block th:each="player : ${tournament.players}">
+                    <th:block th:each="player : ${tournaments[number-1].players}">
                         <li><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId},player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></li>
                     </th:block>
                     </ul>

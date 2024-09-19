@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div layout:fragment="content">
+    <h1 th:text="${tournament.name}"></h1>
+    <div th:if="${controversials.size() > 0}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>Название команды</th>
+                <th>Номер вопроса</th>
+                <th>Ответ команды</th>
+                <th>Статус</th>
+                <th>Комментарий</th>
+                <th>Комментарий апелляционного жюри</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="number: ${numbers}">
+                <tr>
+                    <td th:text="${number}"></td>
+                    <td th:text="${controversials[number-1].fullResult.team.teamName}"></td>
+                    <td th:text="${controversials[number-1].questionNumber}"></td>
+                    <td th:text="${controversials[number-1].answer}"></td>
+                    <td th:text="${controversials[number-1].status}"></td>
+                    <td th:text="${controversials[number-1].comment}"></td>
+                    <td th:text="${controversials[number-1].appealJuryComment}"></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <div th:unless="${controversials.size() > 0}">
+        <p>Спорные отсутствуют</p>
+    </div>
+</div>
+</body>
+</html>

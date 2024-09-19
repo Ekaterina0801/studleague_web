@@ -5,7 +5,8 @@
 <body>
     <div layout:fragment="content">
         <h1 th:text="${tournament.name}"></h1>
-        <td><a th:href="@{leagues/{league_id}/tournaments/{tournaments_id}(league_id=${leagueId}, team_id=${team.id})}" class="name-ref">Окей Гоголь</a></td>
+        <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/controversials(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref">Перейти к спорным</a></td>
+
         <div th:if="${tableResult.size() > 0}">
             <button onclick="toggleQuestions()">Скрыть/Показать столбцы вопросов</button>
         <table class="table">

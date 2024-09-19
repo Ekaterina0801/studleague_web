@@ -22,5 +22,7 @@ public interface FullResultService {
 
     public void deleteControversialFromResult(int result_id, int controversial_id);
 
-    public List<ResultTableRow> fullResultsToTable(int tournament_id, List<FullResult> fullResults);
+    public List<ResultTableRow> fullResultsToTable(List<FullResult> fullResults);
+
+    public List<FullResult> getResultsForTeam(int team_id);
 }

@@ -19,4 +19,9 @@ public interface ControversialService {
 
     public HashMap<Integer, Controversial> getControversialByTeamId(int team_id);
 
+    public HashMap<Integer, Controversial> getControversialByTournament(int tournament_id);
+
+    public List<Controversial> getControversialByTournamentList(int tournament_id);
+
+
 }

@@ -347,6 +347,12 @@ public class WebRestController {
         List<Tournament> tournaments  = player.getTournaments();
         return tournaments;
     }
+
+    @GetMapping("/teams/{team_id}/results")
+    public List<FullResult> allResultsForTeam(@PathVariable int team_id){
+        List<FullResult> results = fullResultService.getResultsForTeam(team_id);
+        return results;
+    }
     //------------LEAGUES------------
     @PutMapping("/leagues/{league_id}/tournaments/{tournament_id}")
     public ResponseEntity<League> addTournamentToLeague(@PathVariable int league_id, @PathVariable int tournament_id)

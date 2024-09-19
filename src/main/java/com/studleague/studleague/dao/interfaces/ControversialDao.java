@@ -20,6 +20,6 @@ public interface ControversialDao {
 
         HashMap<Integer, Controversial> getControversialByTeamId(int team_id);
 
-        HashMap<Integer, Controversial> getControversialByTournamentId(int team_id);
+        HashMap<Integer, Controversial> getControversialByTournamentId(int tournament_id);
 
 }

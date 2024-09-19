@@ -17,7 +17,7 @@
             <th:block th:each="tournament : ${player.tournaments}">
                 <tr>
                     <td th:text="${tournament.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref">Лига Вузов. Тур 1</a></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/results(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref" th:text="${tournament.name}"></a></td>
                 </tr>
             </th:block>
             </tbody>

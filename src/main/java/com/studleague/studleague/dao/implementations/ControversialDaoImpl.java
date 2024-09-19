@@ -67,7 +67,7 @@ public class ControversialDaoImpl implements ControversialDao {
     @Override
     public HashMap<Integer, Controversial> getControversialByTournamentId(int tournament_id){
         Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("from Controversial where tournament_id=:tournament_id");
+        Query query = session.createQuery("SELECT c FROM Controversial c WHERE c.fullResult.tournament.id=:tournament_id");
         query.setParameter("tournament_id", tournament_id);
         List<Controversial> controversials = query.getResultList();
         HashMap<Integer, Controversial> controversialsByNumber = new HashMap<>();

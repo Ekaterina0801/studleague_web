@@ -78,10 +78,13 @@ public class FullResultServiceImpl implements FullResultService {
         fullResultDao.saveFullResult(fullResult);
     }
 
+    public List<FullResult> getResultsForTeam(int team_id){
+        return fullResultDao.getResultsForTeam(team_id);
+    }
 
 
     @Override
-    public List<ResultTableRow> fullResultsToTable(int tournament_id, List<FullResult> fullResults)
+    public List<ResultTableRow> fullResultsToTable(List<FullResult> fullResults)
     {
         List<ResultTableRow> fullResultsTable = new ArrayList<>();
         int counter = 1;
@@ -100,7 +103,7 @@ public class FullResultServiceImpl implements FullResultService {
             int totalScore = 0;
             for (int i = 0; i < maskResults.length(); i++){
                 String answer = String.valueOf(maskResults.charAt(i));
-                questionNumbers.add(i);
+                questionNumbers.add(i+1);
                 try {
                     int number = Integer.parseInt(answer);
                     answers.add(number);
