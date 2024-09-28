@@ -4,6 +4,46 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div layout:fragment="content">
+    <button id="openModal">Добавить новый или существующий турнир к лиге</button>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Добавление нового турнира</h2>
+            <form id="tournamentNewForm" method="post">
+                <div>
+                    <label for="name">Название турнира:</label>
+                    <input type="text" id="name" name="name" required />
+                </div>
+                <div>
+                    <label for="idSite">Айди с сайта МАК:</label>
+                    <input type="text" id="idSite" name="idSite" required />
+                </div>
+                <div>
+                    <label for="dateOfStart">Дата начала:</label>
+                    <input type="text" id="dateOfStart" name="dateOfStart" required />
+                </div>
+                <div>
+                    <label for="dateOfFinal">Дата завершения:</label>
+                    <input type="text" id="dateOfFinal" name="dateOfFinal" required />
+                </div>
+                <input type="hidden" id="leagueId" name="leagueId" th:value="${leagueId}" >
+                <button type="submit">Добавить новый турнир</button>
+            </form>
+            <h2> Добавить существующий турнир</h2>
+            <form id="tournamentForm" method="post">
+            <div>
+                <label for="tournamentId">Выберите турнир:</label>
+                <select id="tournamentId" name="tournamentId" required>
+                    <option th:each="tournament : ${allTournaments}"
+                            th:value="${tournament.id}"
+                            th:text="${tournament.name}"></option>
+                </select>
+            </div>
+                <button type="submit">Добавить существующий турнир</button>
+            </form>
+        </div>
+    </div>
+
         <table class="table">
             <thead>
                 <tr>

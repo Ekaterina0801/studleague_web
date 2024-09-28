@@ -7,12 +7,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name="players")
 @JsonIdentityInfo(scope= Player.class,generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
 public class Player {
@@ -55,7 +61,19 @@ public class Player {
     //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
     private List<Tournament> tournaments = new ArrayList<>();
 
-    public Player() {
+    @OneToMany(mappedBy = "player", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    private List<Transfer> transfers = new ArrayList<>();
+
+    public Player(int id, String name, String patronymic, String surname, String university, String dateOfBirth, List<Tournament> tournaments, List<Transfer> transfers, List<Team> teams) {
+        this.id = id;
+        this.name = name;
+        this.patronymic = patronymic;
+        this.surname = surname;
+        this.university = university;
+        this.dateOfBirth = dateOfBirth;
+        this.tournaments = tournaments;
+        this.transfers = transfers;
+        this.teams = teams;
     }
 
     public Player(int id, String name, String patronymic, String surname, String university, String date_of_birth) {
@@ -86,76 +104,5 @@ public class Player {
             tournaments.add(tournament);
         }
     }
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
-    }
-
-    public List<Tournament> getTournaments() {
-        return tournaments;
-    }
-
-    public void setTournaments(List<Tournament> tournaments) {
-        this.tournaments = tournaments;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(String university) {
-        this.university = university;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public String getFullName()
-    {
-        return this.surname+" "+this.name+" "+this.patronymic;
-    }
-
 
 }

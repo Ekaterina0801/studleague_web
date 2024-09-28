@@ -3,6 +3,7 @@ package com.studleague.studleague.dao.implementations;
 import com.studleague.studleague.dao.interfaces.PlayerDao;
 import com.studleague.studleague.dao.interfaces.TransferDao;
 import com.studleague.studleague.entities.Player;
+import com.studleague.studleague.entities.Team;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
@@ -51,6 +52,24 @@ public class PlayerDaoImpl implements PlayerDao {
         Query query = session.createQuery("delete from Player where id=:id");
         query.setParameter("id", id);
         query.executeUpdate();
+    }
+
+    @Override
+    public Team getTeamPlayerByLeague(int playerId, int leagueId){
+        Session session = entityManager.unwrap(Session.class);
+        String hql = "SELECT t FROM Player p " +
+                      "JOIN p.teams t " +
+                     "WHERE t.league.id = :leagueId AND p.id=:playerId";
+        Query query = session.createQuery(hql);
+        query.setParameter("playerId", playerId);
+        query.setParameter("leagueId", leagueId);
+        List<Team> teams = query.getResultList();
+        Team team = new Team();
+        if (!teams.isEmpty())
+        {
+            team = teams.get(0);
+        }
+        return team;
     }
 
 }

@@ -4,6 +4,32 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
         <div layout:fragment="content">
+            <button id="openModal">Добавить нового игрока</button>
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+            <h2>Добавление новой команды</h2>
+            <form id="teamForm" method="post">
+                 <div>
+                         <label for="teamName">Название команды:</label>
+                     <input type="text" id="teamName" name="teamName" required />
+                     </div>
+                    <div>
+                     <label for="university">Университет:</label>
+                       <input type="text" id="university" name="university" required />
+                     </div>
+                <div>
+                         <label for="leagueId">Выберите лигу:</label>
+                        <select id="leagueId" name="leagueId" required>
+                             <option th:each="league : ${leagues}"
+                                                                th:value="${league.id}"
+                                                                 th:text="${league.name}"></option>
+                          </select>
+                  </div>
+                  <button type="submit">Добавить команду</button>
+               </form>
+                </div>
+            </div>
         <table class="table">
             <thead>
                 <tr>

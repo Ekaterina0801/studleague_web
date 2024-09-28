@@ -62,6 +62,7 @@ public class LeagueServiceImpl implements LeagueService {
         Tournament tournament = tournamentDao.getTournamentById(tournament_id);
         league.addTournamentToLeague(tournament);
         //player.addTeamToPlayer(team);
+        tournamentDao.saveTournament(tournament);
         leagueDao.saveLeague(league);
         //playerDao.savePlayer(player);
         return league;

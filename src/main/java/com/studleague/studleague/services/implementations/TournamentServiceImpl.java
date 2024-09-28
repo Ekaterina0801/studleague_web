@@ -1,7 +1,10 @@
 package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dao.interfaces.*;
+import com.studleague.studleague.dto.TournamentDto;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.mappings.TournamentMapper;
+import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,15 @@ public class TournamentServiceImpl implements TournamentService {
     @Autowired
     private TeamDao teamDao;
 
+    @Autowired
+    private TournamentMapper tournamentMapper;
+
+    @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
+    private LeagueDao leagueDao;
+
 
     @Override
     @Transactional
@@ -42,8 +54,9 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     @Transactional
     public void saveTournament(Tournament tournament) {
-        tournamentDao.saveTournament(tournament);
+        tournamentDao.saveTournament(tournament); // Сохраняем турнир
     }
+
 
     @Override
     @Transactional

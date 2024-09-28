@@ -4,12 +4,19 @@ package com.studleague.studleague.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name="flags")
+@JsonIdentityInfo(scope = Flag.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Flag {
 
     @Id
@@ -23,9 +30,6 @@ public class Flag {
     @ManyToMany(mappedBy = "flags")
     //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
     private List<Team> teams = new ArrayList<>();
-
-    public Flag() {
-    }
 
 
     public Flag(int id, String name) {
@@ -41,30 +45,6 @@ public class Flag {
         }
         teams.add(team);
     }
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
-    }
-
     @Override
     public String toString() {
         return "Flag{" +

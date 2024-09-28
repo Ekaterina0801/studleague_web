@@ -4,12 +4,47 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
         <div layout:fragment="content">
-        <h1 th:text="${teamName}"></h1>
+        <h1 th:text="${team.teamName}"></h1>
         <h2>Флаги</h2>
-        <th:block th:each="flag : ${flags}">
+            <h3>Добавление флага к команде</h3>
+            <form id="flagTeamForm" method="post">
+                <div>
+                    <label for="flagId">Выберите флаг:</label>
+                    <select id="flagId" name="flagId" required>
+                        <option th:each="flag : ${allFlags}"
+                                th:value="${flag.id}"
+                                th:text="${flag.name}"></option>
+                    </select>
+                </div>
+                <button type="submit">Добавить флаг к команде</button>
+            </form>
+        <th:block th:each="flag : ${team.flags}">
         <h3 th:text="${flag.name}"></h3>
         </th:block>
         <h2>Состав</h2>
+            <button id="openModal">Добавить нового игрока</button>
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+            <h3>Добавление нового игрока</h3>
+            <form id="playerForm" method="post">
+                <div>
+                    <label for="playerName">Имя</label>
+                    <input type="text" id="playerName" name="playerName" required>
+                    <label for="playerPatronymic">Отчество</label>
+                    <input type="text" id="playerPatronymic" name="playerPatronymic" required>
+                    <label for="playerSurname">Фамилия</label>
+                    <input type="text" id="playerSurname" name="playerSurname" required>
+                    <label for="playerUniversity">Университет</label>
+                    <input type="text" id="playerUniversity" name="playerUniversity" required>
+                    <label for="playerDateBirth">Дата рождения</label>
+                    <input type="date" id="playerDateBirth" name="playerDateBirth" required>
+                    <input type="hidden" id="teamId" name="teamId" th:value="${team.id}" >
+                </div>
+                <button type="submit">Добавить игрока к команде</button>
+            </form>
+                </div>
+            </div>
         <table class="table">
             <thead>
                 <tr>
@@ -18,10 +53,10 @@
                 </tr>
             </thead>
             <tbody>
-            <th:block th:each="player : ${players}">
+            <th:block th:each="player : ${team.players}">
                 <tr>
                     <td th:text="${player.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId}, player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${team.id}, player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></td>
                 </tr>
             </th:block>
             </tbody>
@@ -39,15 +74,15 @@
             <tbody>
             <th:block th:each="number : ${numbers}">
                 <tr>
-                    <td th:text="${tournaments[number-1].id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/results(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref" th:text="${tournaments[number-1].name}"></a></td>
+                    <td th:text="${team.tournaments[number-1].id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/results(league_id=${leagueId}, tournament_id=${team.tournaments[number-1].id})}" class="name-ref" th:text="${team.tournaments[number-1].name}"></a></td>
                     <div th:if="${number<=results.size()}">
                     <td th:text="${results[number-1].totalScore} + '/' + ${results[number-1].countQuestions}"></td>
                     <td>
                     </div>
                     <ul>
-                    <th:block th:each="player : ${tournaments[number-1].players}">
-                        <li><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId},player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></li>
+                    <th:block th:each="player : ${team.tournaments[number-1].players}">
+                        <li><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${team.id},player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></li>
                     </th:block>
                     </ul>
                     </td>
@@ -72,7 +107,7 @@
             <th:block th:each="transfer : ${transfers}">
                 <tr>
                     <td th:text="${transfer.getId()}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${teamId},player_id=${transfer.player.id})}" class="name-ref" th:text="${transfer.getPlayer().getFullName()}"></a></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${team.id},player_id=${transfer.player.id})}" class="name-ref" th:text="${transfer.getPlayer().getFullName()}"></a></td>
                     <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${transfer.oldTeam.id})}" class="name-ref" th:text="${transfer.getOldTeam().getTeamName()}"></a></td>
                     <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${transfer.newTeam.id})}" class="name-ref" th:text="${transfer.getNewTeam().getTeamName()}"></a></td>
                     <td th:text="${transfer.transferDate}"></td>

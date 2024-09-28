@@ -1,12 +1,7 @@
 package com.studleague.studleague.controllers;
-import com.studleague.studleague.dto.FullResultDTO;
-import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.dto.TransferDTO;
+import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappings.ControversialMapper;
-import com.studleague.studleague.mappings.FullResultMapper;
-import com.studleague.studleague.mappings.TeamMapper;
-import com.studleague.studleague.mappings.TransferMapper;
+import com.studleague.studleague.mappings.*;
 import com.studleague.studleague.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -53,7 +48,13 @@ public class WebRestController {
     public ControversialMapper controversialMapper;
 
     @Autowired
+    public TournamentMapper tournamentMapper;
+
+    @Autowired
     public ControversialService controversialService;
+
+    @Autowired
+    public PlayerMapper playerMapper;
 
     @GetMapping("/flags")
     public List<Flag> getFlags()
@@ -178,10 +179,11 @@ public class WebRestController {
     }
 
     @PostMapping("/players")
-    public Player addNewPlayer(@RequestBody Player player)
+    public PlayerDTO addNewPlayer(@RequestBody PlayerDTO playerDTO)
     {
+        Player player = playerMapper.toEntity(playerDTO);
         playerService.savePlayer(player);
-        return player;
+        return playerDTO;
     }
 
 
@@ -200,12 +202,13 @@ public class WebRestController {
         return teamDTO;
     }
 
-    @PostMapping("/tournaments")
-    public Tournament addNewTournament(@RequestBody Tournament tournament)
-    {
+    @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public TournamentDto addNewTournament(@RequestBody TournamentDto tournamentDto) {
+        Tournament tournament = tournamentMapper.toEntity(tournamentDto);
         tournamentService.saveTournament(tournament);
-        return tournament;
+        return tournamentDto;
     }
+
 
     @PostMapping("/transfers")
     public TransferDTO addNewTransfer(@RequestBody TransferDTO transferDTO)
@@ -374,6 +377,13 @@ public class WebRestController {
         League league = leagueService.getLeagueById(league_id);
         List<Tournament> tournaments = league.getTournaments();
         return tournaments;
+    }
+
+    @GetMapping("/leagues/{league_id}/players/{player_id}/team")
+    public Team teamFromLeague(@PathVariable int league_id, @PathVariable int player_id)
+    {
+        Team team = playerService.getTeamOfPlayerByLeague(league_id,player_id);
+        return team;
     }
 
     @GetMapping("/leagues/{league_id}/teams")

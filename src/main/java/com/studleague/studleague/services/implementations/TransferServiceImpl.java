@@ -38,11 +38,13 @@ public class TransferServiceImpl implements TransferService {
         Team oldTeam = teamDao.getTeamById(transfer.getOldTeam().getId());
         Team newTeam = teamDao.getTeamById(transfer.getNewTeam().getId());
         Player player = transfer.getPlayer();
-        if (oldTeam.getPlayers().contains(player)&&!newTeam.getPlayers().contains(player))
+        if (oldTeam.getPlayers().contains(player) && !newTeam.getPlayers().contains(player))
         {
             transferDAO.saveTransfer(transfer);
             oldTeam.deletePlayerFromTeam(player);
             newTeam.addPlayerToTeam(player);
+            //player.getTeams().remove(oldTeam);
+            //player.getTeams().add(newTeam);
         }
 
 

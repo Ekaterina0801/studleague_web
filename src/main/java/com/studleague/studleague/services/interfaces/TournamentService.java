@@ -1,7 +1,7 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.dto.TournamentDto;
 import com.studleague.studleague.entities.Tournament;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

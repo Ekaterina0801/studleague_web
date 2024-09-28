@@ -3,12 +3,19 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "tournaments")
 @JsonIdentityInfo(scope= Tournament.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Tournament {
@@ -27,17 +34,22 @@ public class Tournament {
 
     @Column(name = "date_of_start")
     @JsonProperty("dateOfStart")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern="^(\\d{2}/\\d{2}/\\d{4})|^(\\d{4}-\\d{2}-\\d{2})")
     private Date dateOfStart;
 
     @Column(name = "date_of_final")
-    @JsonProperty("dateOfFinal")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonProperty("dateOfEnd")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern="^(\\d{2}/\\d{2}/\\d{4})|^(\\d{4}-\\d{2}-\\d{2})")
     private Date dateOfEnd;
 
-    @ManyToMany(mappedBy = "tournaments")
-    //@JsonBackReference(value = "tournaments")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+    )
+    @JoinTable(name="leagues_tournaments",
+            joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     private List<League> leagues = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
@@ -47,14 +59,15 @@ public class Tournament {
     @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinTable(
             name = "tournaments_teams",
-            joinColumns = @JoinColumn(name = "tournament_id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id")
+            joinColumns = @JoinColumn(name = "tournament_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id")
     )
+
     //@JsonManagedReference
     //@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(targetEntity = Player.class, cascade = {CascadeType.DETACH,CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinTable(
             name = "tournaments_players",
             joinColumns = @JoinColumn(name = "tournament_id"),
@@ -65,96 +78,12 @@ public class Tournament {
     private List<Player> players = new ArrayList<>();
 
 
-    public Tournament() {
-    }
-
     public Tournament(int id, String name, String id_site, Date date_of_start, Date date_of_end) {
         this.id = id;
         this.name = name;
         this.idSite = id_site;
         this.dateOfStart = date_of_start;
         this.dateOfEnd = date_of_end;
-    }
-
-    /*public void addResultToResults(Team team, int result )
-    {
-        if (results==null)
-        {
-            results = new HashMap<>();
-        }
-        results.put(team,result);
-    }*/
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIdSite() {
-        return idSite;
-    }
-
-    public void setIdSite(String idSite) {
-        this.idSite = idSite;
-    }
-
-    public Date getDateOfStart() {
-        return dateOfStart;
-    }
-
-    public void setDateOfStart(Date dateOfStart) {
-        this.dateOfStart = dateOfStart;
-    }
-
-    public Date getDateOfEnd() {
-        return dateOfEnd;
-    }
-
-    public void setDateOfEnd(Date dateOfEnd) {
-        this.dateOfEnd = dateOfEnd;
-    }
-
-    public List<League> getLeagues() {
-        return leagues;
-    }
-
-    public void setLeagues(List<League> leagues) {
-        this.leagues = leagues;
-    }
-
-    public List<FullResult> getResults() {
-        return results;
-    }
-
-    public void setResults(List<FullResult> results) {
-        this.results = results;
     }
 
     public void addResult(FullResult fullResult) {
@@ -201,6 +130,18 @@ public class Tournament {
         if (teams != null) {
             teams.remove(team);
             //fullResult.getTournament()..remove(this);
+        }
+    }
+
+    public void addLeague(League league){
+        if(leagues==null){
+            leagues = new ArrayList<>();
+        }
+        if (!leagues.contains(league))
+        {
+            leagues.add(league);
+            league.getTournaments().add(this);
+            //league.addTournamentToLeague(this);
         }
     }
 

@@ -37,7 +37,7 @@ public class TournamentDaoImpl implements TournamentDao {
     @Override
     public void saveTournament(Tournament tournament) {
         Session session = entityManager.unwrap(Session.class);
-        session.saveOrUpdate(tournament);
+        session.merge(tournament);
     }
 
     @Override

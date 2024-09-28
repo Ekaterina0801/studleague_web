@@ -4,7 +4,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div layout:fragment="content">
-        <h1 th:text="${player.name}"></h1>
+        <h1 th:text="${player.getFullName}"></h1>
         <h2>Турниры</h2>
         <table class="table">
             <thead>
@@ -22,6 +22,37 @@
             </th:block>
             </tbody>
         </table>
+    <button id="openModal">Сделать трансфер</button>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Перевести игрока в другую команду</h3>
+            <form id="transferForm" method="post">
+                <div>
+                    <h2>Текущие команды</h2>
+                    <select id="oldTeamId" name="oldTeamId" required>
+                        <option th:each="team : ${oldTeams}"
+                                th:value="${team.id}"
+                                th:text="${team.teamName}"></option>
+                    </select>
+
+                    <h2>Возможные команды</h2>
+                    <select id="newTeamId" name="newTeamId" required>
+                        <option th:each="team : ${newTeams}"
+                                th:value="${team.id}"
+                                th:text="${team.teamName}"></option>
+                    </select>
+                    <label for="transferDate">Выберите дату:</label>
+                    <input type="date" id="transferDate" name="transferDate" required>
+                    <h2>Комментарий</h2>
+                    <input type="text" id="comment" name="comment">
+                    <input type="hidden" id="playerId" name="playerId" th:value="${player.id}" >
+
+                </div>
+                <button type="submit">Перевести игрока</button>
+            </form>
+        </div>
+        </div>
         <h2>Команды</h2>
         <table class="table">
             <thead>
@@ -34,7 +65,7 @@
             <th:block th:each="team: ${player.teams}">
                 <tr>
                     <td th:text="${team.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${team.id})}" class="name-ref">Окей Гоголь</a></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${team.id})}" class="name-ref" th:text="${team.teamName}"></a></td>
                 </tr>
             </th:block>
             </tbody>
@@ -51,7 +82,7 @@
                 </tr>
             </thead>
             <tbody>
-            <th:block th:each="transfer : ${transfers}">
+            <th:block th:each="transfer : ${player.transfers}">
                 <tr>
                     <td th:text="${transfer.getId()}"></td>
                     <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${transfer.oldTeam.id})}" class="name-ref" th:text="${transfer.getOldTeam().getTeamName()}"></a></td>

@@ -1,11 +1,17 @@
 package com.studleague.studleague.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import java.util.Date;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 @Table(name="controversials")
 public class Controversial {
 
@@ -37,8 +43,6 @@ public class Controversial {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="result_id")
     private FullResult fullResult;
-    public Controversial() {
-    }
 
     public Controversial(int id, int questionNumber, String answer, Date issuedAt, String comment, String status, String resolvedAt, String appealJuryComment) {
         this.id = id;
@@ -49,77 +53,5 @@ public class Controversial {
         this.status = status;
         this.resolvedAt = resolvedAt;
         this.appealJuryComment = appealJuryComment;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getQuestionNumber() {
-        return questionNumber;
-    }
-
-    public void setQuestionNumber(int questionNumber) {
-        this.questionNumber = questionNumber;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public Date getIssuedAt() {
-        return issuedAt;
-    }
-
-    public void setIssuedAt(Date issuedAt) {
-        this.issuedAt = issuedAt;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getResolvedAt() {
-        return resolvedAt;
-    }
-
-    public void setResolvedAt(String resolvedAt) {
-        this.resolvedAt = resolvedAt;
-    }
-
-    public String getAppealJuryComment() {
-        return appealJuryComment;
-    }
-
-    public void setAppealJuryComment(String appealJuryComment) {
-        this.appealJuryComment = appealJuryComment;
-    }
-
-    public FullResult getFullResult() {
-        return fullResult;
-    }
-
-    public void setFullResult(FullResult fullResult) {
-        this.fullResult = fullResult;
     }
 }

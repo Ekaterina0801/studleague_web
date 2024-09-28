@@ -135,6 +135,10 @@ public class WebClientController {
         List<League> leagues = responseEntityLeagues.getBody();
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
+        ResponseEntity<List<Tournament>> responseEntityAllTournaments = restTemplate.exchange(URL + "/tournaments", HttpMethod.GET, null, new ParameterizedTypeReference<List<Tournament>>() {
+        });
+        List<Tournament> allTournaments = responseEntityAllTournaments.getBody();
+        model.addAttribute("allTournaments", allTournaments);
         return "tournaments";
     }
 
@@ -144,6 +148,9 @@ public class WebClientController {
         });
         List<League> leagues = responseEntityLeagues.getBody();
         model.addAttribute("leagues", leagues);
+        ResponseEntity<List<Flag>> responseEntityAllFlags = restTemplate.exchange(URL + "/flags", HttpMethod.GET, null, new ParameterizedTypeReference<List<Flag>>() {
+        });
+        List<Flag> allFlags = responseEntityAllFlags.getBody();
         //ResponseEntity<List<Player>> responseEntityPlayers = restTemplate.exchange(URL + "/teams/"+team_id+"/players", HttpMethod.GET, null, new ParameterizedTypeReference<List<Player>>() {
         //});
         //List<Player> players = responseEntityPlayers.getBody();
@@ -164,14 +171,11 @@ public class WebClientController {
         List<Integer> numbers = generateNumbers(team.getTournaments().size());
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
-        model.addAttribute("players", team.getPlayers());
-        model.addAttribute("flags", team.getFlags());
-        model.addAttribute("tournaments", team.getTournaments());
         model.addAttribute("transfers", transfers);
-        model.addAttribute("teamName", team.getTeamName());
-        model.addAttribute("teamId", team.getId());
         model.addAttribute("results", resultsTable);
         model.addAttribute("numbers",numbers);
+        model.addAttribute("allFlags", allFlags);
+        model.addAttribute("team",team);
         return "team-profile";
     }
 
@@ -190,6 +194,14 @@ public class WebClientController {
         ResponseEntity<Player> responseEntityPlayer = restTemplate.exchange(URL + "/players/" + player_id, HttpMethod.GET, null, new ParameterizedTypeReference<Player>() {
         });
         Player player = responseEntityPlayer.getBody();
+        ResponseEntity<List<Team>> responseEntityAllTeams = restTemplate.exchange(URL + "/teams", HttpMethod.GET, null, new ParameterizedTypeReference<List<Team>>() {
+        });
+
+        List<Team> allTeams = responseEntityAllTeams.getBody();
+        List<Team> currentTeams = player.getTeams();
+        allTeams.removeAll(currentTeams);
+        model.addAttribute("oldTeams", currentTeams);
+        model.addAttribute("newTeams",allTeams);
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
         model.addAttribute("player", player);
