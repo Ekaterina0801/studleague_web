@@ -1,18 +1,17 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.interfaces.FlagDao;
-import com.studleague.studleague.dao.interfaces.LeagueDao;
-import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
-import com.studleague.studleague.entities.Flag;
-import com.studleague.studleague.entities.League;
-import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.dao.interfaces.*;
+import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.entities.*;
+import com.studleague.studleague.services.interfaces.FullResultService;
 import com.studleague.studleague.services.interfaces.TeamService;
+import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,6 +28,13 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     LeagueDao leagueDao;
+
+    @Autowired
+    private FullResultDao fullResultDao;
+
+    @Autowired
+    private TournamentService tournamentService;
+
 
 
     @Override
@@ -127,5 +133,80 @@ public class TeamServiceImpl implements TeamService {
         teamDao.saveTeam(team);
         //playerDao.savePlayer(player);
         return team;
+    }
+
+    @Override
+    @Transactional
+    public Team getTeamByIdSite(String idSite)
+    {
+        return teamDao.getTeamByIdSite(idSite);
+    }
+
+    @Override
+    @Transactional
+    public HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(int team_id)
+    {
+        List<Tournament> tournaments = teamDao.tournamentsByTeam(team_id);
+        HashMap<Tournament,List<Player>> tournamentsPlayers = new HashMap<>();
+        Team team = teamDao.getTeamById(team_id);
+
+        for (Tournament tournament: tournaments)
+        {
+            List<Player> players = tournament.getPlayers().stream().filter(x->x.getTeams().contains(team)).toList();
+            tournamentsPlayers.put(tournament,players);
+        }
+        return tournamentsPlayers;
+
+    }
+
+    @Override
+    @Transactional
+    public List<InfoTeamResults> getInfoTeamResultsByTeam(int team_id)
+    {
+        List<InfoTeamResults> infoTeamResults = new ArrayList<>();
+        InfoTeamResults row = new InfoTeamResults();
+        Team team = getTeamById(team_id);
+        List<FullResult> results = fullResultDao.getResultsForTeam(team_id);
+        HashMap<Tournament, FullResult> tournamentsResults = new HashMap<>();
+        for (FullResult result: results)
+        {
+            tournamentsResults.put(result.getTournament(), result);
+        }
+        int counter = 1;
+        HashMap<Tournament, List<Player>> tournamentsPlayers = getTournamentsPlayersByTeam(team_id);
+        for (Tournament tournament:tournamentsPlayers.keySet())
+        {
+            row.setNumber(counter);
+            counter+=1;
+            row.setPlayers(tournamentsPlayers.get(tournament));
+            row.setTeam(team);
+            row.setTournament(tournament);
+            if (tournamentsResults.containsKey(tournament))
+            {
+                FullResult result = tournamentsResults.get(tournament);
+                String maskResults = result.getMask_results();
+                List<Integer> answers = new ArrayList<>();
+                List<Integer> questionNumbers = new ArrayList<>();
+                int totalScore = 0;
+                for (int i = 0; i < maskResults.length(); i++){
+                    String answer = String.valueOf(maskResults.charAt(i));
+                    questionNumbers.add(i+1);
+                    try {
+                        int number = Integer.parseInt(answer);
+                        answers.add(number);
+                        totalScore+=number;
+                    } catch (NumberFormatException e) {
+                        answers.add(0);
+                    }
+                }
+                row.setAnswers(answers);
+                row.setTotalScore(totalScore);
+                row.setCountQuestions(maskResults.length());
+                row.setQuestionNumbers(questionNumbers);
+
+            }
+            infoTeamResults.add(row);
+        }
+        return infoTeamResults;
     }
 }

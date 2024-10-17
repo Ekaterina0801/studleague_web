@@ -4,8 +4,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div layout:fragment="content">
-        <h1 th:text="${player.getFullName}"></h1>
+        <h1 th:text="${player.getFullName()}"></h1>
         <h2>Турниры</h2>
+    <div th:if="${player.tournaments.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -22,6 +23,10 @@
             </th:block>
             </tbody>
         </table>
+    </div>
+    <div th:unless="${player.tournaments.size() > 0}">
+        <p>Турниров пока нет</p>
+    </div>
     <button id="openModal">Сделать трансфер</button>
     <div id="myModal" class="modal">
         <div class="modal-content">
@@ -54,6 +59,7 @@
         </div>
         </div>
         <h2>Команды</h2>
+    <div th:if="${player.teams.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -70,7 +76,12 @@
             </th:block>
             </tbody>
         </table>
+    </div>
+    <div th:unless="${player.teams.size() > 0}">
+        <p>Команд пока нет</p>
+    </div>
         <h2>Трансферы</h2>
+    <div th:if="${player.transfers.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -93,6 +104,10 @@
             </th:block>
             </tbody>
         </table>
+    </div>
+    <div th:unless="${player.transfers.size() > 0}">
+        <p>Транферов пока нет</p>
+    </div>
     </div>
 </body>
 </html>

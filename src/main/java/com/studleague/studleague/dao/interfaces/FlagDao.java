@@ -4,15 +4,15 @@ import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.Transfer;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FlagDao {
-    Flag getFlagById(int id);
+
+    Optional<Flag> getFlagById(int id);
 
     List<Flag> getAllFlags();
 
     void saveFlag(Flag flag);
-
-    void updateFlag(Flag flag, String[] params);
 
     void deleteFlag(int id);
 

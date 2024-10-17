@@ -4,18 +4,16 @@ import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Team;
 import java.util.List;
+import java.util.Optional;
 
 public interface LeagueDao {
-    League getLeagueById(int id);
+    Optional<League> getLeagueById(int id);
 
     List<League> getAllLeagues();
 
     void saveLeague(League league);
 
-    void updateLeague(League league, String[] params);
-
     void deleteLeague(int id);
 
-    List<Team> getAllTeamsByLeague();
 
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -28,15 +29,13 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public Player getPlayerById(int id) {
-        Player player = playerDao.getPlayerById(id);
-        return player;
+        return playerDao.getPlayerById(id).orElse(new Player());
     }
 
     @Override
     @Transactional
     public List<Player> getAllPlayers() {
-        List<Player> players = playerDao.getAllPlayers();
-        return players;
+        return playerDao.getAllPlayers();
     }
 
     @Override
@@ -51,12 +50,6 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public void updatePlayer(Player player, String[] params) {
-        playerDao.updatePlayer(player, params);
-    }
-
-    @Override
-    @Transactional
     public void deletePlayer(int id) {
         playerDao.deletePlayer(id);
     }
@@ -65,8 +58,13 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public Team getTeamOfPlayerByLeague(int playerId, int leagueId)
     {
-        Team team = playerDao.getTeamPlayerByLeague(playerId, leagueId);
-        return team;
+        return teamDao.getTeamPlayerByLeague(playerId, leagueId).orElse(new Team());
 
+    }
+
+    @Override
+    @Transactional
+    public Player getPlayerByIdSite(String idSite){
+        return playerDao.getPlayerByIdSite(idSite).orElse(new Player());
     }
 }

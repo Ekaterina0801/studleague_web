@@ -5,9 +5,10 @@ import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TournamentDao {
-    Tournament getTournamentById(int id);
+    Optional<Tournament> getTournamentById(int id);
 
     List<Tournament> getAllTournaments();
 
@@ -17,5 +18,8 @@ public interface TournamentDao {
 
     void deleteTournament(int id);
 
+    Optional<Tournament> getTournamentBySiteId(String idSite);
+
+    List<Tournament> tournamentsByTeam(int team_id);
 
 }

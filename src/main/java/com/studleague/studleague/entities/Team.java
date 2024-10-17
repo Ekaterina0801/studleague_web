@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -29,7 +30,10 @@ public class Team {
     @Column(name="university")
     private String university;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @Column(name="idSite")
+    private String idSite;
+
+    @ManyToOne()
     @JoinColumn(name="league_id",nullable = false)
     private League league;
 
@@ -46,12 +50,17 @@ public class Team {
     @ManyToMany(mappedBy = "teams")
     private List<Tournament> tournaments = new ArrayList<>();
 
-    public Team(int id, String team_name, String university) {
+    @OneToMany(mappedBy = "team")
+    private List<FullResult> results = new ArrayList<>();
+
+    public Team(int id, String team_name, String university, String idSite) {
         this.id = id;
         this.teamName = team_name;
         this.university = university;
         this.flags = new ArrayList<>();
+        this.idSite = idSite;
     }
+
     public void addPlayerToTeam(Player player)
     {
         if (players==null)
@@ -70,8 +79,7 @@ public class Team {
     public void deletePlayerFromTeam(Player player)
     {
         if (players != null) {
-               players.remove(player);
-               player.getTeams().remove(this);
+            players.remove(player);
         }
     }
 
@@ -82,12 +90,16 @@ public class Team {
         {
             flags = new ArrayList<>();
         }
-        flags.add(flag);
+        if (!flags.contains(flag))
+        {
+            flags.add(flag);
+        }
     }
 
     public void deleteFlagFromTeam(Flag flag)
     {
         if (flags != null) {
+
             flags.remove(flag);
             flag.getTeams().remove(this);
         }
@@ -110,15 +122,30 @@ public class Team {
         }
     }
 
-
     @Override
     public String toString() {
         return "Team{" +
                 "id=" + id +
-                ", team_name='" + teamName + '\'' +
+                ", teamName='" + teamName + '\'' +
                 ", university='" + university + '\'' +
+                ", idSite='" + idSite + '\'' +
+                ", league=" + league +
                 ", players=" + players +
                 ", flags=" + flags +
+                ", tournaments=" + tournaments +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Team team = (Team) o;
+        return Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(idSite, team.idSite) && Objects.equals(league, team.league);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamName, university, idSite, league);
     }
 }

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -52,8 +53,7 @@ public class Tournament {
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     private List<League> leagues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
-    //@JsonManagedReference
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.MERGE)
     private List<FullResult> results = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
@@ -63,18 +63,14 @@ public class Tournament {
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id")
     )
 
-    //@JsonManagedReference
-    //@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(targetEntity = Player.class, cascade = {CascadeType.DETACH,CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "tournaments_players",
             joinColumns = @JoinColumn(name = "tournament_id"),
             inverseJoinColumns = @JoinColumn(name = "player_id")
     )
-    //@JsonManagedReference
-    //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     private List<Player> players = new ArrayList<>();
 
 
@@ -97,7 +93,6 @@ public class Tournament {
     public void deleteResult(FullResult fullResult) {
         if (results != null) {
             results.remove(fullResult);
-            //fullResult.getTournament()..remove(this);
         }
     }
 
@@ -113,7 +108,6 @@ public class Tournament {
     public void deletePlayer(Player player) {
         if (players != null) {
             players.remove(player);
-            //fullResult.getTournament()..remove(this);
         }
     }
 
@@ -129,7 +123,6 @@ public class Tournament {
     public void deleteTeam(Team team) {
         if (teams != null) {
             teams.remove(team);
-            //fullResult.getTournament()..remove(this);
         }
     }
 
@@ -141,9 +134,20 @@ public class Tournament {
         {
             leagues.add(league);
             league.getTournaments().add(this);
-            //league.addTournamentToLeague(this);
         }
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tournament that = (Tournament) o;
+        return Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, dateOfStart, dateOfEnd);
+    }
 }

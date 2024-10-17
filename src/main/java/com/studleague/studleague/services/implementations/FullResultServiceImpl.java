@@ -2,10 +2,14 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dao.interfaces.ControversialDao;
 import com.studleague.studleague.dao.interfaces.FullResultDao;
-import com.studleague.studleague.dto.ResultTableRow;
+import com.studleague.studleague.dao.interfaces.TeamDao;
+import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
+import com.studleague.studleague.entities.Player;
+import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.services.interfaces.FullResultService;
+import com.studleague.studleague.services.interfaces.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,13 @@ public class FullResultServiceImpl implements FullResultService {
 
     @Autowired
     ControversialDao controversialDao;
+
+    @Autowired
+    TeamDao teamDao;
+
+    @Autowired
+    private TeamService teamService;
+
 
     @Override
     @Transactional
@@ -84,16 +95,18 @@ public class FullResultServiceImpl implements FullResultService {
 
 
     @Override
-    public List<ResultTableRow> fullResultsToTable(List<FullResult> fullResults)
+    public List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults)
     {
-        List<ResultTableRow> fullResultsTable = new ArrayList<>();
+        List<InfoTeamResults> fullResultsTable = new ArrayList<>();
         int counter = 1;
+
         for(FullResult fullResult:fullResults)
         {
-            ResultTableRow resultRow = new ResultTableRow();
+            HashMap<Tournament, List<Player>> tournamentsPlayers = teamService.getTournamentsPlayersByTeam(fullResult.getTeam().getId());
+            InfoTeamResults resultRow = new InfoTeamResults();
             resultRow.setNumber(counter);
             counter+=1;
-            resultRow.setTeamName(fullResult.getTeam().getTeamName());
+            resultRow.setTeam(fullResult.getTeam());
 
             //List<Controversial> controversials = fullResult.getControversials();
             //HashMap<Integer, Controversial> controversialsByNumber = controversialDao.getControversialByTournamentId(tournament_id);
@@ -116,6 +129,8 @@ public class FullResultServiceImpl implements FullResultService {
             resultRow.setTotalScore(totalScore);
             resultRow.setCountQuestions(maskResults.length());
             resultRow.setQuestionNumbers(questionNumbers);
+            resultRow.setTournament(fullResult.getTournament());
+            resultRow.setPlayers(tournamentsPlayers.get(fullResult.getTournament()));
             fullResultsTable.add(resultRow);
         }
         return fullResultsTable;

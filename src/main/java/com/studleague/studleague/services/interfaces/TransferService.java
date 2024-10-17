@@ -7,17 +7,17 @@ import com.studleague.studleague.entities.Transfer;
 import java.util.List;
 
 public interface TransferService {
-    public List<Transfer> getAllTransfers();
+    List<Transfer> getAllTransfers();
 
-    public void saveTransfer(Transfer transfer);
+    void saveTransfer(Transfer transfer);
 
-    public Transfer getTransfer(int id);
+    Transfer getTransfer(int id);
 
-    public void updateTransfer(Transfer transfer, String[] params);
+    void updateTransfer(Transfer transfer, String[] params);
 
-    public void deleteTransfer(int id);
+    void deleteTransfer(int id);
 
-    public List<Transfer> getTransfersForPlayer(int player_id);
+    List<Transfer> getTransfersForPlayer(int player_id);
 
-    public List<Transfer> getTransfersForTeam(int team_id);
+    List<Transfer> getTransfersForTeam(int team_id);
 }

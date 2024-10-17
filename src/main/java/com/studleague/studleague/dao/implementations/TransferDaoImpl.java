@@ -2,6 +2,7 @@ package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.FlagDao;
 import com.studleague.studleague.dao.interfaces.TransferDao;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.Transfer;
 import jakarta.persistence.EntityManager;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class TransferDaoImpl implements TransferDao {
@@ -20,63 +23,51 @@ public class TransferDaoImpl implements TransferDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
+
     @Override
-    public Transfer getTransferById(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        Transfer transfer = session.get(Transfer.class,id);
-        return transfer;
+    public Optional<Transfer> getTransferById(int id) {
+        Transfer transfer = getCurrentSession().get(Transfer.class,id);
+        return Optional.ofNullable(transfer);
     }
 
     @Override
     public List<Transfer> getAllTransfers() {
-        Session session = entityManager.unwrap(Session.class);
-        Query<Transfer> query = session.createQuery("from Transfer", Transfer.class);
-        List<Transfer> allTransfers= query.getResultList();
-        return allTransfers;
+        Query<Transfer> query = getCurrentSession().createQuery("from Transfer", Transfer.class);
+        return query.getResultList();
     }
 
     @Override
     public void saveTransfer(Transfer transfer) {
-        Session session = entityManager.unwrap(Session.class);
-        session.saveOrUpdate(transfer);
-        /*if (transfer.getId()==0){
-            session.persist(transfer); //session.save();
-        }
-        else{
+        Session session = getCurrentSession();
+        if (Objects.isNull(session.find(Controversial.class, transfer.getId()))) {
+            session.persist(transfer);
+        } else {
             session.merge(transfer);
-        }*/
-    }
-
-    @Override
-    public void updateTransfer(Transfer transfer, String[] params) {
-
+        }
     }
 
     @Override
     public void deleteTransfer(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("delete from Transfer where id=:id");
+        Query<?> query = getCurrentSession().createQuery("delete from Transfer where id=:id", Transfer.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
     public List<Transfer> getTransfersForPlayer(int player_id) {
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("from Transfer where player.id=:player_id");
+        Query<Transfer> query = getCurrentSession().createQuery("from Transfer where player.id=:player_id", Transfer.class);
         query.setParameter("player_id",player_id);
-        List<Transfer> transfers = query.getResultList();
-        return transfers;
+        return query.getResultList();
 
     }
 
     @Override
     public List<Transfer> getTransfersForTeam(int team_id) {
-        Session session = entityManager.unwrap(Session.class);
-        //Query query = session.createQuery("from Transfer where oldTeam.id=:team_id or newTeam.id=:team_id");
-        Query query = session.createQuery("select t from Transfer t left join fetch t.oldTeam o left join fetch t.newTeam n where o.id=:team_id or n.id=:team_id");
+        Query<Transfer> query = getCurrentSession().createQuery("select t from Transfer t left join fetch t.oldTeam o left join fetch t.newTeam n where o.id=:team_id or n.id=:team_id", Transfer.class);
         query.setParameter("team_id",team_id);
-        List<Transfer> transfers = query.getResultList();
-        return transfers;
+        return query.getResultList();
     }
 }

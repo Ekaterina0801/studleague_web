@@ -4,16 +4,15 @@ import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Transfer;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransferDao {
 
-    Transfer getTransferById(int id);
+    Optional<Transfer> getTransferById(int id);
 
     List<Transfer> getAllTransfers();
 
     void saveTransfer(Transfer t);
-
-    void updateTransfer(Transfer t, String[] params);
 
     void deleteTransfer(int id);
 

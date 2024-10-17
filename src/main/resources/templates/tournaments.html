@@ -14,10 +14,7 @@
                     <label for="name">Название турнира:</label>
                     <input type="text" id="name" name="name" required />
                 </div>
-                <div>
-                    <label for="idSite">Айди с сайта МАК:</label>
-                    <input type="text" id="idSite" name="idSite" required />
-                </div>
+
                 <div>
                     <label for="dateOfStart">Дата начала:</label>
                     <input type="text" id="dateOfStart" name="dateOfStart" required />
@@ -41,9 +38,20 @@
             </div>
                 <button type="submit">Добавить существующий турнир</button>
             </form>
+            <h2> Добавить турнир с сайта МАК</h2>
+            <form id="tournamentSiteForm" method="post">
+                <div>
+                    <div>
+                        <label for="idSite">Айди с сайта МАК:</label>
+                        <input type="text" id="idSite" name="idSite" required />
+                    </div>
+                    <input type="hidden" id="leagueIdSite" name="leagueIdSite" th:value="${leagueId}" >
+                </div>
+                <button type="submit">Добавить турнир</button>
+            </form>
         </div>
     </div>
-
+    <div th:if="${tournaments.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -68,6 +76,9 @@
             </th:block>
             </tbody>
         </table>
+    </div>
+    <div th:unless="${tournaments.size() > 0}">
+        <p>Турниров пока нет</p>
     </div>
 </body>
 </html>

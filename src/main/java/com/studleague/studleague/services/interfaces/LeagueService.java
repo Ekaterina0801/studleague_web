@@ -11,11 +11,9 @@ public interface LeagueService {
 
     void saveLeague(League league);
 
-    void updateLeague(League league, String[] params);
-
     void deleteLeague(int id);
 
-    public League addTournamentToLeague(int league_id, int tournament_id);
+    League addTournamentToLeague(int league_id, int tournament_id);
 
-    public League deleteTournamentToLeague(int league_id, int tournament_id);
+    League deleteTournamentToLeague(int league_id, int tournament_id);
 }

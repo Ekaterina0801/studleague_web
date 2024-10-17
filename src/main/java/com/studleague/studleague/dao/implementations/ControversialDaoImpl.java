@@ -2,7 +2,6 @@ package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.ControversialDao;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Controversial;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
@@ -11,69 +10,65 @@ import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class ControversialDaoImpl implements ControversialDao {
+
     @PersistenceContext
     private EntityManager entityManager;
 
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
+
     @Override
-    public Controversial getControversialById(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        Controversial controversial = session.get(Controversial.class, id);
-        return controversial;
+    public Optional<Controversial> getControversialById(int id) {
+        Controversial controversial = getCurrentSession().get(Controversial.class, id);
+        return Optional.ofNullable(controversial);
     }
 
     @Override
     public List<Controversial> getAllControversials() {
-        Session session = entityManager.unwrap(Session.class);
-        Query<Controversial> query = session.createQuery("from Controversial", Controversial.class);
-        List<Controversial> allControversials= query.getResultList();
-        return allControversials;
+        Query<Controversial> query = getCurrentSession().createQuery("FROM Controversial", Controversial.class);
+        return query.getResultList();
     }
 
     @Override
     public void saveControversial(Controversial controversial) {
-        Session session = entityManager.unwrap(Session.class);
-        session.saveOrUpdate(controversial);
-    }
-
-    @Override
-    public void updateControversial(Controversial controversial, String[] params) {
-
+        Session session = getCurrentSession();
+        if (Objects.isNull(session.find(Controversial.class, controversial.getId()))) {
+            session.persist(controversial);
+        } else {
+            session.merge(controversial);
+        }
     }
 
     @Override
     public void deleteControversial(int id) {
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("delete from Controversial where id=:id");
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Controversial WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public HashMap<Integer, Controversial> getControversialByTeamId(int team_id){
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("from Controversial where team_id=:team_id");
-        query.setParameter("team_id", team_id);
-        List<Controversial> controversials = query.getResultList();
-        HashMap<Integer, Controversial> controversialsByNumber = new HashMap<>();
-        for (Controversial controversial: controversials){
-            controversialsByNumber.put(controversial.getQuestionNumber(), controversial);
-        }
-        return controversialsByNumber;
+    public List<Controversial> getControversialByTeamId(int teamId) {
+        Query<Controversial> query = getCurrentSession()
+                .createQuery("FROM Controversial WHERE team_id = :teamId", Controversial.class);
+        query.setParameter("teamId", teamId);
+        return query.getResultList();
+                //mapControversialsByNumber(query.getResultList());
     }
 
     @Override
-    public HashMap<Integer, Controversial> getControversialByTournamentId(int tournament_id){
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("SELECT c FROM Controversial c WHERE c.fullResult.tournament.id=:tournament_id");
-        query.setParameter("tournament_id", tournament_id);
-        List<Controversial> controversials = query.getResultList();
-        HashMap<Integer, Controversial> controversialsByNumber = new HashMap<>();
-        for (Controversial controversial: controversials){
-            controversialsByNumber.put(controversial.getQuestionNumber(), controversial);
-        }
-        return controversialsByNumber;
+    public List<Controversial> getControversialByTournamentId(int tournamentId) {
+        Query<Controversial> query = getCurrentSession()
+                .createQuery("FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId", Controversial.class);
+        query.setParameter("tournamentId", tournamentId);
+        return query.getResultList();
+        //return mapControversialsByNumber(query.getResultList());
     }
+
+
 }

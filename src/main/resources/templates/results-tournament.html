@@ -5,6 +5,32 @@
 <body>
     <div layout:fragment="content">
         <h1 th:text="${tournament.name}"></h1>
+        <h2>Команды</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>Название команды</th>
+                <th>Состав команды</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="team : ${teamsPlayers.keySet()}">
+                <tr>
+                    <td th:text="${team.id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${team.id})}" class="name-ref" th:text="${team.teamName}"></a></td>
+                    <td>
+                    <ul>
+                        <th:block th:each="player:${teamsPlayers.get(team)}">
+                            <li th:text="${player.getFullName()}"></li>
+                        </th:block>
+                    </ul>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+        <h2>Результаты</h2>
         <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/controversials(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref">Перейти к спорным</a></td>
 
         <div th:if="${tableResult.size() > 0}">
@@ -24,7 +50,7 @@
             <th:block th:each="result: ${tableResult}">
                 <tr>
                     <td th:text="${result.number}"></td>
-                    <td th:text="${result.teamName}"></td>
+                    <td th:text="${result.team.teamName}"></td>
                     <th:block th:each="answer: ${result.answers}">
                         <td class="questionColumn" th:text="${answer}">
                         </td>

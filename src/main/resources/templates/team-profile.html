@@ -18,9 +18,14 @@
                 </div>
                 <button type="submit">Добавить флаг к команде</button>
             </form>
+            <div th:if="${team.flags.size() > 0}">
         <th:block th:each="flag : ${team.flags}">
         <h3 th:text="${flag.name}"></h3>
         </th:block>
+            </div>
+            <div th:unless="${team.flags.size() > 0}">
+                Пока нет флагов
+            </div>
         <h2>Состав</h2>
             <button id="openModal">Добавить нового игрока</button>
             <div id="myModal" class="modal">
@@ -45,6 +50,7 @@
             </form>
                 </div>
             </div>
+            <div th:if="${team.players.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -72,26 +78,28 @@
                 </tr>
             </thead>
             <tbody>
-            <th:block th:each="number : ${numbers}">
+            <th:block th:each="result : ${resultsTable}">
                 <tr>
-                    <td th:text="${team.tournaments[number-1].id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/results(league_id=${leagueId}, tournament_id=${team.tournaments[number-1].id})}" class="name-ref" th:text="${team.tournaments[number-1].name}"></a></td>
-                    <div th:if="${number<=results.size()}">
-                    <td th:text="${results[number-1].totalScore} + '/' + ${results[number-1].countQuestions}"></td>
+                    <td th:text="${result.team.id}"></td>
+                    <td th:text="${result.totalScore} + '/' + ${result.countQuestions}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${result.team.id})}" class="name-ref" th:text="${result.team.teamName}"></a></td>
                     <td>
-                    </div>
-                    <ul>
-                    <th:block th:each="player : ${team.tournaments[number-1].players}">
-                        <li><a th:href="@{/leagues/{league_id}/teams/{team_id}/players/{player_id}(league_id=${leagueId}, team_id=${team.id},player_id=${player.id})}" class="name-ref" th:text="${player.getFullName()}"></a></li>
-                    </th:block>
-                    </ul>
+                        <ul>
+                            <th:block th:each="player:${result.players}">
+                                <li th:text="${player.getFullName()}"></li>
+                            </th:block>
+                        </ul>
                     </td>
                 </tr>
             </th:block>
             </tbody>
         </table>
-
+            </div>
+            <div th:unless="${team.players.size() > 0}">
+                <p>Игроков пока нет</p>
+            </div>
         <h2>Трансферы</h2>
+            <div th:if="${transfers.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
@@ -116,6 +124,10 @@
             </th:block>
             </tbody>
         </table>
+            </div>
+            <div th:unless="${transfers.size() > 0}">
+                <p>Трансферов пока нет</p>
+            </div>
     </div>
 </body>
 </html>

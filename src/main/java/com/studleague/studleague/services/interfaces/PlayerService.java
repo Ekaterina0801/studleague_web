@@ -12,8 +12,9 @@ public interface PlayerService {
 
     void savePlayer(Player player);
 
-    void updatePlayer(Player player, String[] params);
-
     void deletePlayer(int id);
-    public Team getTeamOfPlayerByLeague(int playerId, int leagueId);
+
+    Team getTeamOfPlayerByLeague(int playerId, int leagueId);
+
+    Player getPlayerByIdSite(String idSite);
 }

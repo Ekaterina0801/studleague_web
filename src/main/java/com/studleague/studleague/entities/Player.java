@@ -1,9 +1,6 @@
 package com.studleague.studleague.entities;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -13,6 +10,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -43,6 +41,9 @@ public class Player {
     @Column(name="date_of_birth")
     private String dateOfBirth;
 
+    @Column(name="id_site")
+    private String idSite;
+
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
@@ -51,20 +52,16 @@ public class Player {
                     CascadeType.DETACH
             },
             mappedBy = "players")
-    //@JsonIgnore
 
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "players")
-    //@JsonBackReference
-    //@JsonIgnore
-    //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
+    @ManyToMany(mappedBy = "players", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     private List<Tournament> tournaments = new ArrayList<>();
 
     @OneToMany(mappedBy = "player", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     private List<Transfer> transfers = new ArrayList<>();
 
-    public Player(int id, String name, String patronymic, String surname, String university, String dateOfBirth, List<Tournament> tournaments, List<Transfer> transfers, List<Team> teams) {
+    public Player(int id, String name, String patronymic, String surname, String university, String dateOfBirth, String idSite, List<Tournament> tournaments, List<Transfer> transfers, List<Team> teams) {
         this.id = id;
         this.name = name;
         this.patronymic = patronymic;
@@ -74,6 +71,7 @@ public class Player {
         this.tournaments = tournaments;
         this.transfers = transfers;
         this.teams = teams;
+        this.idSite = idSite;
     }
 
     public Player(int id, String name, String patronymic, String surname, String university, String date_of_birth) {
@@ -105,4 +103,21 @@ public class Player {
         }
     }
 
+    public String getFullName()
+    {
+        return this.name+" "+this.patronymic+" "+this.surname;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(idSite, player.idSite);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, patronymic, surname, idSite);
+    }
 }

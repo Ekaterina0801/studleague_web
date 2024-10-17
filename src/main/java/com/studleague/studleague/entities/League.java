@@ -1,10 +1,6 @@
 package com.studleague.studleague.entities;
 
-
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -35,7 +32,6 @@ public class League {
 
 
     @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    //@JsonManagedReference
     private List<Team> teams = new ArrayList<>();
 
     public League(int id, String name) {
@@ -52,7 +48,6 @@ public class League {
         {
             tournaments.add(tournament);
             tournament.getLeagues().add(this);
-            //tournament.addLeague(this);
         }
 
 
@@ -72,5 +67,18 @@ public class League {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        League league = (League) o;
+        return Objects.equals(name, league.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }

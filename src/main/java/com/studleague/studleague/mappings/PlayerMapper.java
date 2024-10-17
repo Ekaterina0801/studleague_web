@@ -25,7 +25,7 @@ public class PlayerMapper {
 
     public Player toEntity(PlayerDTO playerDTO){
         Player player = new Player(playerDTO.getId(), playerDTO.getName(), playerDTO.getPatronymic(), playerDTO.getSurname(), playerDTO.getUniversity(), playerDTO.getDateOfBirth());
-        for (int teamId:playerDTO.getTeamId())
+        for (int teamId:playerDTO.getTeamIds())
         {
             player.addTeamToPlayer(teamDao.getTeamById(teamId));
         }
@@ -39,7 +39,7 @@ public class PlayerMapper {
         {
             teamIds.add(team.getId());
         }
-        PlayerDTO playerDTO = new PlayerDTO(player.getId(),player.getName(), player.getPatronymic(), player.getSurname(), player.getUniversity(), player.getDateOfBirth(), teamIds);
+        PlayerDTO playerDTO = new PlayerDTO(player.getId(),player.getName(), player.getPatronymic(), player.getSurname(), player.getUniversity(), player.getDateOfBirth(), player.getIdSite(), teamIds);
         return playerDTO;
     }
 }

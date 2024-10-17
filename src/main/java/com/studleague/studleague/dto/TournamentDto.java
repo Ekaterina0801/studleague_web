@@ -2,6 +2,7 @@ package com.studleague.studleague.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -12,16 +13,24 @@ import java.util.Objects;
 
 public class TournamentDto {
     private int id;
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("idSite")
     private String idSite;
+
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonDeserialize(using = CustomJsonDateDeserializer.class)
+    @JsonProperty("dateStart")
     private Date dateOfStart;
+
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonDeserialize(using = CustomJsonDateDeserializer.class)
+    @JsonProperty("dateEnd")
     private Date dateOfEnd;
+
     private List<Integer> leagueIds;
 
     public TournamentDto() {

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const teamData = {
-            teamName: document.getElementById('teamName').value,
+            name: document.getElementById('teamName').value,
             university: document.getElementById('university').value,
             leagueId: parseInt(document.getElementById('leagueId').value)
         };
@@ -83,6 +83,38 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Произошла ошибка при добавлении команды.');
         });
     });
+        document.getElementById('teamSiteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const idSite = document.getElementById('idSite').value
+            const leagueId = document.getElementById('leagueIdSite').value;
+            const requestData = {
+                idSite: idSite,
+                leagueId: leagueId
+            };
+            fetch('/site/teams',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+                .then(data => {
+                console.log('Success:', data);
+                alert('Команда добавлена успешно!');
+                location.reload();
+
+            })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при добавлении команды');
+            });
+        });
     }
     if (window.location.pathname.match(/^\/leagues\/\d+\/teams\/\d+\/players\/\d+$/)) {
 
@@ -166,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Произошла ошибка при добавлении команды.');
             });
         });
+
     }
     if (window.location.pathname.match(/^\/leagues\/\d+\/tournaments$/))
     {
@@ -213,8 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         document.getElementById('tournamentForm').addEventListener('submit', function(event) {
             event.preventDefault();
-
-
             const tournamentId = document.getElementById('tournamentId').value
             const leagueId = document.getElementById('leagueId').value;
             fetch('/api/leagues/'+leagueId+'/tournaments/'+tournamentId, {
@@ -243,6 +274,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Произошла ошибка при добавлении турнира');
             });
         });
+        document.getElementById('tournamentSiteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const idSite = document.getElementById('idSite').value
+            const leagueId = document.getElementById('leagueIdSite').value;
+            const requestData = {
+                idSite: idSite,
+                leagueIds: [leagueId]
+            };
+            fetch('/site/tournaments',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                if (!response.ok) {
+                    console.log(tournamentId);
+                    console.log(leagueId);
+                    console.log(response);
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+                .then(data => {
+                console.log('Success:', data);
+                alert('Турнир добавлен успешно!');
+
+                location.reload();
+
+            })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при добавлении турнира');
+            });
+        });
+
     }
     var modal = document.getElementById("myModal");
 

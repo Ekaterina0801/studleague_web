@@ -1,10 +1,8 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.ResultTableRow;
+import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.services.interfaces.ControversialService;
-import com.studleague.studleague.services.interfaces.FullResultService;
-import com.studleague.studleague.services.interfaces.TournamentService;
+import com.studleague.studleague.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -35,12 +33,20 @@ public class WebClientController {
 
     private final ControversialService controversialService;
 
+    private final PlayerService playerService;
+
+    private final TeamService teamService;
+
     public WebClientController(FullResultService fullResultService,
                                TournamentService tournamentService,
-                               ControversialService controversialService) {
+                               ControversialService controversialService,
+                               PlayerService playerService,
+                               TeamService teamService) {
         this.fullResultService = fullResultService;
         this.tournamentService = tournamentService;
         this.controversialService = controversialService;
+        this.playerService = playerService;
+        this.teamService = teamService;
     }
 
     public static List<Integer> generateNumbers(int n) {
@@ -84,14 +90,28 @@ public class WebClientController {
         ResponseEntity<List<FullResult>> responseEntityResults = restTemplate.exchange(URL + "/tournaments/" + tournament_id + "/results", HttpMethod.GET, null, new ParameterizedTypeReference<List<FullResult>>() {
         });
         List<FullResult> results = responseEntityResults.getBody();
-        List<ResultTableRow> tableResult = fullResultService.fullResultsToTable(results);
+        List<InfoTeamResults> tableResult = fullResultService.fullResultsToTable(results);
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
         ResponseEntity<Tournament> responseEntityTournament = restTemplate.exchange(URL + "/tournaments/" + tournament_id, HttpMethod.GET, null, new ParameterizedTypeReference<Tournament>() {
         });
         Tournament tournament = responseEntityTournament.getBody();
         List<League> leagues = responseEntityLeagues.getBody();
+        List<Team> teams = tournament.getTeams();
+        List<Player> players = tournament.getPlayers();
+        HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();
+        for (Player player: players)
+        {
+            Team team = playerService.getTeamOfPlayerByLeague(player.getId(), league_id);
+            if (!teamsPlayers.containsKey(team))
+            {
+                teamsPlayers.put(team, new ArrayList<>());
+            }
+            teamsPlayers.get(team).add(player);
+        }
         model.addAttribute("tournament", tournament);
+        //model.addAttribute("teamsPlayers", teamsPlayers);
+        model.addAttribute("teams", teams);
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
         model.addAttribute("tableResult", tableResult);
@@ -121,6 +141,7 @@ public class WebClientController {
         List<League> leagues = responseEntityLeagues.getBody();
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
+
         return "teams";
     }
 
@@ -167,8 +188,9 @@ public class WebClientController {
         ResponseEntity<List<FullResult>> responseEntityResults = restTemplate.exchange(URL + "/teams/" + team_id+"/results", HttpMethod.GET, null, new ParameterizedTypeReference<List<FullResult>>() {
         });
         List<FullResult> results = responseEntityResults.getBody();
-        List<ResultTableRow> resultsTable = fullResultService.fullResultsToTable(results);
+        List<InfoTeamResults> resultsTable = teamService.getInfoTeamResultsByTeam(team_id);
         List<Integer> numbers = generateNumbers(team.getTournaments().size());
+        HashMap<Tournament, List<Player>> tournamentsPlayers = teamService.getTournamentsPlayersByTeam(team.getId());
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
         model.addAttribute("transfers", transfers);
@@ -176,6 +198,8 @@ public class WebClientController {
         model.addAttribute("numbers",numbers);
         model.addAttribute("allFlags", allFlags);
         model.addAttribute("team",team);
+        //model.addAttribute("tournamentsPlayers",tournamentsPlayers);
+        model.addAttribute("resultsTable",resultsTable);
         return "team-profile";
     }
 

@@ -4,7 +4,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
         <div layout:fragment="content">
-            <button id="openModal">Добавить нового игрока</button>
+            <button id="openModal">Добавить новую команду</button>
             <div id="myModal" class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
@@ -28,28 +28,47 @@
                   </div>
                   <button type="submit">Добавить команду</button>
                </form>
+                    <h2> Добавить команду с сайта МАК</h2>
+                    <form id="teamSiteForm" method="post">
+                        <div>
+                            <div>
+                                <label for="idSite">Айди с сайта МАК:</label>
+                                <input type="text" id="idSite" name="idSite" required />
+                            </div>
+                            <input type="hidden" id="leagueIdSite" name="leagueIdSite" th:value="${leagueId}" >
+                        </div>
+                        <button type="submit">Добавить команду</button>
+                    </form>
                 </div>
             </div>
+            <div th:if="${teams.size() > 0}">
         <table class="table">
             <thead>
                 <tr>
                     <th>№</th>
+                    <th>МАК ID</th>
                     <th>Название</th>
                 </tr>
             </thead>
             <tbody>
             <th:block th:each="team : ${teams}">
                 <tr>
-                    <td th:text="${team.getId()}"></td>
+                    <td th:text="${team.id}"></td>
+                    <td th:text="${team.idSite}"></td>
                     <td>
                           <a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${team.getId()})}"
                          class="name-ref"
-                  th:text="${team.getTeamName()}"></a>
+                  th:text="${team.teamName}"></a>
                   </td>
                 </tr>
             </th:block>
             </tbody>
         </table>
+            </div>
+            <div th:unless="${teams.size() > 0}">
+                <p>Команд пока нет</p>
+
+            </div>
     </div>
 </body>
 </html>

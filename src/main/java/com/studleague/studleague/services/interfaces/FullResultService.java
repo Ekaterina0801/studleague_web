@@ -1,6 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.ResultTableRow;
+import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.FullResult;
 
 import java.util.HashMap;
@@ -14,15 +14,14 @@ public interface FullResultService {
 
     void saveFullResult(FullResult fullResult);
 
-    void updateFullResult(FullResult fullResult, String[] params);
 
     void deleteFullResult(int id);
 
     FullResult addControversialToResult(int result_id, int controversial_id);
 
-    public void deleteControversialFromResult(int result_id, int controversial_id);
+    void deleteControversialFromResult(int result_id, int controversial_id);
 
-    public List<ResultTableRow> fullResultsToTable(List<FullResult> fullResults);
+    List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults);
 
-    public List<FullResult> getResultsForTeam(int team_id);
+    List<FullResult> getResultsForTeam(int team_id);
 }

@@ -3,15 +3,14 @@ package com.studleague.studleague.dao.interfaces;
 import com.studleague.studleague.entities.FullResult;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FullResultDao {
-    FullResult getFullResultById(int id);
+    Optional<FullResult> getFullResultById(int id);
 
     List<FullResult> getAllFullResults();
 
     void saveFullResult(FullResult fullResult);
-
-    void updateFullResult(FullResult fullResult, String[] params);
 
     void deleteFullResult(int id);
 
