@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@ToString
 @Table(name="fullResults")
 @JsonIdentityInfo(scope = FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class FullResult {
@@ -24,7 +25,7 @@ public class FullResult {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name="team_id",nullable = false)
@@ -39,14 +40,8 @@ public class FullResult {
     private String mask_results;
 
     @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL,orphanRemoval=true)
+    @ToString.Exclude
     private List<Controversial> controversials = new ArrayList<>();
-
-    public FullResult(int id, Team team, Tournament tournament, String mask_results) {
-        this.id = id;
-        this.team = team;
-        this.tournament = tournament;
-        this.mask_results = mask_results;
-    }
 
 
     public void addControversialToFullResult(Controversial controversial){

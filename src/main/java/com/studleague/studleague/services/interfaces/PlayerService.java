@@ -14,7 +14,5 @@ public interface PlayerService {
 
     void deletePlayer(int id);
 
-    Team getTeamOfPlayerByLeague(int playerId, int leagueId);
-
     Player getPlayerByIdSite(String idSite);
 }

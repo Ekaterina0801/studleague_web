@@ -3,9 +3,7 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +13,17 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 @Table(name="teams")
 @JsonIdentityInfo(scope=Team.class,generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
+@AllArgsConstructor
 public class Team {
 
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name="team_name")
     private String teamName;
@@ -31,7 +32,7 @@ public class Team {
     private String university;
 
     @Column(name="idSite")
-    private String idSite;
+    private long idSite;
 
     @ManyToOne()
     @JoinColumn(name="league_id",nullable = false)
@@ -48,18 +49,13 @@ public class Team {
     private List<Flag> flags = new ArrayList<>();
 
     @ManyToMany(mappedBy = "teams")
+    @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
+    @ToString.Exclude
     private List<FullResult> results = new ArrayList<>();
 
-    public Team(int id, String team_name, String university, String idSite) {
-        this.id = id;
-        this.teamName = team_name;
-        this.university = university;
-        this.flags = new ArrayList<>();
-        this.idSite = idSite;
-    }
 
     public void addPlayerToTeam(Player player)
     {
@@ -120,20 +116,6 @@ public class Team {
             tournaments.remove(tournament);
             tournament.getTeams().remove(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Team{" +
-                "id=" + id +
-                ", teamName='" + teamName + '\'' +
-                ", university='" + university + '\'' +
-                ", idSite='" + idSite + '\'' +
-                ", league=" + league +
-                ", players=" + players +
-                ", flags=" + flags +
-                ", tournaments=" + tournaments +
-                '}';
     }
 
     @Override

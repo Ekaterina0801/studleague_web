@@ -1,11 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.TournamentDao;
-import com.studleague.studleague.dao.interfaces.TransferDao;
-import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.services.interfaces.TournamentService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -16,6 +12,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +29,7 @@ public class TournamentDaoImpl implements TournamentDao {
 
 
     @Override
-    public Optional<Tournament> getTournamentById(int id) {
+    public Optional<Tournament> getTournamentById(long id) {
         Tournament tournament = getCurrentSession().get(Tournament.class, id);
         return Optional.ofNullable(tournament);
     }
@@ -45,49 +42,60 @@ public class TournamentDaoImpl implements TournamentDao {
 
     @Override
     public void saveTournament(Tournament tournament) {
+        Session session = getCurrentSession();
+        Long idSite = tournament.getIdSite();
 
-        Session session = entityManager.unwrap(Session.class);
-        session.merge(tournament);
-        System.out.println(entityManager.contains(tournament));
-        String idSite = tournament.getIdSite();
-        Query<Tournament> query = session.createQuery("from Tournament t where t.idSite = :idSite", Tournament.class);
-        query.setParameter("idSite", idSite);
-        System.out.println(tournament);
-        List<Tournament> tournaments = query.getResultList();
+        Tournament existingTournament = session.createQuery("from Tournament t where t.idSite = :idSite", Tournament.class)
+                .setParameter("idSite", idSite)
+                .uniqueResult();
 
-        if (tournaments.isEmpty()) {
-            session.merge(tournament);
+        if (existingTournament == null) {
+            session.persist(tournament);
         } else {
-            Tournament existingTournament = tournaments.get(0);
-            existingTournament.setName(tournament.getName());
-            existingTournament.setDateOfStart(tournament.getDateOfStart());
-            existingTournament.setDateOfEnd(tournament.getDateOfEnd());
-            existingTournament.setLeagues(tournament.getLeagues());
-            existingTournament.setPlayers(tournament.getPlayers());
-            existingTournament.setResults(tournament.getResults());
-            existingTournament.setTeams(tournament.getTeams());
-            session.update(existingTournament);
+            updateExistingTournament(existingTournament, tournament);
+            session.merge(existingTournament);
+        }
+    }
+
+    private void updateExistingTournament(Tournament existingTournament, Tournament newTournament) {
+        if (newTournament.getName() != null && !newTournament.getName().isEmpty()) {
+            existingTournament.setName(newTournament.getName());
+        }
+        if (newTournament.getDateOfStart() != null) {
+            existingTournament.setDateOfStart(newTournament.getDateOfStart());
+        }
+        if (newTournament.getDateOfEnd() != null) {
+            existingTournament.setDateOfEnd(newTournament.getDateOfEnd());
+        }
+        if (newTournament.getLeagues() != null) {
+            existingTournament.setLeagues(new ArrayList<>(newTournament.getLeagues()));
+        }
+        if (newTournament.getPlayers() != null) {
+            existingTournament.setPlayers(new ArrayList<>(newTournament.getPlayers()));
+        }
+        if (newTournament.getResults() != null) {
+            existingTournament.setResults(new ArrayList<>(newTournament.getResults()));
+        }
+        if (newTournament.getTeams() != null) {
+            existingTournament.setTeams(new ArrayList<>(newTournament.getTeams()));
+        }
+        if (newTournament.getIdSite() != 0) {
+            existingTournament.setIdSite(newTournament.getIdSite());
         }
     }
 
 
 
-
     @Override
-    public void updateTournament(Tournament tournament, String[] params) {
-
-    }
-
-    @Override
-    public void deleteTournament(int id) {
+    public void deleteTournament(long id) {
         Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("delete from Tournament where id=:id");
+        Query<?> query = session.createQuery("delete from Tournament where id=:id", Tournament.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public Optional<Tournament> getTournamentBySiteId(String idSite)
+    public Optional<Tournament> getTournamentBySiteId(long idSite)
     {
         Query<Tournament> query = getCurrentSession().createQuery("from Tournament where idSite=:idSite", Tournament.class);
         query.setParameter("idSite", idSite);
@@ -102,10 +110,10 @@ public class TournamentDaoImpl implements TournamentDao {
     }
 
     @Override
-    public List<Tournament> tournamentsByTeam(int team_id) {
+    public List<Tournament> tournamentsByTeam(long teamId) {
         Session session = entityManager.unwrap(Session.class);
         Query<Tournament> query = getCurrentSession().createQuery("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId", Tournament.class);
-        query.setParameter("teamId", team_id);
+        query.setParameter("teamId", teamId);
         return query.getResultList();
     }
 

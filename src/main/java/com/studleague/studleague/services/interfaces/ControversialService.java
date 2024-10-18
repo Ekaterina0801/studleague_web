@@ -7,20 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface ControversialService {
+
     List<Controversial> getAllControversials();
 
     void saveControversial(Controversial controversial);
 
-    Controversial getControversialById(int id);
+    Controversial getControversialById(Long id);
 
+    void deleteControversial(Long id);
 
-    void deleteControversial(int id);
+    HashMap<Integer, Controversial> getControversialsByTournamentIdWithQuestionNumber(Long tournamentId);
 
-    HashMap<Integer, Controversial> getControversialByTeamId(int team_id);
+    List<Controversial> getControversialsByTournamentId(Long tournamentId);
 
-    HashMap<Integer, Controversial> getControversialByTournament(int tournament_id);
+    HashMap<Integer, Controversial> getControversialsByTeamIdWithQuestionNumber(Long teamId);
 
-    List<Controversial> getControversialByTournamentList(int tournament_id);
-
+    List<Controversial> getControversialsByTeamId(Long teamId);
 
 }

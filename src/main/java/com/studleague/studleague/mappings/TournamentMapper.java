@@ -5,40 +5,52 @@ import com.studleague.studleague.dao.interfaces.LeagueDao;
 import com.studleague.studleague.dto.TournamentDto;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Component
 public class TournamentMapper {
 
     @Autowired
-    LeagueDao leagueDao;
+    private LeagueDao leagueDao;
 
-    @Autowired
-    public TournamentMapper(){
+    public Tournament toEntity(TournamentDto tournamentDto) {
+        Tournament tournament = Tournament.builder()
+                .id(tournamentDto.getId())
+                .name(tournamentDto.getName())
+                .idSite(tournamentDto.getIdSite())
+                .dateOfStart(tournamentDto.getDateOfStart())
+                .dateOfEnd(tournamentDto.getDateOfEnd())
+                .leagues(new ArrayList<>())
+                .build();
 
-    }
-
-    public Tournament toEntity(TournamentDto tournamentDto){
-        Tournament tournament = new Tournament(tournamentDto.getId(), tournamentDto.getName(), tournamentDto.getIdSite(),tournamentDto.getDateOfStart(),tournamentDto.getDateOfEnd());
-        for (int id: tournamentDto.getLeagueIds())
-        {
-            tournament.addLeague(leagueDao.getLeagueById(id));
+        for (long id : tournamentDto.getLeagueIds()) {
+            League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(id), "League", id);
+            tournament.addLeague(league);
         }
-        //tournament.(leagueDao.getLeagueById(teamDTO.getLeagueId()));
+
         return tournament;
     }
 
-    public TournamentDto toDTO(Tournament tournament){
-        List<Integer> leaguesIds = new ArrayList<>();
-        for (League league: tournament.getLeagues())
-        {
+    public TournamentDto toDTO(Tournament tournament) {
+        List<Long> leaguesIds = new ArrayList<>();
+        for (League league : tournament.getLeagues()) {
             leaguesIds.add(league.getId());
         }
-        TournamentDto tournamentDto = new TournamentDto(tournament.getId(),tournament.getName(),tournament.getIdSite(),tournament.getDateOfStart(),tournament.getDateOfEnd(),leaguesIds);
-        return tournamentDto;
+
+        return TournamentDto.builder()
+                .id(tournament.getId())
+                .name(tournament.getName())
+                .idSite(tournament.getIdSite())
+                .dateOfStart(tournament.getDateOfStart())
+                .dateOfEnd(tournament.getDateOfEnd())
+                .leagueIds(leaguesIds)
+                .build();
     }
 }
+

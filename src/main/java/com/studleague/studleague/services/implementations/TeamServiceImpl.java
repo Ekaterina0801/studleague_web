@@ -3,9 +3,8 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dao.interfaces.*;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.services.interfaces.FullResultService;
+import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.TeamService;
-import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,91 +32,75 @@ public class TeamServiceImpl implements TeamService {
     private FullResultDao fullResultDao;
 
     @Autowired
-    private TournamentService tournamentService;
+    private TournamentDao tournamentDao;
 
 
 
     @Override
     @Transactional
-    public Team getTeamById(int id) {
-        Team team  = teamDao.getTeamById(id);
-        return team;
+    public Team getTeamById(long id) {
+        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(id), "Team", id);
     }
 
     @Override
     @Transactional
     public List<Team> getAllTeams() {
-        List<Team> teams = teamDao.getAllTeams();
-        return teams;
+        return teamDao.getAllTeams();
     }
 
     @Override
     @Transactional
     public void saveTeam(Team team) {
         teamDao.saveTeam(team);
-
     }
 
     @Override
     @Transactional
-    public void updateTeam(Team team, String[] params) {
-        teamDao.updateTeam(team,params);
-    }
-
-    @Override
-    @Transactional
-    public void deleteTeam(int id) {
+    public void deleteTeam(long id) {
         teamDao.deleteTeam(id);
     }
 
     @Override
     @Transactional
-    public List<Team> teamsByLeague(int league_id) {
-        List<Team> teamsByLeague = teamDao.teamsByLeague(league_id);
-        return teamsByLeague;
+    public List<Team> teamsByLeague(long leagueId) {
+        return teamDao.teamsByLeague(leagueId);
     }
 
     @Override
     @Transactional
-    public Team addPlayerToTeam(int team_id, int player_id) {
-        Player player = playerDao.getPlayerById(player_id);
-        Team team = teamDao.getTeamById(team_id);
+    public Team addPlayerToTeam(long teamId, long playerId) {
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
         team.addPlayerToTeam(player);
-        //player.addTeamToPlayer(team);
         teamDao.saveTeam(team);
-        //playerDao.savePlayer(player);
         return team;
     }
 
     @Override
     @Transactional
-    public Team deletePlayerFromTeam(int team_id, int player_id) {
-        Player player = playerDao.getPlayerById(player_id);
-        Team team = teamDao.getTeamById(team_id);
+    public Team deletePlayerFromTeam(long teamId, long playerId) {
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
         team.deletePlayerFromTeam(player);
-        //player.addTeamToPlayer(team);
         teamDao.saveTeam(team);
-        //playerDao.savePlayer(player);
         return team;
     }
 
     @Override
     @Transactional
-    public Team addFlagToTeam(int team_id, int flag_id) {
-        Flag flag = flagDao.getFlagById(flag_id);
-        Team team = teamDao.getTeamById(team_id);
+    public Team addFlagToTeam(long teamId, long flagId) {
+        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagDao.getFlagById(flagId), "Flag", flagId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
         team.addFlagToTeam(flag);
-        //player.addTeamToPlayer(team);
         teamDao.saveTeam(team);
-        //playerDao.savePlayer(player);
         return team;
     }
 
     @Override
     @Transactional
-    public Team addLeagueToTeam(int team_id, int league_id) {
-        League league = leagueDao.getLeagueById(league_id);
-        Team team = teamDao.getTeamById(team_id);
+    public Team addLeagueToTeam(long teamId, long leagueId) {
+        League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(leagueId), "League", leagueId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
         team.setLeague(league);
         teamDao.saveTeam(team);
         return team;
@@ -125,41 +108,91 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public Team deleteFlagFromTeam(int team_id, int flag_id) {
-        Flag flag = flagDao.getFlagById(flag_id);
-        Team team = teamDao.getTeamById(team_id);
+    public Team deleteFlagFromTeam(long teamId, long flagId) {
+        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagDao.getFlagById(flagId), "Flag", flagId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
         team.deleteFlagFromTeam(flag);
-        //player.addTeamToPlayer(team);
         teamDao.saveTeam(team);
-        //playerDao.savePlayer(player);
         return team;
     }
 
     @Override
     @Transactional
-    public Team getTeamByIdSite(String idSite)
-    {
-        return teamDao.getTeamByIdSite(idSite);
+    public Team getTeamByIdSite(long idSite) {
+        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(idSite), "Team (by idSite)", idSite);
     }
 
     @Override
     @Transactional
-    public HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(int team_id)
-    {
-        List<Tournament> tournaments = teamDao.tournamentsByTeam(team_id);
-        HashMap<Tournament,List<Player>> tournamentsPlayers = new HashMap<>();
-        Team team = teamDao.getTeamById(team_id);
+    public List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId) {
+        List<InfoTeamResults> infoTeamResults = new ArrayList<>();
+        Team team = getTeamById(teamId);
+        List<FullResult> results = fullResultDao.getResultsForTeam(teamId);
 
-        for (Tournament tournament: tournaments)
-        {
-            List<Player> players = tournament.getPlayers().stream().filter(x->x.getTeams().contains(team)).toList();
-            tournamentsPlayers.put(tournament,players);
+        HashMap<Tournament, FullResult> tournamentsResults = new HashMap<>();
+        for (FullResult result : results) {
+            tournamentsResults.put(result.getTournament(), result);
+        }
+
+        HashMap<Tournament, List<Player>> tournamentsPlayers = getTournamentsPlayersByTeam(teamId);
+
+        int counter = 1;
+        for (Tournament tournament : tournamentsPlayers.keySet()) {
+            InfoTeamResults row = new InfoTeamResults();
+            row.setNumber(counter++);
+            row.setPlayers(tournamentsPlayers.get(tournament));
+            row.setTeam(team);
+            row.setTournament(tournament);
+
+            if (tournamentsResults.containsKey(tournament)) {
+                setScoreDetails(row, tournamentsResults.get(tournament));
+            }
+
+            infoTeamResults.add(row);
+        }
+        return infoTeamResults;
+    }
+
+    private void setScoreDetails(InfoTeamResults row, FullResult result) {
+        String maskResults = result.getMask_results();
+        List<Integer> answers = new ArrayList<>();
+        List<Integer> questionNumbers = new ArrayList<>();
+        int totalScore = 0;
+
+        for (int i = 0; i < maskResults.length(); i++) {
+            String answer = String.valueOf(maskResults.charAt(i));
+            questionNumbers.add(i + 1);
+            try {
+                int number = Integer.parseInt(answer);
+                answers.add(number);
+                totalScore += number;
+            } catch (NumberFormatException e) {
+                answers.add(0);
+            }
+        }
+
+        row.setAnswers(answers);
+        row.setTotalScore(totalScore);
+        row.setCountQuestions(maskResults.length());
+        row.setQuestionNumbers(questionNumbers);
+    }
+
+    @Override
+    @Transactional
+    public HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(long teamId) {
+
+        List<Tournament> tournaments = tournamentDao.tournamentsByTeam(teamId);
+        HashMap<Tournament, List<Player>> tournamentsPlayers = new HashMap<>();
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        for (Tournament tournament : tournaments) {
+            List<Player> players = tournament.getPlayers().stream().filter(x -> x.getTeams().contains(team)).toList();
+            tournamentsPlayers.put(tournament, players);
         }
         return tournamentsPlayers;
 
     }
 
-    @Override
+    /*@Override
     @Transactional
     public List<InfoTeamResults> getInfoTeamResultsByTeam(int team_id)
     {
@@ -209,4 +242,13 @@ public class TeamServiceImpl implements TeamService {
         }
         return infoTeamResults;
     }
+*/
+
+
+    @Override
+    @Transactional
+    public Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId) {
+        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamPlayerByLeague(playerId, leagueId), "Team (by playerId and teamId)", playerId);
+    }
+
 }

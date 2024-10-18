@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public Optional<Controversial> getControversialById(int id) {
+    public Optional<Controversial> getControversialById(long id) {
         Controversial controversial = getCurrentSession().get(Controversial.class, id);
         return Optional.ofNullable(controversial);
     }
@@ -46,28 +45,26 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public void deleteControversial(int id) {
+    public void deleteControversial(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Controversial WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Controversial> getControversialByTeamId(int teamId) {
+    public List<Controversial> getControversialByTeamId(long teamId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial WHERE team_id = :teamId", Controversial.class);
         query.setParameter("teamId", teamId);
         return query.getResultList();
-                //mapControversialsByNumber(query.getResultList());
     }
 
     @Override
-    public List<Controversial> getControversialByTournamentId(int tournamentId) {
+    public List<Controversial> getControversialByTournamentId(long tournamentId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId", Controversial.class);
         query.setParameter("tournamentId", tournamentId);
         return query.getResultList();
-        //return mapControversialsByNumber(query.getResultList());
     }
 
 

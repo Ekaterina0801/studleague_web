@@ -1,25 +1,21 @@
 package com.studleague.studleague.dao.interfaces;
 
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Flag;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 public interface ControversialDao {
 
-        Optional<Controversial> getControversialById(int id);
+        Optional<Controversial> getControversialById(long id);
 
         List<Controversial> getAllControversials();
 
         void saveControversial(Controversial controversial);
 
-        void deleteControversial(int id);
+        void deleteControversial(long id);
 
-        List<Controversial> getControversialByTeamId(int team_id);
+        List<Controversial> getControversialByTeamId(long teamId);
 
-        List<Controversial> getControversialByTournamentId(int tournament_id);
+        List<Controversial> getControversialByTournamentId(long tournamentId);
 
 }

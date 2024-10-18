@@ -2,9 +2,7 @@ package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -29,7 +27,7 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public Optional<Team> getTeamById(int id) {
+    public Optional<Team> getTeamById(long id) {
         Team team = getCurrentSession().get(Team.class, id);
         return Optional.ofNullable(team);
     }
@@ -44,7 +42,7 @@ public class TeamDaoImpl implements TeamDao {
     @Override
     public void saveTeam(Team team) {
         Session session = getCurrentSession();
-        String idSite = team.getIdSite();
+        Long idSite = team.getIdSite();
         Team existingTeam = session.createQuery("from Team t where t.idSite = :idSite", Team.class)
                 .setParameter("idSite", idSite)
                 .uniqueResult();
@@ -72,7 +70,7 @@ public class TeamDaoImpl implements TeamDao {
         if (newTeam.getUniversity() != null) {
             existingTeam.setUniversity(newTeam.getUniversity());
         }
-        if (newTeam.getIdSite() != null) {
+        if (newTeam.getIdSite() != 0) {
             existingTeam.setIdSite(newTeam.getIdSite());
         }
         if (newTeam.getTournaments() != null && !newTeam.getTournaments().isEmpty()) {
@@ -81,23 +79,23 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public void deleteTeam(int id) {
+    public void deleteTeam(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Team WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Team> teamsByLeague(int league_id) {
+    public List<Team> teamsByLeague(long leagueId) {
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.league.id = :league_id", Team.class);
-        query.setParameter("league_id", league_id);
+        query.setParameter("league_id", leagueId);
         return query.getResultList();
     }
 
 
 
     @Override
-    public Optional<Team> getTeamByIdSite(String idSite){
+    public Optional<Team> getTeamByIdSite(long idSite){
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.idSite =: idSite", Team.class);
         query.setParameter("idSite", idSite);
         try {
@@ -112,7 +110,7 @@ public class TeamDaoImpl implements TeamDao {
 
 
     @Override
-    public Optional<Team> getTeamPlayerByLeague(int playerId, int leagueId) {
+    public Optional<Team> getTeamPlayerByLeague(long playerId, long leagueId) {
         String hql = "SELECT t FROM Player p " +
                 "JOIN p.teams t " +
                 "WHERE t.league.id = :leagueId AND p.id = :playerId";

@@ -24,7 +24,7 @@ public class LeagueDaoImpl implements LeagueDao {
     }
 
     @Override
-    public Optional<League> getLeagueById(int id) {
+    public Optional<League> getLeagueById(long id) {
         League league = getCurrentSession().get(League.class, id);
         return Optional.ofNullable(league);
     }
@@ -47,7 +47,7 @@ public class LeagueDaoImpl implements LeagueDao {
 
 
     @Override
-    public void deleteLeague(int id) {
+    public void deleteLeague(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM League WHERE id = :id", League.class);
         query.setParameter("id", id);
         query.executeUpdate();

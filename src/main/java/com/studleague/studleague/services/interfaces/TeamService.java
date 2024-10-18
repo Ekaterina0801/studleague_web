@@ -9,30 +9,31 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface TeamService {
-    Team getTeamById(int id);
+    Team getTeamById(long id);
 
     List<Team> getAllTeams();
 
     void saveTeam(Team team);
 
+    void deleteTeam(long id);
 
-    void deleteTeam(int id);
+    List<Team> teamsByLeague(long leagueId);
 
-    List<Team> teamsByLeague(int league_id);
+    Team addPlayerToTeam(long teamId, long playerId);
 
-    Team addPlayerToTeam(int team_id, int player_id);
+    Team deletePlayerFromTeam(long teamId, long playerId);
 
-    Team deletePlayerFromTeam(int team_id, int player_id);
+    Team addFlagToTeam(long teamId, long flagId);
 
-    Team addFlagToTeam(int team_id, int flag_id);
+    Team deleteFlagFromTeam(long teamId, long flagId);
 
-    Team deleteFlagFromTeam(int team_id, int flag_id);
+    Team addLeagueToTeam(long teamId, long leagueId);
 
-    Team addLeagueToTeam(int team_id, int league_id);
+    Team getTeamByIdSite(long idSite);
 
-    Team getTeamByIdSite(String idSite);
+    HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(long teamId);
 
-    HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(int team_id);
+    List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId);
 
-    List<InfoTeamResults> getInfoTeamResultsByTeam(int team_id);
+    Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId);
 }

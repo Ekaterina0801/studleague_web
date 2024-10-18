@@ -1,24 +1,23 @@
 package com.studleague.studleague.dao.interfaces;
 
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TeamDao {
-    Optional<Team> getTeamById(int id);
+    Optional<Team> getTeamById(long id);
 
     List<Team> getAllTeams();
 
     void saveTeam(Team team);
 
-    void deleteTeam(int id);
+    void deleteTeam(long id);
 
-    List<Team> teamsByLeague(int league_id);
+    List<Team> teamsByLeague(long leagueId);
 
-    Optional<Team> getTeamByIdSite(String idSite);
+    Optional<Team> getTeamByIdSite(long idSite);
 
-    Optional<Team> getTeamPlayerByLeague(int playerId, int leagueId);
+    Optional<Team> getTeamPlayerByLeague(long playerId, long leagueId);
 
 }

@@ -11,13 +11,11 @@ public interface TransferService {
 
     void saveTransfer(Transfer transfer);
 
-    Transfer getTransfer(int id);
+    Transfer getTransfer(long id);
 
-    void updateTransfer(Transfer transfer, String[] params);
+    void deleteTransfer(long id);
 
-    void deleteTransfer(int id);
+    List<Transfer> getTransfersForPlayer(long player_id);
 
-    List<Transfer> getTransfersForPlayer(int player_id);
-
-    List<Transfer> getTransfersForTeam(int team_id);
+    List<Transfer> getTransfersForTeam(long team_id);
 }

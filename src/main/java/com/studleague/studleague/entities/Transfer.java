@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.Objects;
@@ -16,6 +14,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@ToString
 @Table(name="transfers")
 @JsonIdentityInfo(scope= Transfer.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Transfer {
@@ -23,7 +24,7 @@ public class Transfer {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @JsonFormat(pattern="dd-MM-yyyy")
     private Date transferDate;
@@ -42,27 +43,6 @@ public class Transfer {
 
     @Column(name = "comments")
     private String comments;
-
-    public Transfer(int id, Date transfer_date, Team oldTeam, Player player, Team newTeam, String comments) {
-        this.id = id;
-        this.transferDate = transfer_date;
-        this.oldTeam = oldTeam;
-        this.player = player;
-        this.newTeam = newTeam;
-        this.comments = comments;
-    }
-
-    @Override
-    public String toString() {
-        return "Transfer{" +
-                "id=" + id +
-                ", transfer_date=" + transferDate +
-                ", player=" + player +
-                ", oldTeam=" + oldTeam +
-                ", newTeam=" + newTeam +
-                ", comments='" + comments + '\'' +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {

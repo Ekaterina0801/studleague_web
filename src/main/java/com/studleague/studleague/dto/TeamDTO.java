@@ -1,37 +1,30 @@
 package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TeamDTO {
-    private int id;
+    private long id;
     @JsonProperty("name")
     private String teamName;
     @JsonProperty("university")
     private String university;
     @JsonProperty("leagueId")
-    private int leagueId;
+    private long leagueId;
     @JsonProperty("idSite")
-    private String idSite;
+    private long idSite;
     @JsonProperty("teamMembers")
-    private List<PlayerDTO> players;
+    private List<PlayerDTO> players = new ArrayList<>();
 
-    public TeamDTO() {
-    }
-
-    public TeamDTO(int id, String teamName, String university, int leagueId, String idSite, List<PlayerDTO> players) {
-        this.id = id;
-        this.teamName = teamName;
-        this.university = university;
-        this.leagueId = leagueId;
-        this.idSite = idSite;
-        this.players = players;
-    }
 
 }
 

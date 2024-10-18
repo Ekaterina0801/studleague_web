@@ -1,9 +1,7 @@
 package com.studleague.studleague.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 import java.util.Date;
@@ -12,12 +10,15 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@ToString
 @Table(name="controversials")
 public class Controversial {
 
     @Id
     @Column(name="id")
-    private int id;
+    private long id;
 
     @Column(name="questionNumber")
     private int questionNumber;
@@ -44,14 +45,4 @@ public class Controversial {
     @JoinColumn(name="result_id")
     private FullResult fullResult;
 
-    public Controversial(int id, int questionNumber, String answer, Date issuedAt, String comment, String status, String resolvedAt, String appealJuryComment) {
-        this.id = id;
-        this.questionNumber = questionNumber;
-        this.answer = answer;
-        this.issuedAt = issuedAt;
-        this.comment = comment;
-        this.status = status;
-        this.resolvedAt = resolvedAt;
-        this.appealJuryComment = appealJuryComment;
-    }
 }

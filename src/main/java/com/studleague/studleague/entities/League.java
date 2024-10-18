@@ -3,9 +3,7 @@ package com.studleague.studleague.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +13,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@ToString
 @JsonIdentityInfo(scope = League.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name="leagues")
 public class League {
@@ -22,22 +23,20 @@ public class League {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name="name")
     private String name;
 
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ToString.Exclude
     private List<Team> teams = new ArrayList<>();
 
-    public League(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 
     public void addTournamentToLeague(Tournament tournament){
         if (tournaments==null)
@@ -61,13 +60,6 @@ public class League {
         }
     }
 
-    @Override
-    public String toString() {
-        return "League{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {

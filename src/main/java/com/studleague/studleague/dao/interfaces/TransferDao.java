@@ -1,6 +1,5 @@
 package com.studleague.studleague.dao.interfaces;
 
-import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Transfer;
 
 import java.util.List;
@@ -8,16 +7,16 @@ import java.util.Optional;
 
 public interface TransferDao {
 
-    Optional<Transfer> getTransferById(int id);
+    Optional<Transfer> getTransferById(long id);
 
     List<Transfer> getAllTransfers();
 
-    void saveTransfer(Transfer t);
+    void saveTransfer(Transfer transfer);
 
-    void deleteTransfer(int id);
+    void deleteTransfer(long id);
 
-    List<Transfer> getTransfersForPlayer(int player_id);
+    List<Transfer> getTransfersForPlayer(long playerId);
 
-    List<Transfer> getTransfersForTeam(int team_id);
+    List<Transfer> getTransfersForTeam(long teamId);
 
 }

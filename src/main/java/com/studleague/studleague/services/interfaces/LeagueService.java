@@ -5,15 +5,15 @@ import com.studleague.studleague.entities.League;
 import java.util.List;
 
 public interface LeagueService {
-    League getLeagueById(int id);
+    League getLeagueById(long id);
 
     List<League> getAllLeagues();
 
     void saveLeague(League league);
 
-    void deleteLeague(int id);
+    void deleteLeague(long id);
 
-    League addTournamentToLeague(int league_id, int tournament_id);
+    League addTournamentToLeague(long leagueId, long tournamentId);
 
-    League deleteTournamentToLeague(int league_id, int tournament_id);
+    League deleteTournamentToLeague(long leagueId, long tournamentId);
 }

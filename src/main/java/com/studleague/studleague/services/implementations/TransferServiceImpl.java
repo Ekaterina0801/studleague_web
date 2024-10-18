@@ -1,12 +1,12 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.implementations.TransferDaoImpl;
 import com.studleague.studleague.dao.interfaces.PlayerDao;
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dao.interfaces.TransferDao;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Transfer;
+import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.List;
 public class TransferServiceImpl implements TransferService {
 
     @Autowired
-    private TransferDao transferDAO;
+    private TransferDao transferDao;
 
     @Autowired
     private PlayerDao playerDao;
@@ -29,22 +29,21 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public List<Transfer> getAllTransfers() {
-        return transferDAO.getAllTransfers();
+        return transferDao.getAllTransfers();
     }
 
     @Override
     @Transactional
     public void saveTransfer(Transfer transfer) {
-        Team oldTeam = teamDao.getTeamById(transfer.getOldTeam().getId());
-        Team newTeam = teamDao.getTeamById(transfer.getNewTeam().getId());
+        long oldTeamId = transfer.getOldTeam().getId();
+        long newTeamId = transfer.getNewTeam().getId();
+        Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(oldTeamId), "Team", oldTeamId);
+        Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(newTeamId), "Team", newTeamId);
         Player player = transfer.getPlayer();
-        if (oldTeam.getPlayers().contains(player) && !newTeam.getPlayers().contains(player))
-        {
-            transferDAO.saveTransfer(transfer);
+        if (oldTeam.getPlayers().contains(player) && !newTeam.getPlayers().contains(player)) {
+            transferDao.saveTransfer(transfer);
             oldTeam.deletePlayerFromTeam(player);
             newTeam.addPlayerToTeam(player);
-            //player.getTeams().remove(oldTeam);
-            //player.getTeams().add(newTeam);
         }
 
 
@@ -52,34 +51,25 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     @Transactional
-    public Transfer getTransfer(int id) {
-        Transfer transfer = transferDAO.getTransferById(id);
-        return transfer;
+    public Transfer getTransfer(long id) {
+        return EntityRetrievalUtils.getEntityOrThrow(transferDao.getTransferById(id), "Transfer", id);
     }
 
     @Override
     @Transactional
-    public void updateTransfer(Transfer transfer, String[] params) {
-
+    public void deleteTransfer(long id) {
+        transferDao.deleteTransfer(id);
     }
 
     @Override
     @Transactional
-    public void deleteTransfer(int id) {
-        transferDAO.deleteTransfer(id);
+    public List<Transfer> getTransfersForPlayer(long playerId) {
+        return transferDao.getTransfersForPlayer(playerId);
     }
 
     @Override
     @Transactional
-    public List<Transfer> getTransfersForPlayer(int player_id) {
-        List<Transfer> transfers = transferDAO.getTransfersForPlayer(player_id);
-        return transfers;
-    }
-
-    @Override
-    @Transactional
-    public List<Transfer> getTransfersForTeam(int team_id) {
-        List<Transfer> transfers = transferDAO.getTransfersForTeam(team_id);
-        return transfers;
+    public List<Transfer> getTransfersForTeam(long teamId) {
+        return transferDao.getTransfersForTeam(teamId);
     }
 }

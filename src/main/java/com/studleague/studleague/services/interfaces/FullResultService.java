@@ -8,20 +8,19 @@ import java.util.List;
 
 public interface FullResultService {
 
-    FullResult getFullResultById(int id);
+    FullResult getFullResultById(long id);
 
     List<FullResult> getAllFullResults();
 
     void saveFullResult(FullResult fullResult);
 
+    void deleteFullResult(long id);
 
-    void deleteFullResult(int id);
+    FullResult addControversialToResult(long resultId, long controversialId);
 
-    FullResult addControversialToResult(int result_id, int controversial_id);
-
-    void deleteControversialFromResult(int result_id, int controversial_id);
+    void deleteControversialFromResult(long resultId, long controversialId);
 
     List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults);
 
-    List<FullResult> getResultsForTeam(int team_id);
+    List<FullResult> getResultsForTeam(long teamId);
 }

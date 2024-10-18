@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Objects;
 import java.util.Optional;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -27,7 +26,7 @@ public class FullResultDaoImpl implements FullResultDao {
     }
 
     @Override
-    public Optional<FullResult> getFullResultById(int id) {
+    public Optional<FullResult> getFullResultById(long id) {
         FullResult fullResult = getCurrentSession().get(FullResult.class, id);
         return Optional.ofNullable(fullResult);
     }
@@ -50,17 +49,17 @@ public class FullResultDaoImpl implements FullResultDao {
 
 
     @Override
-    public void deleteFullResult(int id) {
+    public void deleteFullResult(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM FullResult WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<FullResult> getResultsForTeam(int team_id) {
+    public List<FullResult> getResultsForTeam(long teamId) {
         Session session = getCurrentSession();
         Query<FullResult> query = session.createQuery("from FullResult where team.id=:team_id", FullResult.class);
-        query.setParameter("team_id", team_id);
+        query.setParameter("team_id", teamId);
         return query.getResultList();
     }
 

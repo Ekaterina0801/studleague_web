@@ -49,7 +49,7 @@ public class SiteServiceImpl {
 
 
 
-    public List<TeamDetailsDTO> addTeams(String tournamentId, String leagueId) {
+    public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authToken);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -71,17 +71,17 @@ public class SiteServiceImpl {
                     new ParameterizedTypeReference<TournamentDto>() {});
 
             TournamentDto tournamentDto1 = responseEntityTournament.getBody();
-            List<Integer> leagues = new ArrayList<>();
-            leagues.add(Integer.valueOf(leagueId));
+            List<Long> leagues = new ArrayList<>();
+            leagues.add(leagueId);
             tournamentDto1.setLeagueIds(leagues);
-            tournamentDto1.setIdSite(String.valueOf(tournamentDto1.getId()));
+            tournamentDto1.setIdSite(tournamentDto1.getId());
             tournament = tournamentMapper.toEntity(tournamentDto1);
             tournamentService.saveTournament(tournament);
         }
 
         if (teams != null) {
             for (TeamDetailsDTO team : teams) {
-                team.setLeagueId(Integer.valueOf(leagueId));
+                team.setLeagueId(leagueId);
                 team.setIdSite(team.getTeam().getId());
 
                 List<Player> playersEntity = new ArrayList<>();
@@ -97,11 +97,11 @@ public class SiteServiceImpl {
                                 member.getPlayer().getSurname(),
                                 null,
                                 null,
-                                String.valueOf(member.getPlayer().getId()),
+                                member.getPlayer().getId(),
                                 List.of(team.getId())
                         );
                         existingPlayer = playerMapper.toEntity(player);
-                        existingPlayer.setIdSite(String.valueOf(member.getPlayer().getId()));
+                        existingPlayer.setIdSite(member.getPlayer().getId());
                         tournament.addPlayer(existingPlayer);
                     }
                     playersEntity.add(existingPlayer);
@@ -109,12 +109,12 @@ public class SiteServiceImpl {
 
                 League league = leagueService.getLeagueById(team.getLeagueId());
 
-                Team teamEntity = teamService.getTeamByIdSite(String.valueOf(team.getTeam().getId()));
+                Team teamEntity = teamService.getTeamByIdSite(team.getTeam().getId());
 
                 teamEntity.setLeague(league);
 
                 if (team.getMask() != null) {
-                    FullResult fullResult = new FullResult(0, teamEntity, tournament, team.getMask());
+                    FullResult fullResult = new FullResult(0, teamEntity, tournament, team.getMask(), new ArrayList<>());
                     fullResultService.saveFullResult(fullResult);
                 }
 
@@ -123,7 +123,7 @@ public class SiteServiceImpl {
                 {
                     teamEntity.setPlayers(playersEntity);
                     TeamDTO teamInDetails = team.getTeam();
-                    teamEntity.setIdSite(String.valueOf(teamInDetails.getId()));
+                    teamEntity.setIdSite(teamInDetails.getId());
                     teamEntity.setTeamName(String.valueOf(teamInDetails.getTeamName()));
                 }
                 else

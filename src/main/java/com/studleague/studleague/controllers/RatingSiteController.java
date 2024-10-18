@@ -4,8 +4,6 @@ package com.studleague.studleague.controllers;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.dto.TeamDetailsDTO;
 import com.studleague.studleague.dto.TournamentDto;
-import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.mappings.TeamMapper;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,7 +47,7 @@ public class RatingSiteController {
         });
         TournamentDto tournamentDto1 = responseEntityTournament.getBody();
         tournamentDto1.setLeagueIds(tournamentDto.getLeagueIds());
-        tournamentDto1.setIdSite(String.valueOf(tournamentDto1.getId()));
+        tournamentDto1.setIdSite(tournamentDto1.getId());
         Tournament tournament = tournamentMapper.toEntity(tournamentDto1);
         tournamentService.saveTournament(tournament);
         return tournamentDto1;
@@ -66,7 +63,7 @@ public class RatingSiteController {
         });
         TeamDTO teamDto1 = responseEntityTeam.getBody();
         teamDto1.setLeagueId(teamDto.getLeagueId());
-        teamDto1.setIdSite(String.valueOf(teamDto1.getId()));
+        teamDto1.setIdSite(teamDto1.getId());
         Team team = teamMapper.toEntity(teamDto1);
         teamService.saveTeam(team);
         return teamDto1;
@@ -75,7 +72,7 @@ public class RatingSiteController {
     @PostMapping("/tournaments/{tournament_id}/teams")
     public List<TeamDetailsDTO> addTeams(@PathVariable int tournament_id, @RequestBody TournamentDto tournamentDto)
     {
-        List<TeamDetailsDTO> teams = siteService.addTeams("11189","1");
+        List<TeamDetailsDTO> teams = siteService.addTeams(11189,1);
         return teams;
 
     }

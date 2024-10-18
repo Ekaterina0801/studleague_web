@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +16,16 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name="players")
+@Builder
+@ToString
+@AllArgsConstructor
 @JsonIdentityInfo(scope= Player.class,generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
 public class Player {
 
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name="name")
     private String name;
@@ -42,7 +43,7 @@ public class Player {
     private String dateOfBirth;
 
     @Column(name="id_site")
-    private String idSite;
+    private long idSite;
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
@@ -52,36 +53,16 @@ public class Player {
                     CascadeType.DETACH
             },
             mappedBy = "players")
-
+    @ToString.Exclude
     private List<Team> teams = new ArrayList<>();
 
     @ManyToMany(mappedBy = "players", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
     @OneToMany(mappedBy = "player", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ToString.Exclude
     private List<Transfer> transfers = new ArrayList<>();
-
-    public Player(int id, String name, String patronymic, String surname, String university, String dateOfBirth, String idSite, List<Tournament> tournaments, List<Transfer> transfers, List<Team> teams) {
-        this.id = id;
-        this.name = name;
-        this.patronymic = patronymic;
-        this.surname = surname;
-        this.university = university;
-        this.dateOfBirth = dateOfBirth;
-        this.tournaments = tournaments;
-        this.transfers = transfers;
-        this.teams = teams;
-        this.idSite = idSite;
-    }
-
-    public Player(int id, String name, String patronymic, String surname, String university, String date_of_birth) {
-        this.id = id;
-        this.name = name;
-        this.patronymic = patronymic;
-        this.surname = surname;
-        this.university = university;
-        this.dateOfBirth = date_of_birth;
-    }
 
     public void addTeamToPlayer(Team team)
     {

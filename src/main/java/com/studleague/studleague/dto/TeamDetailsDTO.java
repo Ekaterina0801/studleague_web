@@ -1,25 +1,28 @@
 package com.studleague.studleague.dto;
 
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Team;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class TeamDetailsDTO {
-    private int id;
+    private long id;
     private TeamDTO team;
-    private int leagueId;
-    private int idSite;
+    private long leagueId;
+    private long idSite;
     private String mask;
     private Integer questionsTotal;
     private String position;
-    private List<Object> controversials; // Assuming controversials is a list of objects
-    private List<TeamMemberDTO> teamMembers;
+    private List<Controversial> controversials = new ArrayList<>();
+    private List<TeamMemberDTO> teamMembers = new ArrayList<>();
 
 }
 

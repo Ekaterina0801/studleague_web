@@ -2,6 +2,7 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dao.interfaces.ControversialDao;
 import com.studleague.studleague.entities.Controversial;
+import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,19 +32,19 @@ public class ControversialServiceImpl implements ControversialService {
 
     @Override
     @Transactional
-    public Controversial getControversialById(int id) {
-        return controversialDao.getControversialById(id).orElse(new Controversial());
+    public Controversial getControversialById(Long id) {
+        return EntityRetrievalUtils.getEntityOrThrow(controversialDao.getControversialById(id),"Controversial", id);
     }
 
     @Override
     @Transactional
-    public void deleteControversial(int id) {
+    public void deleteControversial(Long id) {
         controversialDao.deleteControversial(id);
     }
 
     @Override
     @Transactional
-    public HashMap<Integer, Controversial> getControversialsByTeamIdWithQuestionNumber(int teamId){
+    public HashMap<Integer, Controversial> getControversialsByTeamIdWithQuestionNumber(Long teamId) {
 
         List<Controversial> controversials = controversialDao.getControversialByTeamId(teamId);
         return mapControversialsByNumber(controversials);
@@ -51,24 +52,21 @@ public class ControversialServiceImpl implements ControversialService {
 
     @Override
     @Transactional
-    public List<Controversial> getControversialsByTeamId(int teamId)
-    {
+    public List<Controversial> getControversialsByTeamId(Long teamId) {
         return controversialDao.getControversialByTeamId(teamId);
     }
 
     @Override
     @Transactional
-    public HashMap<Integer, Controversial> getControversialByTournamentIdWithQuestionNumber(int tournamentId)
-    {
-        List<Controversial> controversials = controversialDao.getControversialByTournamentId(tournamentId)
+    public HashMap<Integer, Controversial> getControversialsByTournamentIdWithQuestionNumber(Long tournamentId) {
+        List<Controversial> controversials = controversialDao.getControversialByTournamentId(tournamentId);
         return mapControversialsByNumber(controversials);
     }
 
     @Override
     @Transactional
-    public List<Controversial> getControversialByTournamentList(int tournament_id)
-    {
-        return controversialDao.getControversialByTournamentId(tournament_id).values().stream().toList();
+    public List<Controversial> getControversialsByTournamentId(Long tournamentId) {
+        return controversialDao.getControversialByTournamentId(tournamentId);
     }
 
     private HashMap<Integer, Controversial> mapControversialsByNumber(List<Controversial> controversials) {

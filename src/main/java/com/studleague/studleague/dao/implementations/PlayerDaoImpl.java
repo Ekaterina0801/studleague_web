@@ -1,9 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -28,7 +26,7 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public Optional<Player> getPlayerById(int id) {
+    public Optional<Player> getPlayerById(long id) {
         Player player = getCurrentSession().get(Player.class, id);
         return Optional.ofNullable(player);
     }
@@ -50,7 +48,7 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public void deletePlayer(int id) {
+    public void deletePlayer(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Player WHERE id = :id", Player.class);
         query.setParameter("id", id);
         query.executeUpdate();
@@ -58,7 +56,7 @@ public class PlayerDaoImpl implements PlayerDao {
 
 
     @Override
-    public Optional<Player> getPlayerByIdSite(String idSite) {
+    public Optional<Player> getPlayerByIdSite(long idSite) {
         Query<Player> query = getCurrentSession().createQuery("from Player p where p.idSite = :idSite", Player.class);
         query.setParameter("idSite", idSite);
 

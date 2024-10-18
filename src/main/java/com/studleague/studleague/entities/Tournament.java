@@ -3,9 +3,7 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +15,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
+@AllArgsConstructor
 @Table(name = "tournaments")
 @JsonIdentityInfo(scope= Tournament.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Tournament {
@@ -24,14 +25,14 @@ public class Tournament {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "id_site")
     @JsonProperty("idSite")
-    private String idSite;
+    private long idSite;
 
     @Column(name = "date_of_start")
     @JsonProperty("dateOfStart")
@@ -51,9 +52,11 @@ public class Tournament {
     )
     @JoinTable(name="leagues_tournaments",
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
+    @ToString.Exclude
     private List<League> leagues = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.MERGE)
+    @ToString.Exclude
     private List<FullResult> results = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
@@ -62,6 +65,7 @@ public class Tournament {
             joinColumns = @JoinColumn(name = "tournament_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id")
     )
+    @ToString.Exclude
 
     private List<Team> teams = new ArrayList<>();
 
@@ -71,16 +75,8 @@ public class Tournament {
             joinColumns = @JoinColumn(name = "tournament_id"),
             inverseJoinColumns = @JoinColumn(name = "player_id")
     )
+    @ToString.Exclude
     private List<Player> players = new ArrayList<>();
-
-
-    public Tournament(int id, String name, String id_site, Date date_of_start, Date date_of_end) {
-        this.id = id;
-        this.name = name;
-        this.idSite = id_site;
-        this.dateOfStart = date_of_start;
-        this.dateOfEnd = date_of_end;
-    }
 
     public void addResult(FullResult fullResult) {
         if (results == null) {
