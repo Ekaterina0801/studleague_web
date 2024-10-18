@@ -111,7 +111,6 @@ public class TournamentDaoImpl implements TournamentDao {
 
     @Override
     public List<Tournament> tournamentsByTeam(long teamId) {
-        Session session = entityManager.unwrap(Session.class);
         Query<Tournament> query = getCurrentSession().createQuery("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId", Tournament.class);
         query.setParameter("teamId", teamId);
         return query.getResultList();

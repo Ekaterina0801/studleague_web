@@ -4,6 +4,7 @@ import com.studleague.studleague.entities.*;
 import com.studleague.studleague.mappings.*;
 import com.studleague.studleague.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,403 +58,377 @@ public class WebRestController {
     public PlayerMapper playerMapper;
 
     @GetMapping("/flags")
-    public List<Flag> getFlags()
+    public ResponseEntity<List<Flag>> getFlags()
     {
-        return flagService.getAllFlags();
+        return ResponseEntity.ok(flagService.getAllFlags());
     }
 
     @GetMapping("/results")
-    public List<FullResult> getResults()
+    public ResponseEntity<List<FullResult>> getResults()
     {
-        return fullResultService.getAllFullResults();
+        return ResponseEntity.ok(fullResultService.getAllFullResults());
     }
 
     @GetMapping("/leagues")
-    public List<League> getLeagues()
+    public ResponseEntity<List<League>> getLeagues()
     {
-        return leagueService.getAllLeagues();
+        return ResponseEntity.ok(leagueService.getAllLeagues());
     }
 
     @GetMapping("/players")
-    public List<Player> getPlayers()
+    public ResponseEntity<List<Player>> getPlayers()
     {
-        List<Player> players = playerService.getAllPlayers();
-        System.out.println(players);
-        return players;
+        return ResponseEntity.ok(playerService.getAllPlayers());
     }
 
     @GetMapping("/controversials")
-    public List<Controversial> getControversials()
+    public ResponseEntity<List<Controversial>> getControversials()
     {
-        List<Controversial> controversials = controversialService.getAllControversials();
-        return controversials;
+        return ResponseEntity.ok(controversialService.getAllControversials());
     }
 
     @GetMapping("/teams")
-    public List<Team> getTeams()
+    public ResponseEntity<List<Team>> getTeams()
     {
-        return teamService.getAllTeams();
+        return ResponseEntity.ok(teamService.getAllTeams());
     }
 
     @GetMapping("/tournaments")
-    public List<Tournament> getTournaments()
+    public ResponseEntity<List<Tournament>> getTournaments()
     {
-        return tournamentService.getAllTournaments();
+        return ResponseEntity.ok(tournamentService.getAllTournaments());
     }
 
     @GetMapping("/transfers")
-    public List<Transfer> getTransfers()
+    public ResponseEntity<List<Transfer>> getTransfers()
     {
-        return transferService.getAllTransfers();
+        return ResponseEntity.ok(transferService.getAllTransfers());
     }
 
     @GetMapping("/flags/{id}")
-    public Flag getFlag(@PathVariable int id)
+    public ResponseEntity<Flag> getFlag(@PathVariable long id)
     {
-        Flag flag = flagService.getFlagById(id);
-        return flag;
+        return ResponseEntity.ok(flagService.getFlagById(id));
     }
 
     @GetMapping("/results/{id}")
-    public FullResult getResult(@PathVariable int id)
+    public ResponseEntity<FullResult> getResult(@PathVariable long id)
     {
-        FullResult fullResult = fullResultService.getFullResultById(id);
-        return fullResult;
+        return ResponseEntity.ok(fullResultService.getFullResultById(id));
     }
 
     @GetMapping("/leagues/{id}")
-    public League getLeague(@PathVariable int id)
+    public ResponseEntity<League> getLeague(@PathVariable long id)
     {
-        League league = leagueService.getLeagueById(id);
-        return league;
+        return ResponseEntity.ok(leagueService.getLeagueById(id));
     }
 
     @GetMapping("/players/{id}")
-    public Player getPlayer(@PathVariable int id)
+    public ResponseEntity<Player> getPlayer(@PathVariable long id)
     {
-        Player player = playerService.getPlayerById(id);
-        return player;
+        return ResponseEntity.ok(playerService.getPlayerById(id));
     }
 
     @GetMapping("/teams/{id}")
-    public Team getTeam(@PathVariable int id)
+    public ResponseEntity<Team> getTeam(@PathVariable long id)
     {
-        Team team = teamService.getTeamById(id);
-        return team;
+        return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
     @GetMapping("/tournaments/{id}")
-    public Tournament getTournament(@PathVariable int id)
+    public ResponseEntity<Tournament> getTournament(@PathVariable long id)
     {
-        Tournament tournament = tournamentService.getTournamentById(id);
-        return tournament;
+        return ResponseEntity.ok(tournamentService.getTournamentById(id));
     }
 
     @GetMapping("/transfers/{id}")
-    public Transfer getTransfer(@PathVariable int id)
+    public ResponseEntity<Transfer> getTransfer(@PathVariable long id)
     {
-        Transfer transfer = transferService.getTransfer(id);
-        return transfer;
+        return ResponseEntity.ok(transferService.getTransfer(id));
     }
 
     @PostMapping("/flags")
-    public Flag addNewFlag(@RequestBody Flag flag)
+    public ResponseEntity<Flag> addNewFlag(@RequestBody Flag flag)
     {
         flagService.saveFlag(flag);
-        return flag;
+        return ResponseEntity.status(HttpStatus.CREATED).body(flag);
     }
 
     @PostMapping("/results")
-    public FullResultDTO addNewResult(@RequestBody FullResultDTO fullResultDTO)
+    public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO)
     {
         FullResult fullResult = fullResultMapper.toEntity(fullResultDTO);
         fullResultService.saveFullResult(fullResult);
-        return fullResultDTO;
+        return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
     }
 
     @PostMapping("/leagues")
-    public League addNewLeague(@RequestBody League league)
+    public ResponseEntity<League> addNewLeague(@RequestBody League league)
     {
         leagueService.saveLeague(league);
-        return league;
+        return ResponseEntity.status(HttpStatus.CREATED).body(league);
     }
 
     @PostMapping("/players")
-    public PlayerDTO addNewPlayer(@RequestBody PlayerDTO playerDTO)
+    public ResponseEntity<PlayerDTO> addNewPlayer(@RequestBody PlayerDTO playerDTO)
     {
         Player player = playerMapper.toEntity(playerDTO);
         playerService.savePlayer(player);
-        return playerDTO;
+        return ResponseEntity.status(HttpStatus.CREATED).body(playerDTO);
     }
 
 
     @PostMapping ("/controversials")
-    public Controversial addNewControversial(@RequestBody Controversial controversial)
+    public ResponseEntity<Controversial> addNewControversial(@RequestBody Controversial controversial)
     {
         controversialService.saveControversial(controversial);
-        return controversial;
+        return ResponseEntity.status(HttpStatus.CREATED).body(controversial);
     }
 
     @PostMapping(value="/teams",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TeamDTO addNewTeam(@RequestBody TeamDTO teamDTO)
+    public ResponseEntity<TeamDTO> addNewTeam(@RequestBody TeamDTO teamDTO)
     {
         Team team = teamMapper.toEntity(teamDTO);
         teamService.saveTeam(team);
-        return teamDTO;
+        return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }
 
     @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TournamentDto addNewTournament(@RequestBody TournamentDto tournamentDto) {
+    public ResponseEntity<TournamentDto> addNewTournament(@RequestBody TournamentDto tournamentDto) {
         Tournament tournament = tournamentMapper.toEntity(tournamentDto);
         tournamentService.saveTournament(tournament);
-        return tournamentDto;
+        return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
     }
 
 
     @PostMapping("/transfers")
-    public TransferDTO addNewTransfer(@RequestBody TransferDTO transferDTO)
+    public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO)
     {
         Transfer transfer = transferMapper.toEntity(transferDTO);
         transferService.saveTransfer(transfer);
-        return transferDTO;
+        return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
     }
 
     @DeleteMapping("/flags/{id}")
-    public String deleteFlag(@PathVariable int id)
+    public ResponseEntity<String> deleteFlag(@PathVariable long id)
     {
         flagService.deleteFlag(id);
-        return "Flag with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Flag with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/controversials/{id}")
-    public String deleteControversial(@PathVariable int id)
+    public ResponseEntity<String> deleteControversial(@PathVariable long id)
     {
         controversialService.deleteControversial(id);
-        return "Controversial with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Controversial with ID = "+ id + "was deleted");
     }
 
 
     @DeleteMapping("/results/{id}")
-    public String deleteFullResult(@PathVariable int id)
+    public ResponseEntity<String> deleteFullResult(@PathVariable long id)
     {
         fullResultService.deleteFullResult(id);
-        return "FullResult with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("FullResult with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/leagues/{id}")
-    public String deleteLeague(@PathVariable int id)
+    public ResponseEntity<String> deleteLeague(@PathVariable long id)
     {
         leagueService.deleteLeague(id);
-        return "League with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("League with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/players/{id}")
-    public String deletePlayer(@PathVariable int id)
+    public ResponseEntity<String> deletePlayer(@PathVariable long id)
     {
         playerService.deletePlayer(id);
-        return "Player with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Player with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/teams/{id}")
-    public String deleteTeam(@PathVariable int id)
+    public ResponseEntity<String> deleteTeam(@PathVariable long id)
     {
         teamService.deleteTeam(id);
-        return "Team with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Team with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/tournaments/{id}")
-    public String deleteTournament(@PathVariable int id)
+    public ResponseEntity<String> deleteTournament(@PathVariable long id)
     {
         tournamentService.deleteTournament(id);
-        return "Tournament with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Tournament with ID = "+ id + "was deleted");
     }
 
     @DeleteMapping("/transfers/{id}")
-    public String deleteTransfer(@PathVariable int id)
+    public ResponseEntity<String> deleteTransfer(@PathVariable long id)
     {
         transferService.deleteTransfer(id);
-        return "Transfer with ID = "+ id + "was deleted";
+        return ResponseEntity.ok("Transfer with ID = "+ id + "was deleted");
     }
 
     //------------TEAMS------------
-    @PutMapping("/teams/{team_id}/players/{player_id}")
-    public ResponseEntity<Team> addPlayerToTeam(@PathVariable int team_id, @PathVariable int player_id)
+    @PutMapping("/teams/{teamId}/players/{playerId}")
+    public ResponseEntity<Team> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId)
     {
-        Team updatedTeam = teamService.addPlayerToTeam(team_id, player_id);
+        Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
         return ResponseEntity.ok(updatedTeam);
     }
 
-    @DeleteMapping("/teams/{team_id}/players/{player_id}")
-    public ResponseEntity<Team> deletePlayerFromTeam(@PathVariable int team_id, @PathVariable int player_id)
+    @DeleteMapping("/teams/{teamId}/players/{playerId}")
+    public ResponseEntity<Team> deletePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId)
     {
-        Team updatedTeam = teamService.deletePlayerFromTeam(team_id, player_id);
+        Team updatedTeam = teamService.deletePlayerFromTeam(teamId, playerId);
         return ResponseEntity.ok(updatedTeam);
     }
 
-    @PutMapping("/teams/{team_id}/flags/{flag_id}")
-    public ResponseEntity<Team> addFlagToTeam(@PathVariable int team_id, @PathVariable int flag_id)
+    @PutMapping("/teams/{teamId}/flags/{flagId}")
+    public ResponseEntity<Team> addFlagToTeam(@PathVariable long teamId, @PathVariable long flagId)
     {
-        Team updatedTeam = teamService.addFlagToTeam(team_id, flag_id);
+        Team updatedTeam = teamService.addFlagToTeam(teamId, flagId);
         return ResponseEntity.ok(updatedTeam);
     }
 
-    @PutMapping("/teams/{team_id}/leagues/{league_id}")
-    public ResponseEntity<Team> addLeagueToTeam(@PathVariable int team_id, @PathVariable int league_id)
+    @PutMapping("/teams/{teamId}/leagues/{leagueId}")
+    public ResponseEntity<Team> addLeagueToTeam(@PathVariable long teamId, @PathVariable long leagueId)
     {
-        Team updatedTeam = teamService.addLeagueToTeam(team_id, league_id);
+        Team updatedTeam = teamService.addLeagueToTeam(teamId, leagueId);
         return ResponseEntity.ok(updatedTeam);
     }
 
-    @DeleteMapping("/teams/{team_id}/flags/{flag_id}")
-    public ResponseEntity<Team> deleteFlagFromTeam(@PathVariable int team_id, @PathVariable int flag_id)
+    @DeleteMapping("/teams/{teamId}/flags/{flagId}")
+    public ResponseEntity<Team> deleteFlagFromTeam(@PathVariable long teamId, @PathVariable long flagId)
     {
-        Team updatedTeam = teamService.deleteFlagFromTeam(team_id, flag_id);
+        Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
         return ResponseEntity.ok(updatedTeam);
     }
 
-    @GetMapping("/teams/{team_id}/players")
-    public List<Player> allPlayersFromTeam(@PathVariable int team_id){
-        Team team = teamService.getTeamById(team_id);
-        List<Player> players = team.getPlayers();
-        return players;
+    @GetMapping("/teams/{teamId}/players")
+    public ResponseEntity<List<Player>> allPlayersFromTeam(@PathVariable long teamId){
+        Team team = teamService.getTeamById(teamId);
+        return ResponseEntity.ok(team.getPlayers());
     }
 
-    @GetMapping("/teams/{team_id}/tournaments")
-    public List<Tournament> allTournamentsFromTeam(@PathVariable int team_id){
-        Team team = teamService.getTeamById(team_id);
+    @GetMapping("/teams/{teamId}/tournaments")
+    public ResponseEntity<List<Tournament>> allTournamentsFromTeam(@PathVariable long teamId){
+        Team team = teamService.getTeamById(teamId);
         List<Tournament> tournaments = team.getTournaments();
-        return tournaments;
+        return ResponseEntity.ok(tournaments);
     }
 
-    @GetMapping("/teams/{team_id}/flags")
-    public List<Flag> allFlagsFromTeam(@PathVariable int team_id){
-        Team team = teamService.getTeamById(team_id);
-        List<Flag> flags = team.getFlags();
-        return flags;
+    @GetMapping("/teams/{teamId}/flags")
+    public ResponseEntity<List<Flag>> allFlagsFromTeam(@PathVariable long teamId){
+        Team team = teamService.getTeamById(teamId);
+        return ResponseEntity.ok(team.getFlags());
     }
 
-    @GetMapping("/teams/{team_id}/transfers")
-    public List<Transfer> allTransfersFromTeam(@PathVariable int team_id){
-        List<Transfer> transfers = transferService.getTransfersForTeam(team_id);
-        return transfers;
+    @GetMapping("/teams/{teamId}/transfers")
+    public ResponseEntity<List<Transfer>> allTransfersFromTeam(@PathVariable long teamId){
+        return ResponseEntity.ok(transferService.getTransfersForTeam(teamId));
     }
 
-    @GetMapping("/players/{player_id}/transfers")
-    public List<Transfer> allTransfersFromPlayer(@PathVariable int player_id){
-        List<Transfer> transfers = transferService.getTransfersForPlayer(player_id);
-        return transfers;
+    @GetMapping("/players/{playerId}/transfers")
+    public ResponseEntity<List<Transfer>> allTransfersFromPlayer(@PathVariable long playerId){
+        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId));
     }
 
-    @GetMapping("/players/{player_id}/tournaments")
-    public List<Tournament> allTournamentsFromPlayer(@PathVariable int player_id){
-        Player player = playerService.getPlayerById(player_id);
-        List<Tournament> tournaments  = player.getTournaments();
-        return tournaments;
+    @GetMapping("/players/{playerId}/tournaments")
+    public ResponseEntity<List<Tournament>> allTournamentsFromPlayer(@PathVariable long playerId){
+        Player player = playerService.getPlayerById(playerId);
+        return ResponseEntity.ok(player.getTournaments());
     }
 
-    @GetMapping("/teams/{team_id}/results")
-    public List<FullResult> allResultsForTeam(@PathVariable int team_id){
-        List<FullResult> results = fullResultService.getResultsForTeam(team_id);
-        return results;
+    @GetMapping("/teams/{teamId}/results")
+    public ResponseEntity<List<FullResult>> allResultsForTeam(@PathVariable long teamId){
+        return ResponseEntity.ok(fullResultService.getResultsForTeam(teamId));
     }
     //------------LEAGUES------------
-    @PutMapping("/leagues/{league_id}/tournaments/{tournament_id}")
-    public ResponseEntity<League> addTournamentToLeague(@PathVariable int league_id, @PathVariable int tournament_id)
+    @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
+    public ResponseEntity<League> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
     {
-        League updatedLeague = leagueService.addTournamentToLeague(league_id,tournament_id);
+        League updatedLeague = leagueService.addTournamentToLeague(leagueId,tournamentId);
         return ResponseEntity.ok(updatedLeague);
     }
 
-    @DeleteMapping("/leagues/{league_id}/tournaments/{tournament_id}")
-    public ResponseEntity<League> deleteTournamentFromLeague(@PathVariable int league_id, @PathVariable int tournament_id)
+    @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
+    public ResponseEntity<League> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
     {
-        League updatedLeague = leagueService.deleteTournamentToLeague(league_id,tournament_id);
+        League updatedLeague = leagueService.deleteTournamentToLeague(leagueId,tournamentId);
         return ResponseEntity.ok(updatedLeague);
     }
 
-    @GetMapping("/leagues/{league_id}/tournaments")
-    public List<Tournament> allTournamentsFromLeague(@PathVariable int league_id)
+    @GetMapping("/leagues/{leagueId}/tournaments")
+    public ResponseEntity<List<Tournament>> allTournamentsFromLeague(@PathVariable long leagueId)
     {
-        League league = leagueService.getLeagueById(league_id);
-        List<Tournament> tournaments = league.getTournaments();
-        return tournaments;
+        League league = leagueService.getLeagueById(leagueId);
+        return ResponseEntity.ok(league.getTournaments());
     }
 
-    @GetMapping("/leagues/{league_id}/players/{player_id}/team")
-    public Team teamFromLeague(@PathVariable int league_id, @PathVariable int player_id)
+    @GetMapping("/leagues/{leagueId}/players/{playerId}/team")
+    public ResponseEntity<Team> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId)
     {
-        Team team = playerService.getTeamOfPlayerByLeague(league_id,player_id);
-        return team;
+        return ResponseEntity.ok(teamService.getTeamByPlayerIdAndLeagueId(leagueId,playerId));
     }
 
-    @GetMapping("/leagues/{league_id}/teams")
-    public List<Team> allTeamsFromLeague(@PathVariable int league_id){
-        List<Team> teams = teamService.teamsByLeague(league_id);
-        return teams;
+    @GetMapping("/leagues/{leagueId}/teams")
+    public ResponseEntity<List<Team>> allTeamsFromLeague(@PathVariable long leagueId){
+        return ResponseEntity.ok(teamService.teamsByLeague(leagueId));
     }
 
     //------------TOURNAMENTS------------
-    @PutMapping("/tournaments/{tournament_id}/results/{result_id}")
-    public ResponseEntity<Tournament> addResultToTournament(@PathVariable int tournament_id, @PathVariable int result_id)
+    @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
+    public ResponseEntity<Tournament> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId)
     {
-        Tournament updatedTournament = tournamentService.addResultToTournament(tournament_id,result_id);
+        Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId,resultId);
         return ResponseEntity.ok(updatedTournament);
     }
 
-    @DeleteMapping("/tournaments/{tournament_id}/results/{result_id}")
-    public ResponseEntity<Tournament> deleteResultFromTournament(@PathVariable int tournament_id, @PathVariable int result_id)
+    @DeleteMapping("/tournaments/{tournamentId}/results/{resultId}")
+    public ResponseEntity<Tournament> deleteResultFromTournament(@PathVariable long tournamentId, @PathVariable long resultId)
     {
-        Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournament_id,result_id);
+        Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournamentId,resultId);
         return ResponseEntity.ok(updatedTournament);
     }
 
-    @GetMapping("/tournaments/{tournament_id}/results")
-    public List<FullResult> allResultsFromTournament(@PathVariable int tournament_id)
+    @GetMapping("/tournaments/{tournamentId}/results")
+    public ResponseEntity<List<FullResult>> allResultsFromTournament(@PathVariable long tournamentId)
     {
-        Tournament tournament = tournamentService.getTournamentById(tournament_id);
-        List<FullResult> results = tournament.getResults();
-        return results;
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        return ResponseEntity.ok(tournament.getResults());
     }
 
-    @PutMapping("/tournaments/{tournament_id}/teams/{team_id}/players/{player_id}")
-    public ResponseEntity<Tournament> addPlayersTeamsToTournament(@PathVariable int tournament_id, @PathVariable int team_id, @PathVariable int player_id)
+    @PutMapping("/tournaments/{tournamentId}/teams/{teamId}/players/{playerId}")
+    public ResponseEntity<Tournament> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId)
     {
-        Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournament_id,team_id,player_id);
+        Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId,teamId,playerId);
         return ResponseEntity.ok(updatedTournament);
     }
 
-    @GetMapping("/tournaments/{tournament_id}/teams")
-    public List<Team> allTeamsFromTournament(@PathVariable int tournament_id)
+    @GetMapping("/tournaments/{tournamentId}/teams")
+    public ResponseEntity<List<Team>> allTeamsFromTournament(@PathVariable long tournamentId)
     {
-        Tournament tournament = tournamentService.getTournamentById(tournament_id);
-        List<Team> teams = tournament.getTeams();
-        return teams;
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        return ResponseEntity.ok(tournament.getTeams());
     }
 
-    @GetMapping("/tournaments/{tournament_id}/players")
-    public List<Player> allPlayersFromTournament(@PathVariable int tournament_id)
+    @GetMapping("/tournaments/{tournamentId}/players")
+    public ResponseEntity<List<Player>> allPlayersFromTournament(@PathVariable long tournamentId)
     {
-        Tournament tournament = tournamentService.getTournamentById(tournament_id);
-        List<Player> players = tournament.getPlayers();
-        return players;
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        return ResponseEntity.ok(tournament.getPlayers());
     }
 
-    @GetMapping("/results/{result_id}/controversials")
-    public List<Controversial> allControversialsFromResult(@PathVariable int result_id)
+    @GetMapping("/results/{resultId}/controversials")
+    public ResponseEntity<List<Controversial>> allControversialsFromResult(@PathVariable long resultId)
     {
-        FullResult fullResult = fullResultService.getFullResultById(result_id);
-        List<Controversial> controversials = fullResult.getControversials();
-        return controversials;
+        FullResult fullResult = fullResultService.getFullResultById(resultId);
+        return ResponseEntity.ok(fullResult.getControversials());
     }
 
-    @PutMapping("/results/{result_id}/controversials/{controversial_id}")
-    public ResponseEntity<FullResult> addControversialToResult(@PathVariable int result_id, @PathVariable int controversial_id)
+    @PutMapping("/results/{resultId}/controversials/{controversialId}")
+    public ResponseEntity<FullResult> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId)
     {
-        FullResult fullResult = fullResultService.addControversialToResult(result_id,controversial_id);
+        FullResult fullResult = fullResultService.addControversialToResult(resultId,controversialId);
         return ResponseEntity.ok(fullResult);
     }
-
-
-
 
 }

@@ -58,7 +58,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/results")
-    public String leagueResultsView(@PathVariable int league_id, Model model) {
+    public String leagueResultsView(@PathVariable long league_id, Model model) {
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
         List<League> leagues = responseEntityLeagues.getBody();
@@ -68,14 +68,14 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/controversials")
-    public String controversialsTournamentView(@PathVariable int league_id, @PathVariable int tournament_id, Model model) {
+    public String controversialsTournamentView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
         ResponseEntity<Tournament> responseEntityTournament = restTemplate.exchange(URL + "/tournaments/" + tournament_id, HttpMethod.GET, null, new ParameterizedTypeReference<Tournament>() {
         });
         Tournament tournament = responseEntityTournament.getBody();
         List<League> leagues = responseEntityLeagues.getBody();
-        List<Controversial> controversials = controversialService.getControversialByTournamentList(tournament_id);
+        List<Controversial> controversials = controversialService.getControversialsByTournamentId(tournament_id);
         model.addAttribute("leagueId", league_id);
         model.addAttribute("leagues", leagues);
         model.addAttribute("controversials", controversials);
@@ -85,7 +85,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/results")
-    public String tournamentResultsView(@PathVariable int league_id, @PathVariable int tournament_id, Model model) {
+    public String tournamentResultsView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
 
         ResponseEntity<List<FullResult>> responseEntityResults = restTemplate.exchange(URL + "/tournaments/" + tournament_id + "/results", HttpMethod.GET, null, new ParameterizedTypeReference<List<FullResult>>() {
         });
@@ -102,7 +102,7 @@ public class WebClientController {
         HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();
         for (Player player: players)
         {
-            Team team = playerService.getTeamOfPlayerByLeague(player.getId(), league_id);
+            Team team = teamService.getTeamByPlayerIdAndLeagueId(player.getId(), league_id);
             if (!teamsPlayers.containsKey(team))
             {
                 teamsPlayers.put(team, new ArrayList<>());
@@ -119,7 +119,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/teams/{team_id}/results")
-    public String teamResultsView(@PathVariable int league_id, @PathVariable int team_id, Model model) {
+    public String teamResultsView(@PathVariable long league_id, @PathVariable long team_id, Model model) {
 
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
@@ -131,7 +131,7 @@ public class WebClientController {
 
 
     @RequestMapping("/leagues/{league_id}/teams")
-    public String teamsView(@PathVariable int league_id, Model model) {
+    public String teamsView(@PathVariable long league_id, Model model) {
         ResponseEntity<List<Team>> responseEntityTeams = restTemplate.exchange(URL + "/leagues/" + league_id + "/teams", HttpMethod.GET, null, new ParameterizedTypeReference<List<Team>>() {
         });
         List<Team> teams = responseEntityTeams.getBody();
@@ -146,7 +146,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments")
-    public String tournamentsView(@PathVariable int league_id, Model model) {
+    public String tournamentsView(@PathVariable long league_id, Model model) {
         ResponseEntity<List<Tournament>> responseEntityTournaments = restTemplate.exchange(URL + "/leagues/" + league_id + "/tournaments", HttpMethod.GET, null, new ParameterizedTypeReference<List<Tournament>>() {
         });
         List<Tournament> tournaments = responseEntityTournaments.getBody();
@@ -164,7 +164,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/teams/{team_id}")
-    public String teamProfileView(@PathVariable int league_id, @PathVariable int team_id, Model model) {
+    public String teamProfileView(@PathVariable long league_id, @PathVariable long team_id, Model model) {
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
         List<League> leagues = responseEntityLeagues.getBody();
@@ -204,7 +204,7 @@ public class WebClientController {
     }
 
     @RequestMapping("/leagues/{league_id}/teams/{team_id}/players/{player_id}")
-    public String playerProfileView(@PathVariable int league_id, @PathVariable int team_id, @PathVariable int player_id, Model model) {
+    public String playerProfileView(@PathVariable long league_id, @PathVariable long team_id, @PathVariable long player_id, Model model) {
         ResponseEntity<List<League>> responseEntityLeagues = restTemplate.exchange(URL + "/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
         List<League> leagues = responseEntityLeagues.getBody();
@@ -274,7 +274,7 @@ public class WebClientController {
         }
     }
 
-    private Team fetchTeam(int team_id) {
+    private Team fetchTeam(long team_id) {
         try {
             ResponseEntity<Team> responseEntity = restTemplate.exchange(
                     URL + "/teams/" + team_id,
@@ -290,7 +290,7 @@ public class WebClientController {
         }
     }
 
-    private List<Transfer> fetchTransfers(int team_id) {
+    private List<Transfer> fetchTransfers(long team_id) {
         try {
             ResponseEntity<List<Transfer>> responseEntity = restTemplate.exchange(
                     URL + "/teams/" + team_id + "/transfers",

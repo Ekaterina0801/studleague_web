@@ -87,7 +87,7 @@ public class SiteServiceImpl {
                 List<Player> playersEntity = new ArrayList<>();
                 for (TeamMemberDTO member : team.getTeamMembers()) {
                     // Поиск существующего игрока
-                    Player existingPlayer = playerService.getPlayerByIdSite(String.valueOf(member.getPlayer().getId()));
+                    Player existingPlayer = playerService.getPlayerByIdSite(member.getPlayer().getId());
                     if (existingPlayer.getId()==0) {
                         // Если игрок не найден, создаем нового
                         PlayerDTO player = new PlayerDTO(

@@ -28,7 +28,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public Player getPlayerById(int id) {
+    public Player getPlayerById(long id) {
         return EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(id), "Player", id);
     }
 
@@ -50,14 +50,14 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public void deletePlayer(int id) {
+    public void deletePlayer(long id) {
         playerDao.deletePlayer(id);
     }
 
 
     @Override
     @Transactional
-    public Player getPlayerByIdSite(int idSite) {
+    public Player getPlayerByIdSite(long idSite) {
         return EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerByIdSite(idSite), "Player", idSite);
     }
 }

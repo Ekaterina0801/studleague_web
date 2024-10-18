@@ -1,7 +1,6 @@
 package com.studleague.studleague.dto;
 
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Team;
 import lombok.*;
 
 import java.util.ArrayList;

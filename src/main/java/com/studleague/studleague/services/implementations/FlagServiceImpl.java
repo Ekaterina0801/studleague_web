@@ -32,13 +32,13 @@ public class FlagServiceImpl implements FlagService {
 
     @Override
     @Transactional
-    public Flag getFlagById(int id) {
+    public Flag getFlagById(long id) {
         return EntityRetrievalUtils.getEntityOrThrow(flagDao.getFlagById(id), "Flag", id);
     }
 
     @Override
     @Transactional
-    public void deleteFlag(int id) {
+    public void deleteFlag(long id) {
         flagDao.deleteFlag(id);
     }
 }

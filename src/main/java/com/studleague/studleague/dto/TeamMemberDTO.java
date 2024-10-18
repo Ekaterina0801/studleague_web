@@ -1,6 +1,5 @@
 package com.studleague.studleague.dto;
 
-import com.studleague.studleague.entities.Player;
 import lombok.*;
 
 @Getter

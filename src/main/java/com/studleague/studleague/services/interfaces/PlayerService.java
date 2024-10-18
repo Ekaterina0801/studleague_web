@@ -6,13 +6,13 @@ import com.studleague.studleague.entities.Team;
 import java.util.List;
 
 public interface PlayerService {
-    Player getPlayerById(int id);
+    Player getPlayerById(long id);
 
     List<Player> getAllPlayers();
 
     void savePlayer(Player player);
 
-    void deletePlayer(int id);
+    void deletePlayer(long id);
 
-    Player getPlayerByIdSite(String idSite);
+    Player getPlayerByIdSite(long idSite);
 }

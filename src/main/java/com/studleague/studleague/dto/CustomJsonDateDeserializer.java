@@ -1,7 +1,6 @@
 package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
@@ -14,7 +13,7 @@ public class CustomJsonDateDeserializer extends JsonDeserializer<Date>
 {
     @Override
     public Date deserialize(JsonParser jsonParser,
-                            DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+                            DeserializationContext deserializationContext) throws IOException{
 
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
         String date = jsonParser.getText();

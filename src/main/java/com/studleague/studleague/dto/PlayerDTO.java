@@ -2,7 +2,6 @@ package com.studleague.studleague.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.studleague.studleague.entities.Team;
 import lombok.*;
 
 import java.util.ArrayList;

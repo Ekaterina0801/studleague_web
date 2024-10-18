@@ -1,11 +1,6 @@
 package com.studleague.studleague.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
