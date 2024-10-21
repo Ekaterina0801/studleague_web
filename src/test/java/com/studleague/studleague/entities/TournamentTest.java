@@ -2,6 +2,7 @@ package com.studleague.studleague.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,8 +16,8 @@ class TournamentTest {
         tournament = new Tournament();
         tournament.setName("Test Tournament");
         tournament.setIdSite(1234);
-        tournament.setDateOfStart(new Date());
-        tournament.setDateOfEnd(new Date());
+        tournament.setDateOfStart(LocalDate.parse("1990-01-01"));
+        tournament.setDateOfEnd(LocalDate.parse("1990-01-01"));
     }
 
     @Test

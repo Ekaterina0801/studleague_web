@@ -4,13 +4,15 @@ package com.studleague.studleague.entities;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 class TransferTest {
 
     @Test
     void testConstructorAndGetters() {
-        Date transferDate = new Date();
+        LocalDate transferDate = LocalDate.parse("1990-01-01");
         Player player = new Player();
         Team oldTeam = new Team();
         Team newTeam = new Team();
@@ -27,7 +29,7 @@ class TransferTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Date transferDate = new Date();
+        LocalDate transferDate = LocalDate.parse("1990-01-01");
         Player playerA = new Player(); // Assume same for playerB
         Player playerB = new Player();
         Team oldTeam = new Team();
@@ -47,7 +49,7 @@ class TransferTest {
 
     @Test
     void testToString() {
-        Date transferDate = new Date();
+        LocalDate transferDate = LocalDate.parse("1990-01-01");
         Player player = new Player();
         Team oldTeam = new Team();
         Team newTeam = new Team();

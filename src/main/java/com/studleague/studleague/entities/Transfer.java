@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -27,7 +27,7 @@ public class Transfer {
     private long id;
 
     @JsonFormat(pattern="dd-MM-yyyy")
-    private Date transferDate;
+    private LocalDate transferDate;
 
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "player_id")

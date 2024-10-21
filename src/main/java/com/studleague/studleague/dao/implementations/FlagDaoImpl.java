@@ -1,6 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.FlagDao;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Flag;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -47,9 +48,15 @@ public class FlagDaoImpl implements FlagDao {
 
     @Override
     public void deleteFlag(long id) {
-        Query<?> query = getCurrentSession().createQuery("DELETE FROM Flag WHERE id = :id", Flag.class);
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Flag WHERE id = :id");
         query.setParameter("id", id);
         query.executeUpdate();
 
+    }
+
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Flag");
+        query.executeUpdate();
     }
 }

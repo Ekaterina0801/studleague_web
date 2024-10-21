@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,7 +14,7 @@ import java.util.Date;
 public class TransferDTO {
     private long id;
     @JsonFormat(pattern="dd-MM-yyyy")
-    private Date transferDate;
+    private LocalDate transferDate;
     @JsonProperty("playerId")
     private long playerId;
     @JsonProperty("oldTeamId")

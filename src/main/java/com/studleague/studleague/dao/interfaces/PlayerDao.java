@@ -16,4 +16,6 @@ public interface PlayerDao {
     Optional<Player> getPlayerByIdSite(long idSite);
 
     boolean existsByIdSite(long idSite);
+
+    void deleteAll();
 }

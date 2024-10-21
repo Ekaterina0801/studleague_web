@@ -20,4 +20,6 @@ public interface TournamentDao {
 
     public boolean existsByIdSite(long idSite);
 
+    void deleteAll();
+
 }

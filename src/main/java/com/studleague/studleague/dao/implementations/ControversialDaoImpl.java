@@ -67,5 +67,11 @@ public class ControversialDaoImpl implements ControversialDao {
         return query.getResultList();
     }
 
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Controversial");
+        query.executeUpdate();
+    }
+
 
 }

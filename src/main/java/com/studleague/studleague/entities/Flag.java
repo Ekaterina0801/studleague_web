@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @Table(name="flags")
 @Builder
+@NoArgsConstructor
 @ToString
 @JsonIdentityInfo(scope = Flag.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
@@ -31,14 +31,12 @@ public class Flag {
 
     @ManyToMany(mappedBy = "flags")
     @ToString.Exclude
+    @Builder.Default
     private List<Team> teams = new ArrayList<>();
+
 
     public void addTeamToFlag(Team team)
     {
-        if (teams==null)
-        {
-            teams = new ArrayList<>();
-        }
         if (!teams.contains(team))
             teams.add(team);
     }

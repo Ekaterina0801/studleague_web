@@ -2,6 +2,7 @@ package com.studleague.studleague.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,8 +47,8 @@ class PlayerTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", "1990-01-01", 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", "1990-01-01", 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
         assertEquals(player1, player2);
         assertEquals(player1.hashCode(), player2.hashCode());
@@ -55,8 +56,8 @@ class PlayerTest {
 
     @Test
     void testNotEqualDifferentIdSite() {
-        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", "1990-01-01", 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", "1990-01-01", 456, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 456, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
         assertNotEquals(player1, player2);
     }

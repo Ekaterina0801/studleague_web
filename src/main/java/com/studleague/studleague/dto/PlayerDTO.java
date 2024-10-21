@@ -3,7 +3,9 @@ package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class PlayerDTO {
     @JsonProperty("university")
     private String university;
     @JsonProperty("dateOfBirth")
-    private String dateOfBirth;;
+    private LocalDate dateOfBirth;;
     @JsonProperty("idSite")
     private long idSite;
     @JsonProperty("teams")

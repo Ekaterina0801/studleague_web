@@ -24,7 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SiteServiceImpl {
+public class SiteService {
 
     private final String URL = "https://api.rating.chgk.net/";
     private RestTemplate restTemplate = new RestTemplate();

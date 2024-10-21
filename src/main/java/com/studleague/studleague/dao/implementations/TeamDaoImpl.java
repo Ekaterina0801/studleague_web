@@ -138,4 +138,10 @@ public class TeamDaoImpl implements TeamDao {
         return count != null && count > 0;
     }
 
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Team");
+        query.executeUpdate();
+    }
+
 }

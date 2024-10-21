@@ -13,5 +13,7 @@ public interface LeagueDao {
 
     void deleteLeague(long id);
 
+    void deleteAll();
+
 
 }

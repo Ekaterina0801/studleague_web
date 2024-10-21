@@ -19,4 +19,6 @@ public interface TransferDao {
 
     List<Transfer> getTransfersForTeam(long teamId);
 
+    void deleteAll();
+
 }

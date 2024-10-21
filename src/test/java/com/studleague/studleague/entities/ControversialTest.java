@@ -2,6 +2,8 @@ package com.studleague.studleague.entities;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ControversialTest {
@@ -14,7 +16,7 @@ public class ControversialTest {
                 .id(1)
                 .questionNumber(5)
                 .answer("Yes")
-                .issuedAt(new Date())
+                .issuedAt(LocalDate.parse("1990-01-01"))
                 .status("Pending")
                 .comment("Test comment")
                 .resolvedAt("2024-10-19")
@@ -46,7 +48,7 @@ public class ControversialTest {
 
     @Test
     public void testAllArgsConstructor() {
-        Controversial controversial2 = new Controversial(2, 10, "No", new Date(), "Resolved", "Comment", "2024-10-20", "Jury comments", null);
+        Controversial controversial2 = new Controversial(2, 10, "No", LocalDate.parse("1990-01-01"), "Resolved", "Comment", "2024-10-20", "Jury comments", null);
         assertEquals(2, controversial2.getId());
         assertEquals(10, controversial2.getQuestionNumber());
     }

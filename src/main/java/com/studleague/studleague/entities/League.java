@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @JsonIdentityInfo(scope = League.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name="leagues")
@@ -30,19 +30,17 @@ public class League {
 
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
+    @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @ToString.Exclude
+    @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
 
     public void addTournamentToLeague(Tournament tournament){
-        if (tournaments==null)
-        {
-            tournaments = new ArrayList<>();
-        }
         if(!tournaments.contains(tournament))
         {
             tournaments.add(tournament);

@@ -15,4 +15,6 @@ public interface FullResultDao {
     void deleteFullResult(long id);
 
     List<FullResult> getResultsForTeam(long teamId);
+
+    void deleteAll();
 }

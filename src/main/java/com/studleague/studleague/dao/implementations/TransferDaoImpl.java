@@ -67,4 +67,10 @@ public class TransferDaoImpl implements TransferDao {
         query.setParameter("team_id",teamId);
         return query.getResultList();
     }
+
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Transfer");
+        query.executeUpdate();
+    }
 }

@@ -14,4 +14,6 @@ public interface FlagDao {
 
     void deleteFlag(long id);
 
+    void deleteAll();
+
 }

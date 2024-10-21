@@ -1,6 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.LeagueDao;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.League;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -53,5 +54,10 @@ public class LeagueDaoImpl implements LeagueDao {
         query.executeUpdate();
     }
 
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM League");
+        query.executeUpdate();
+    }
 
 }

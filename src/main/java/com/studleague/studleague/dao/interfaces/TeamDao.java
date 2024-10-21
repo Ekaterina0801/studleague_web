@@ -22,4 +22,6 @@ public interface TeamDao {
 
     public boolean existsByIdSite(long idSite);
 
+    void deleteAll();
+
 }

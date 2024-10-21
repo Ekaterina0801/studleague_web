@@ -1,6 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.TournamentDao;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Tournament;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -125,6 +126,12 @@ public class TournamentDaoImpl implements TournamentDao {
         query.setParameter("idSite", idSite);
         List<Long> results = query.getResultList();
         return !results.isEmpty() && results.get(0) > 0;
+    }
+
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Tournament");
+        query.executeUpdate();
     }
 
 

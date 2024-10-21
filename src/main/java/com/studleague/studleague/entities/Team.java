@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
 @ToString
 @Table(name="teams")
 @JsonIdentityInfo(scope=Team.class,generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
@@ -41,28 +41,27 @@ public class Team {
     @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_players",
     joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
+    @Builder.Default
     private List<Player> players = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
+    @Builder.Default
     private List<Flag> flags = new ArrayList<>();
 
     @ManyToMany(mappedBy = "teams",cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
+    @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
     @ToString.Exclude
+    @Builder.Default
     private List<FullResult> results = new ArrayList<>();
-
 
     public void addPlayerToTeam(Player player)
     {
-        if (players==null)
-        {
-            players = new ArrayList<>();
-        }
         if(!players.contains(player))
         {
             players.add(player);
@@ -82,10 +81,6 @@ public class Team {
 
     public void addFlagToTeam(Flag flag)
     {
-        if (flags==null)
-        {
-            flags = new ArrayList<>();
-        }
         if (!flags.contains(flag))
         {
             flags.add(flag);
@@ -103,10 +98,6 @@ public class Team {
 
     public void addTournamentToTeam(Tournament tournament)
     {
-        if (tournaments==null)
-        {
-            tournaments = new ArrayList<>();
-        }
         if (!tournaments.contains(tournament))
             tournaments.add(tournament);
     }

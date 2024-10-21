@@ -8,7 +8,7 @@ import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.mappings.TeamMapper;
 import com.studleague.studleague.mappings.TournamentMapper;
-import com.studleague.studleague.services.implementations.SiteServiceImpl;
+import com.studleague.studleague.services.implementations.SiteService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class RatingSiteController {
     private final TeamMapper teamMapper;
     private final TournamentService tournamentService;
     private final TeamService teamService;
-    private final SiteServiceImpl siteService;
+    private final SiteService siteService;
 
     @PostMapping("/tournaments")
     public TournamentDto addTournament(@RequestBody TournamentDto tournamentDto)

@@ -18,4 +18,6 @@ public interface ControversialDao {
 
         List<Controversial> getControversialByTournamentId(long tournamentId);
 
+        void deleteAll();
+
 }

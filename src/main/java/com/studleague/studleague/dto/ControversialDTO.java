@@ -3,7 +3,7 @@ package com.studleague.studleague.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -22,7 +22,7 @@ public class ControversialDTO {
     private int questionNumber;
     private String answer;
     @JsonProperty("issuedAt")
-    private Date issuedAt;
+    private LocalDate issuedAt;
     private String status;
     private String comment;
     @JsonProperty("resolvedAt")

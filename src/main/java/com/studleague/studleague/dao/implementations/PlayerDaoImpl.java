@@ -1,6 +1,7 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.PlayerDao;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Player;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -78,6 +79,12 @@ public class PlayerDaoImpl implements PlayerDao {
         query.setParameter("idSite", idSite);
         Long count = query.getSingleResult();
         return count != null && count > 0;
+    }
+
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM Player");
+        query.executeUpdate();
     }
 
 

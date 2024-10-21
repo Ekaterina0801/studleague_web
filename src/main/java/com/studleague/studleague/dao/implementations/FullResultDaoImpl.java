@@ -63,5 +63,10 @@ public class FullResultDaoImpl implements FullResultDao {
         return query.getResultList();
     }
 
+    @Override
+    public void deleteAll() {
+        Query<?> query = getCurrentSession().createQuery("DELETE FROM FullResult");
+        query.executeUpdate();
+    }
 
 }

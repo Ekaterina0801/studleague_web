@@ -13,11 +13,11 @@ import java.util.Objects;
 
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @Table(name="fullResults")
 @JsonIdentityInfo(scope = FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -43,14 +43,10 @@ public class FullResult {
 
     @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL,orphanRemoval=true)
     @ToString.Exclude
+    @Builder.Default
     private List<Controversial> controversials = new ArrayList<>();
 
-
     public void addControversialToFullResult(Controversial controversial){
-        if (controversials==null)
-        {
-            controversials = new ArrayList<>();
-        }
         if(!controversials.contains(controversial))
             controversials.add(controversial);
     }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -28,7 +28,7 @@ public class Controversial {
     private String answer;
 
     @Column(name="issuedAt")
-    private Date issuedAt;
+    private LocalDate issuedAt;
 
     @Column(name="status")
     private String status;

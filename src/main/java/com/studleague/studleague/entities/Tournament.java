@@ -5,18 +5,18 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "tournaments")
 @JsonIdentityInfo(scope= Tournament.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Tournament {
@@ -36,27 +36,27 @@ public class Tournament {
     @Column(name = "date_of_start")
     @JsonProperty("dateOfStart")
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="^(\\d{2}/\\d{2}/\\d{4})|^(\\d{4}-\\d{2}-\\d{2})")
-    private Date dateOfStart;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateOfStart;
 
     @Column(name = "date_of_final")
     @JsonProperty("dateOfEnd")
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="^(\\d{2}/\\d{2}/\\d{4})|^(\\d{4}-\\d{2}-\\d{2})")
-    private Date dateOfEnd;
-
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateOfEnd;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH}
     )
     @JoinTable(name="leagues_tournaments",
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     @ToString.Exclude
+    @Builder.Default
     private List<League> leagues = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
     //, cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
     @ToString.Exclude
+    @Builder.Default
     private List<FullResult> results = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
@@ -66,6 +66,7 @@ public class Tournament {
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id")
     )
     @ToString.Exclude
+    @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
@@ -75,12 +76,10 @@ public class Tournament {
             inverseJoinColumns = @JoinColumn(name = "player_id")
     )
     @ToString.Exclude
+    @Builder.Default
     private List<Player> players = new ArrayList<>();
 
     public void addResult(FullResult fullResult) {
-        if (results == null) {
-            results = new ArrayList<>();
-        }
         if (!results.contains(fullResult)){
             results.add(fullResult);
             fullResult.setTournament(this);
@@ -94,9 +93,6 @@ public class Tournament {
     }
 
     public void addPlayer(Player player) {
-        if (players == null) {
-            players = new ArrayList<>();
-        }
         if (!players.contains(player)){
             players.add(player);
             player.addTournamentToPlayer(this);
@@ -110,9 +106,6 @@ public class Tournament {
     }
 
     public void addTeam(Team team) {
-        if (teams == null) {
-            teams = new ArrayList<>();
-        }
         if (!teams.contains(team)){
             teams.add(team);
             team.addTournamentToTeam(this);
@@ -126,9 +119,6 @@ public class Tournament {
     }
 
     public void addLeague(League league){
-        if(leagues==null){
-            leagues = new ArrayList<>();
-        }
         if (!leagues.contains(league))
         {
             leagues.add(league);
