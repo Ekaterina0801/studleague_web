@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
@@ -40,20 +41,21 @@ public class TournamentDaoImpl implements TournamentDao {
         return query.getResultList();
     }
 
+    //TODO:change save and update
     @Override
     public void saveTournament(Tournament tournament) {
         Session session = getCurrentSession();
-        Long idSite = tournament.getIdSite();
+        long idSite = tournament.getIdSite();
 
-        Tournament existingTournament = session.createQuery("from Tournament t where t.idSite = :idSite", Tournament.class)
-                .setParameter("idSite", idSite)
-                .uniqueResult();
-
-        if (existingTournament == null) {
-            session.persist(tournament);
+        if (!existsByIdSite(idSite)){
+            session.save(tournament);
         } else {
+            Query<Tournament> queryT = session.createQuery("from Tournament t where t.idSite = :idSite", Tournament.class);
+            queryT.setParameter("idSite", idSite);
+            //Tournament existingTournament = getTournamentBySiteId(idSite);
+            Tournament existingTournament = queryT.getSingleResult();
             updateExistingTournament(existingTournament, tournament);
-            session.merge(existingTournament);
+            session.update(existingTournament);
         }
     }
 
@@ -114,6 +116,15 @@ public class TournamentDaoImpl implements TournamentDao {
         Query<Tournament> query = getCurrentSession().createQuery("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId", Tournament.class);
         query.setParameter("teamId", teamId);
         return query.getResultList();
+    }
+
+    @Transactional
+    @Override
+    public boolean existsByIdSite(long idSite) {
+        Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Tournament p WHERE p.idSite = :idSite", Long.class);
+        query.setParameter("idSite", idSite);
+        List<Long> results = query.getResultList();
+        return !results.isEmpty() && results.get(0) > 0;
     }
 
 

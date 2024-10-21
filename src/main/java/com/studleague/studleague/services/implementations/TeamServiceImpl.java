@@ -192,6 +192,10 @@ public class TeamServiceImpl implements TeamService {
 
     }
 
+    public boolean existsByIdSite(long idSite){
+        return teamDao.existsByIdSite(idSite);
+    }
+
     /*@Override
     @Transactional
     public List<InfoTeamResults> getInfoTeamResultsByTeam(int team_id)

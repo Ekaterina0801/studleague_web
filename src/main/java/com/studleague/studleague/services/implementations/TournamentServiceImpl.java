@@ -156,10 +156,15 @@ public class TournamentServiceImpl implements TournamentService {
         }
     }
 
-
+    @Override
     public Tournament getTournamentBySiteId(long idSite) {
         return EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentBySiteId(idSite), "Tournament", idSite);
     }
 
+    @Override
+    public boolean existsByIdSite(long idSite)
+    {
+        return tournamentDao.existsByIdSite(idSite);
+    }
 
 }

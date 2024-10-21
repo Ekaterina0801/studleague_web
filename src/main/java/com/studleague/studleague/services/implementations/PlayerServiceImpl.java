@@ -42,10 +42,14 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public void savePlayer(Player player) {
         playerDao.savePlayer(player);
-        for (Team team : player.getTeams()) {
-            team.addPlayerToTeam(player);
-            teamDao.saveTeam(team);
+        if (player.getTeams()!=null)
+        {
+            for (Team team : player.getTeams()) {
+                team.addPlayerToTeam(player);
+                teamDao.saveTeam(team);
+            }
         }
+
     }
 
     @Override
@@ -59,5 +63,11 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public Player getPlayerByIdSite(long idSite) {
         return EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerByIdSite(idSite), "Player", idSite);
+    }
+
+
+    @Override
+    public boolean existsByIdSite(long idSite){
+        return playerDao.existsByIdSite(idSite);
     }
 }

@@ -49,11 +49,11 @@ public class Transfer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transfer transfer = (Transfer) o;
-        return Objects.equals(transferDate, transfer.transferDate) && Objects.equals(player, transfer.player) && Objects.equals(oldTeam, transfer.oldTeam) && Objects.equals(newTeam, transfer.newTeam) && Objects.equals(comments, transfer.comments);
+        return id == transfer.id && Objects.equals(transferDate, transfer.transferDate) && Objects.equals(player, transfer.player) && Objects.equals(oldTeam, transfer.oldTeam) && Objects.equals(newTeam, transfer.newTeam) && Objects.equals(comments, transfer.comments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transferDate, player, oldTeam, newTeam, comments);
+        return Objects.hash(id, transferDate, player, oldTeam, newTeam, comments);
     }
 }

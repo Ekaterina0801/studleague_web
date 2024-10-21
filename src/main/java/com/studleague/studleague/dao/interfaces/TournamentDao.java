@@ -18,4 +18,6 @@ public interface TournamentDao {
 
     List<Tournament> tournamentsByTeam(long teamId);
 
+    public boolean existsByIdSite(long idSite);
+
 }

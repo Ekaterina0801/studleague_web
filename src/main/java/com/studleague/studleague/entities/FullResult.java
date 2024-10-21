@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -32,6 +33,7 @@ public class FullResult {
     private Team team;
 
     @ManyToOne()
+    //cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
     @JoinColumn(name="tournament_id",nullable = false)
     @JsonBackReference
     private Tournament tournament;
@@ -61,4 +63,16 @@ public class FullResult {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FullResult that = (FullResult) o;
+        return id == that.id && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results) && Objects.equals(controversials, that.controversials);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, team, tournament, mask_results, controversials);
+    }
 }

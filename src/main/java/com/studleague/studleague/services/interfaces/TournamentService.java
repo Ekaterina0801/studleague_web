@@ -29,4 +29,6 @@ public interface TournamentService {
     Tournament addTeamAndPlayerToTournament(long tournamentId, long teamId, long playerId);
 
     Tournament getTournamentBySiteId(long idSite);
+
+    boolean existsByIdSite(long idSite);
 }

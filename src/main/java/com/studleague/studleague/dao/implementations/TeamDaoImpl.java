@@ -10,6 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
@@ -39,21 +40,22 @@ public class TeamDaoImpl implements TeamDao {
     }
 
 
+    //TODO: change save and update to persist and merge
     @Override
     public void saveTeam(Team team) {
         Session session = getCurrentSession();
-        Long idSite = team.getIdSite();
-        Team existingTeam = session.createQuery("from Team t where t.idSite = :idSite", Team.class)
-                .setParameter("idSite", idSite)
-                .uniqueResult();
-        if (existingTeam == null) {
-            session.persist(team);
+        long idSite = team.getIdSite();
+
+        if (!existsByIdSite(idSite)) {
+            session.save(team);
         } else {
+            Query<Team> query = session.createQuery("from Team t where t.idSite = :idSite", Team.class);
+            query.setParameter("idSite", idSite);
+            Team existingTeam = query.getSingleResult();
             updateExistingTeam(existingTeam, team);
-            session.merge(existingTeam);
+            session.update(existingTeam);
         }
     }
-
     private void updateExistingTeam(Team existingTeam, Team newTeam) {
         if (newTeam.getTeamName() != null && !newTeam.getTeamName().isEmpty()) {
             existingTeam.setTeamName(newTeam.getTeamName());
@@ -127,5 +129,13 @@ public class TeamDaoImpl implements TeamDao {
         }
     }
 
+    @Transactional
+    @Override
+    public boolean existsByIdSite(long idSite) {
+        Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Team p WHERE p.idSite = :idSite", Long.class);
+        query.setParameter("idSite", idSite);
+        Long count = query.getSingleResult();
+        return count != null && count > 0;
+    }
 
 }

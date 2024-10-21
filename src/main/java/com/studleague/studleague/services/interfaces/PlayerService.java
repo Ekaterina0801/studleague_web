@@ -1,7 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
 
 import java.util.List;
 
@@ -15,4 +14,6 @@ public interface PlayerService {
     void deletePlayer(long id);
 
     Player getPlayerByIdSite(long idSite);
+
+    boolean existsByIdSite(long idSite);
 }

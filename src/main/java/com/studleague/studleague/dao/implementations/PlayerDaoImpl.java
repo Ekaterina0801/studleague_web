@@ -9,6 +9,7 @@ import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -70,6 +71,14 @@ public class PlayerDaoImpl implements PlayerDao {
         }
     }
 
+    @Transactional
+    @Override
+    public boolean existsByIdSite(long idSite) {
+        Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Player p WHERE p.idSite = :idSite", Long.class);
+        query.setParameter("idSite", idSite);
+        Long count = query.getSingleResult();
+        return count != null && count > 0;
+    }
 
 
 }

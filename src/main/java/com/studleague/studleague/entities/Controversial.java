@@ -5,6 +5,7 @@ import lombok.*;
 
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -45,4 +46,16 @@ public class Controversial {
     @JoinColumn(name="result_id")
     private FullResult fullResult;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Controversial that = (Controversial) o;
+        return id == that.id && questionNumber == that.questionNumber && Objects.equals(answer, that.answer) && Objects.equals(issuedAt, that.issuedAt) && Objects.equals(status, that.status) && Objects.equals(comment, that.comment) && Objects.equals(resolvedAt, that.resolvedAt) && Objects.equals(appealJuryComment, that.appealJuryComment) && Objects.equals(fullResult, that.fullResult);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment, fullResult);
+    }
 }

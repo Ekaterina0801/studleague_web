@@ -47,20 +47,19 @@ public class Player {
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
-                    CascadeType.PERSIST,
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
-                    CascadeType.DETACH
+                    CascadeType.DETACH,
             },
             mappedBy = "players")
     @ToString.Exclude
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "players", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "players", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,})
     @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "player", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "player", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     private List<Transfer> transfers = new ArrayList<>();
 
@@ -94,11 +93,11 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(idSite, player.idSite);
+        return id == player.id && idSite == player.idSite && Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(university, player.university) && Objects.equals(dateOfBirth, player.dateOfBirth) && Objects.equals(teams, player.teams) && Objects.equals(tournaments, player.tournaments) && Objects.equals(transfers, player.transfers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, patronymic, surname, idSite);
+        return Objects.hash(id, name, patronymic, surname, university, dateOfBirth, idSite, teams, tournaments, transfers);
     }
 }

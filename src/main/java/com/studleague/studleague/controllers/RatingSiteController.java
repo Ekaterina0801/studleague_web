@@ -69,12 +69,10 @@ public class RatingSiteController {
         return teamDto1;
     }
 
-    @PostMapping("/tournaments/{tournament_id}/teams")
-    public List<TeamDetailsDTO> addTeams(@PathVariable int tournament_id, @RequestBody TournamentDto tournamentDto)
+    @PostMapping("leagues/{leagueId}/tournaments/{tournamentId}/teams")
+    public List<TeamDetailsDTO> addTeams(@PathVariable long leagueId, @PathVariable long tournamentId, @RequestBody TournamentDto tournamentDto)
     {
-        List<TeamDetailsDTO> teams = siteService.addTeams(11189,1);
-        return teams;
-
+        return siteService.addTeams(tournamentId,leagueId);
     }
 
 }

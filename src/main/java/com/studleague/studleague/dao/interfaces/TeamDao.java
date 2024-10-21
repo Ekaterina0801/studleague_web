@@ -20,4 +20,6 @@ public interface TeamDao {
 
     Optional<Team> getTeamPlayerByLeague(long playerId, long leagueId);
 
+    public boolean existsByIdSite(long idSite);
+
 }

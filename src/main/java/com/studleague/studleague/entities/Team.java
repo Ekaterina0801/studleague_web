@@ -38,17 +38,17 @@ public class Team {
     @JoinColumn(name="league_id",nullable = false)
     private League league;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_players",
     joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     private List<Player> players = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
     private List<Flag> flags = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "teams")
+    @ManyToMany(mappedBy = "teams",cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
@@ -107,7 +107,8 @@ public class Team {
         {
             tournaments = new ArrayList<>();
         }
-        tournaments.add(tournament);
+        if (!tournaments.contains(tournament))
+            tournaments.add(tournament);
     }
 
     public void deleteTournamentFromTeam(Tournament tournament)
@@ -123,11 +124,11 @@ public class Team {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Team team = (Team) o;
-        return Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(idSite, team.idSite) && Objects.equals(league, team.league);
+        return id == team.id && idSite == team.idSite && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league) && Objects.equals(players, team.players) && Objects.equals(flags, team.flags) && Objects.equals(tournaments, team.tournaments) && Objects.equals(results, team.results);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamName, university, idSite, league);
+        return Objects.hash(id, teamName, university, idSite, league, players, flags, tournaments, results);
     }
 }

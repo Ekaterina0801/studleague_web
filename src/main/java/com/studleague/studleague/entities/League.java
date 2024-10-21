@@ -28,7 +28,7 @@ public class League {
     @Column(name="name")
     private String name;
 
-    @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     private List<Tournament> tournaments = new ArrayList<>();
 
@@ -60,17 +60,16 @@ public class League {
         }
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         League league = (League) o;
-        return Objects.equals(name, league.name);
+        return id == league.id && Objects.equals(name, league.name) && Objects.equals(tournaments, league.tournaments) && Objects.equals(teams, league.teams);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(id, name, tournaments, teams);
     }
 }

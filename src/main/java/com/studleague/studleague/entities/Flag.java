@@ -48,12 +48,12 @@ public class Flag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Flag flag = (Flag) o;
-        return Objects.equals(name, flag.name);
+        return id == flag.id && Objects.equals(name, flag.name) && Objects.equals(teams, flag.teams);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(id, name, teams);
     }
 }
 

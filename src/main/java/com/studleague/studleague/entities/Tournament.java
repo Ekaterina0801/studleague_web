@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,28 +47,28 @@ public class Tournament {
 
 
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH}
     )
     @JoinTable(name="leagues_tournaments",
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     @ToString.Exclude
     private List<League> leagues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "tournament")
+    //, cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
     @ToString.Exclude
     private List<FullResult> results = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "tournaments_teams",
             joinColumns = @JoinColumn(name = "tournament_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id")
     )
     @ToString.Exclude
-
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinTable(
             name = "tournaments_players",
             joinColumns = @JoinColumn(name = "tournament_id"),
@@ -81,8 +80,10 @@ public class Tournament {
     public void addResult(FullResult fullResult) {
         if (results == null) {
             results = new ArrayList<>();
-        } else {
+        }
+        if (!results.contains(fullResult)){
             results.add(fullResult);
+            fullResult.setTournament(this);
         }
     }
 
@@ -95,7 +96,8 @@ public class Tournament {
     public void addPlayer(Player player) {
         if (players == null) {
             players = new ArrayList<>();
-        } else {
+        }
+        if (!players.contains(player)){
             players.add(player);
             player.addTournamentToPlayer(this);
         }
@@ -110,7 +112,8 @@ public class Tournament {
     public void addTeam(Team team) {
         if (teams == null) {
             teams = new ArrayList<>();
-        } else {
+        }
+        if (!teams.contains(team)){
             teams.add(team);
             team.addTournamentToTeam(this);
         }
@@ -133,17 +136,16 @@ public class Tournament {
         }
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tournament that = (Tournament) o;
-        return Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
+        return id == that.id && idSite == that.idSite && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd) && Objects.equals(leagues, that.leagues) && Objects.equals(results, that.results) && Objects.equals(teams, that.teams) && Objects.equals(players, that.players);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dateOfStart, dateOfEnd);
+        return Objects.hash(id, name, idSite, dateOfStart, dateOfEnd, leagues, results, teams, players);
     }
 }

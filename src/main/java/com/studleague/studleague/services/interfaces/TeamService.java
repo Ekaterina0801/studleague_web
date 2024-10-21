@@ -36,4 +36,6 @@ public interface TeamService {
     List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId);
 
     Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId);
+
+    boolean existsByIdSite(long idSite);
 }
