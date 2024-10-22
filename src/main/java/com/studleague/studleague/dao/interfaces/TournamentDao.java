@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TournamentDao {
-    Optional<Tournament> getTournamentById(long id);
+    Optional<Tournament> findById(long id);
 
-    List<Tournament> getAllTournaments();
+    List<Tournament> findAll();
 
-    void saveTournament(Tournament tournament);
+    void save(Tournament tournament);
 
-    void deleteTournament(long id);
+    void deleteByTournamentId(long id);
 
-    Optional<Tournament> getTournamentBySiteId(long idSite);
+    Optional<Tournament> findByIdSite(long idSite);
 
-    List<Tournament> tournamentsByTeam(long teamId);
+    List<Tournament> findAllByTeamId(long teamId);
 
     public boolean existsByIdSite(long idSite);
 

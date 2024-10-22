@@ -3,6 +3,7 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dao.interfaces.*;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,109 +18,115 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService {
 
     @Autowired
-    TeamDao teamDao;
+    //private TeamDao teamRepository;
+    private TeamRepository teamRepository;
 
     @Autowired
-    PlayerDao playerDao;
+    //private PlayerDao playerRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    FlagDao flagDao;
+    //private FlagDao flagRepository;
+    private FlagRepository flagRepository;
 
     @Autowired
-    LeagueDao leagueDao;
+    //private LeagueDao leagueRepository;
+    private LeagueRepository leagueRepository;
 
     @Autowired
-    private FullResultDao fullResultDao;
+    //private ResultDao resultRepository;
+    private ResultRepository resultRepository;
 
     @Autowired
-    private TournamentDao tournamentDao;
+    //private TournamentDao tournamentRepository;
+    private TournamentRepository tournamentRepository;
 
 
 
     @Override
     @Transactional
     public Team getTeamById(long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(id), "Team", id);
+        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(id), "Team", id);
     }
 
     @Override
     @Transactional
     public List<Team> getAllTeams() {
-        return teamDao.getAllTeams();
+        return teamRepository.findAll();
     }
 
     @Override
     @Transactional
     public void saveTeam(Team team) {
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
     }
 
     @Override
     @Transactional
     public void deleteTeam(long id) {
-        teamDao.deleteTeam(id);
+        teamRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public List<Team> teamsByLeague(long leagueId) {
-        return teamDao.teamsByLeague(leagueId);
+        return teamRepository.findAllByLeagueId(leagueId);
     }
 
     @Override
     @Transactional
     public Team addPlayerToTeam(long teamId, long playerId) {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         team.addPlayerToTeam(player);
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
         return team;
     }
 
     @Override
     @Transactional
     public Team deletePlayerFromTeam(long teamId, long playerId) {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         team.deletePlayerFromTeam(player);
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
         return team;
     }
 
     @Override
     @Transactional
     public Team addFlagToTeam(long teamId, long flagId) {
-        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagDao.getFlagById(flagId), "Flag", flagId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         team.addFlagToTeam(flag);
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
         return team;
     }
 
     @Override
     @Transactional
     public Team addLeagueToTeam(long teamId, long leagueId) {
-        League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(leagueId), "League", leagueId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         team.setLeague(league);
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
         return team;
     }
 
     @Override
     @Transactional
     public Team deleteFlagFromTeam(long teamId, long flagId) {
-        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagDao.getFlagById(flagId), "Flag", flagId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         team.deleteFlagFromTeam(flag);
-        teamDao.saveTeam(team);
+        teamRepository.save(team);
         return team;
     }
 
     @Override
     @Transactional
     public Team getTeamByIdSite(long idSite) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(idSite), "Team (by idSite)", idSite);
+        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(idSite), "Team (by idSite)", idSite);
     }
 
     @Override
@@ -127,7 +134,7 @@ public class TeamServiceImpl implements TeamService {
     public List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId) {
         List<InfoTeamResults> infoTeamResults = new ArrayList<>();
         Team team = getTeamById(teamId);
-        List<FullResult> results = fullResultDao.getResultsForTeam(teamId);
+        List<FullResult> results = resultRepository.findAllByTeamId(teamId);
 
         HashMap<Tournament, FullResult> tournamentsResults = new HashMap<>();
         for (FullResult result : results) {
@@ -181,9 +188,9 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(long teamId) {
 
-        List<Tournament> tournaments = tournamentDao.tournamentsByTeam(teamId);
+        List<Tournament> tournaments = tournamentRepository.findAllByTeamId(teamId);
         HashMap<Tournament, List<Player>> tournamentsPlayers = new HashMap<>();
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         for (Tournament tournament : tournaments) {
             List<Player> players = tournament.getPlayers().stream().filter(x -> x.getTeams().contains(team)).toList();
             tournamentsPlayers.put(tournament, players);
@@ -193,7 +200,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     public boolean existsByIdSite(long idSite){
-        return teamDao.existsByIdSite(idSite);
+        return teamRepository.existsByIdSite(idSite);
     }
 
     /*@Override
@@ -252,7 +259,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamPlayerByLeague(playerId, leagueId), "Team (by playerId and teamId)", playerId);
+        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByPlayerIdAndLeagueId(playerId, leagueId), "Team (by playerId and teamId)", playerId);
     }
 
 }

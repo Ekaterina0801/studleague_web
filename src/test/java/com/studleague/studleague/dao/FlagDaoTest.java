@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -33,23 +32,23 @@ public class FlagDaoTest {
     @Test
     public void testCreateReadDelete() {
         Flag flag = Flag.builder().name("Вуз").build();
-        flagDao.saveFlag(flag);
+        flagDao.save(flag);
 
-        List<Flag> flags = flagDao.getAllFlags();
+        List<Flag> flags = flagDao.findAll();
         Assertions.assertThat(flags).extracting(Flag::getName).containsOnly("Вуз");
 
         flagDao.deleteAll();
-        Assertions.assertThat(flagDao.getAllFlags()).isEmpty();
+        Assertions.assertThat(flagDao.findAll()).isEmpty();
     }
 
     @Test
     public void testSaveMultipleFlags() {
         Flag flag1 = Flag.builder().name("Flag1").build();
         Flag flag2 = Flag.builder().name("Flag2").build();
-        flagDao.saveFlag(flag1);
-        flagDao.saveFlag(flag2);
+        flagDao.save(flag1);
+        flagDao.save(flag2);
 
-        List<Flag> flags = flagDao.getAllFlags();
+        List<Flag> flags = flagDao.findAll();
         Assertions.assertThat(flags).hasSize(2)
                 .extracting(Flag::getName)
                 .containsExactlyInAnyOrder("Flag1", "Flag2");
@@ -58,21 +57,21 @@ public class FlagDaoTest {
     @Test
     public void testUpdateFlag() {
         Flag flag = Flag.builder().name("OriginalName").build();
-        flagDao.saveFlag(flag);
+        flagDao.save(flag);
 
         flag.setName("UpdatedName");
-        flagDao.saveFlag(flag);
+        flagDao.save(flag);
 
-        Flag updatedFlag = flagDao.getAllFlags().get(0);
+        Flag updatedFlag = flagDao.findAll().get(0);
         Assertions.assertThat(updatedFlag.getName()).isEqualTo("UpdatedName");
     }
 
     @Test
     public void testFindById() {
         Flag flag = Flag.builder().name("FindMe").build();
-        flagDao.saveFlag(flag);
+        flagDao.save(flag);
 
-        Flag foundFlag = flagDao.getFlagById(flag.getId()).orElse(null);
+        Flag foundFlag = flagDao.findById(flag.getId()).orElse(null);
         Assertions.assertThat(foundFlag).isNotNull();
         Assertions.assertThat(foundFlag.getName()).isEqualTo("FindMe");
     }
@@ -80,18 +79,18 @@ public class FlagDaoTest {
 
     @Test
     public void testNoFlagsInitially() {
-        Assertions.assertThat(flagDao.getAllFlags()).isEmpty();
+        Assertions.assertThat(flagDao.findAll()).isEmpty();
     }
 
     @Test
     public void testDuplicateFlagsNotAllowed() {
         Flag flag1 = Flag.builder().name("Duplicate").build();
-        flagDao.saveFlag(flag1);
+        flagDao.save(flag1);
 
         Flag flag2 = Flag.builder().name("Duplicate").build();
-        flagDao.saveFlag(flag2);
+        flagDao.save(flag2);
 
-        List<Flag> flags = flagDao.getAllFlags();
+        List<Flag> flags = flagDao.findAll();
         Assertions.assertThat(flags).hasSize(2);
     }
 }

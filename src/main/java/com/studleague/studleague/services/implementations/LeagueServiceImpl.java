@@ -4,6 +4,8 @@ import com.studleague.studleague.dao.interfaces.LeagueDao;
 import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.repository.LeagueRepository;
+import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,54 +18,56 @@ import java.util.List;
 public class LeagueServiceImpl implements LeagueService {
 
     @Autowired
-    LeagueDao leagueDao;
+    //private LeagueDao leagueRepository;
+    private LeagueRepository leagueRepository;
 
     @Autowired
-    TournamentDao tournamentDao;
+    //private TournamentDao tournamentRepository;
+    private TournamentRepository tournamentRepository;
 
 
     @Override
     @Transactional
     public League getLeagueById(long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(id), "League", id);
+        return EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(id), "League", id);
     }
 
     @Override
     @Transactional
     public List<League> getAllLeagues() {
-        return leagueDao.getAllLeagues();
+        return leagueRepository.findAll();
     }
 
     @Override
     @Transactional
     public void saveLeague(League league) {
-        leagueDao.saveLeague(league);
+        leagueRepository.save(league);
     }
 
     @Override
     @Transactional
     public void deleteLeague(long id) {
-        leagueDao.deleteLeague(id);
+        leagueRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public League addTournamentToLeague(long leagueId, long tournamentId) {
-        League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(leagueId), "League", leagueId);
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
+        League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         league.addTournamentToLeague(tournament);
-        tournamentDao.saveTournament(tournament);
-        leagueDao.saveLeague(league);
+        tournamentRepository.save(tournament);
+        leagueRepository.save(league);
         return league;
     }
 
     @Override
     @Transactional
     public League deleteTournamentToLeague(long leagueId, long tournamentId) {
-        League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(leagueId), "League", leagueId);
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(leagueId), "Tournament", tournamentId);
+        League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(leagueId), "Tournament", tournamentId);
         league.deleteTournamentFromLeague(tournament);
-        leagueDao.saveLeague(league);
+        leagueRepository.save(league);
         return league;
     }
 }

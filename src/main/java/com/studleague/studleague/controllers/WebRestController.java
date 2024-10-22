@@ -19,7 +19,7 @@ public class WebRestController {
     public FlagService flagService;
 
     @Autowired
-    public FullResultService fullResultService;
+    public ResultService resultService;
 
     @Autowired
     public LeagueService leagueService;
@@ -66,7 +66,7 @@ public class WebRestController {
     @GetMapping("/results")
     public ResponseEntity<List<FullResult>> getResults()
     {
-        return ResponseEntity.ok(fullResultService.getAllFullResults());
+        return ResponseEntity.ok(resultService.getAllFullResults());
     }
 
     @GetMapping("/leagues")
@@ -114,7 +114,7 @@ public class WebRestController {
     @GetMapping("/results/{id}")
     public ResponseEntity<FullResult> getResult(@PathVariable long id)
     {
-        return ResponseEntity.ok(fullResultService.getFullResultById(id));
+        return ResponseEntity.ok(resultService.getFullResultById(id));
     }
 
     @GetMapping("/leagues/{id}")
@@ -158,7 +158,7 @@ public class WebRestController {
     public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO)
     {
         FullResult fullResult = fullResultMapper.toEntity(fullResultDTO);
-        fullResultService.saveFullResult(fullResult);
+        resultService.saveFullResult(fullResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
     }
 
@@ -227,7 +227,7 @@ public class WebRestController {
     @DeleteMapping("/results/{id}")
     public ResponseEntity<String> deleteFullResult(@PathVariable long id)
     {
-        fullResultService.deleteFullResult(id);
+        resultService.deleteFullResult(id);
         return ResponseEntity.ok("FullResult with ID = "+ id + "was deleted");
     }
 
@@ -339,7 +339,7 @@ public class WebRestController {
 
     @GetMapping("/teams/{teamId}/results")
     public ResponseEntity<List<FullResult>> allResultsForTeam(@PathVariable long teamId){
-        return ResponseEntity.ok(fullResultService.getResultsForTeam(teamId));
+        return ResponseEntity.ok(resultService.getResultsForTeam(teamId));
     }
     //------------LEAGUES------------
     @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
@@ -420,14 +420,14 @@ public class WebRestController {
     @GetMapping("/results/{resultId}/controversials")
     public ResponseEntity<List<Controversial>> allControversialsFromResult(@PathVariable long resultId)
     {
-        FullResult fullResult = fullResultService.getFullResultById(resultId);
+        FullResult fullResult = resultService.getFullResultById(resultId);
         return ResponseEntity.ok(fullResult.getControversials());
     }
 
     @PutMapping("/results/{resultId}/controversials/{controversialId}")
     public ResponseEntity<FullResult> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId)
     {
-        FullResult fullResult = fullResultService.addControversialToResult(resultId,controversialId);
+        FullResult fullResult = resultService.addControversialToResult(resultId,controversialId);
         return ResponseEntity.ok(fullResult);
     }
 

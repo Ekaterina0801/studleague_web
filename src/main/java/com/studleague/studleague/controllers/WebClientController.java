@@ -23,20 +23,19 @@ import java.util.stream.IntStream;
 @RequestMapping("/")
 public class WebClientController {
 
-    //@Autowired
     private RestTemplate restTemplate = new RestTemplate();
 
     private static final String BASE_URL = "http://localhost:8080/api";
 
-    private final FullResultService fullResultService;
+    private final ResultService resultService;
     private final ControversialService controversialService;
     private final TeamService teamService;
 
     @Autowired
-    public WebClientController(FullResultService fullResultService, TournamentService tournamentService,
+    public WebClientController(ResultService resultService, TournamentService tournamentService,
                                ControversialService controversialService, PlayerService playerService,
                                TeamService teamService) {
-        this.fullResultService = fullResultService;
+        this.resultService = resultService;
         this.controversialService = controversialService;
         this.teamService = teamService;
     }
@@ -82,7 +81,7 @@ public class WebClientController {
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/results")
     public String tournamentResultsView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
         List<FullResult> results = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id + "/results", new ParameterizedTypeReference<List<FullResult>>() {});
-        List<InfoTeamResults> tableResult = fullResultService.fullResultsToTable(results);
+        List<InfoTeamResults> tableResult = resultService.fullResultsToTable(results);
         Tournament tournament = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id, new ParameterizedTypeReference<Tournament>() {});
 
         List<League> leagues = fetchLeagues();

@@ -3,10 +3,9 @@ package com.studleague.studleague.services.interfaces;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.FullResult;
 
-import java.util.HashMap;
 import java.util.List;
 
-public interface FullResultService {
+public interface ResultService {
 
     FullResult getFullResultById(long id);
 

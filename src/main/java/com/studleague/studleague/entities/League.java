@@ -34,7 +34,7 @@ public class League {
     private List<Tournament> tournaments = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
@@ -63,11 +63,11 @@ public class League {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         League league = (League) o;
-        return id == league.id && Objects.equals(name, league.name) && Objects.equals(tournaments, league.tournaments) && Objects.equals(teams, league.teams);
+        return id == league.id && Objects.equals(name, league.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, tournaments, teams);
+        return Objects.hash(id, name);
     }
 }

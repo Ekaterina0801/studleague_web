@@ -30,7 +30,7 @@ public class TournamentMapper {
                 .build();
 
         for (long id : tournamentDto.getLeagueIds()) {
-            League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(id), "League", id);
+            League league = EntityRetrievalUtils.getEntityOrThrow(leagueDao.findById(id), "League", id);
             tournament.addLeague(league);
         }
 

@@ -29,19 +29,19 @@ public class Tournament {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "id_site")
+    @Column(name = "idSite")
     @JsonProperty("idSite")
     private long idSite;
 
-    @Column(name = "date_of_start")
+    @Column(name = "dateOfStart")
     @JsonProperty("dateOfStart")
-    @Temporal(TemporalType.DATE)
+    //@Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfStart;
 
-    @Column(name = "date_of_final")
+    @Column(name = "dateOfFinal")
     @JsonProperty("dateOfEnd")
-    @Temporal(TemporalType.DATE)
+    //@Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfEnd;
 
@@ -69,7 +69,7 @@ public class Tournament {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "tournaments_players",
             joinColumns = @JoinColumn(name = "tournament_id"),
@@ -131,11 +131,11 @@ public class Tournament {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tournament that = (Tournament) o;
-        return id == that.id && idSite == that.idSite && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd) && Objects.equals(leagues, that.leagues) && Objects.equals(results, that.results) && Objects.equals(teams, that.teams) && Objects.equals(players, that.players);
+        return id == that.id && idSite == that.idSite && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, idSite, dateOfStart, dateOfEnd, leagues, results, teams, players);
+        return Objects.hash(id, name, idSite, dateOfStart, dateOfEnd);
     }
 }

@@ -33,7 +33,7 @@ public class PlayerMapper {
 
         for (long teamId : playerDTO.getTeamIds()) {
             if (teamId!=0){
-                Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+                Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(teamId), "Team", teamId);
                 player.addTeamToPlayer(team);
             }
 

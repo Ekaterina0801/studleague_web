@@ -6,13 +6,13 @@ import java.util.Optional;
 
 public interface FlagDao {
 
-    Optional<Flag> getFlagById(long id);
+    Optional<Flag> findById(long id);
 
-    List<Flag> getAllFlags();
+    List<Flag> findAll();
 
-    void saveFlag(Flag flag);
+    void save(Flag flag);
 
-    void deleteFlag(long id);
+    void deleteById(long id);
 
     void deleteAll();
 

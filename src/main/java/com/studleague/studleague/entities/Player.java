@@ -46,11 +46,11 @@ public class Player {
     @Column(name = "id_site")
     private long idSite;
 
-    @ManyToMany(fetch = FetchType.EAGER,
+    @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
-                    CascadeType.DETACH,
+                    CascadeType.DETACH
             },
             mappedBy = "players")
     @ToString.Exclude
@@ -92,11 +92,11 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return id == player.id && idSite == player.idSite && Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(university, player.university) && Objects.equals(dateOfBirth, player.dateOfBirth) && Objects.equals(teams, player.teams) && Objects.equals(tournaments, player.tournaments) && Objects.equals(transfers, player.transfers);
+        return id == player.id && idSite == player.idSite && Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(university, player.university) && Objects.equals(dateOfBirth, player.dateOfBirth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, university, dateOfBirth, idSite, teams, tournaments, transfers);
+        return Objects.hash(id, name, patronymic, surname, university, dateOfBirth, idSite);
     }
 }

@@ -1,6 +1,6 @@
 package com.studleague.studleague.mappings;
 
-import com.studleague.studleague.dao.interfaces.FullResultDao;
+import com.studleague.studleague.dao.interfaces.ResultDao;
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.dto.FullResultDTO;
@@ -11,13 +11,11 @@ import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class FullResultMapper {
 
     @Autowired
-    FullResultDao fullResultDao;
+    ResultDao resultDao;
 
     @Autowired
     TeamDao teamDao;
@@ -34,8 +32,8 @@ public class FullResultMapper {
     public FullResult toEntity(FullResultDTO fullResultDTO) {
         long teamId = fullResultDTO.getTeam_id();
         long tournamentId = fullResultDTO.getTournament_id();
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(teamId), "Team", teamId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.findById(tournamentId), "Tournament", tournamentId);
         return FullResult.builder()
                 .id(fullResultDTO.getId())
                 .team(team)

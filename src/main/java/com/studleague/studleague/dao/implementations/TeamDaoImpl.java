@@ -28,13 +28,13 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public Optional<Team> getTeamById(long id) {
+    public Optional<Team> findById(long id) {
         Team team = getCurrentSession().get(Team.class, id);
         return Optional.ofNullable(team);
     }
 
     @Override
-    public List<Team> getAllTeams() {
+    public List<Team> findAll() {
         Query<Team> query = getCurrentSession().createQuery("from Team", Team.class);
         return query.getResultList();
     }
@@ -42,7 +42,7 @@ public class TeamDaoImpl implements TeamDao {
 
     //TODO: change save and update to persist and merge
     @Override
-    public void saveTeam(Team team) {
+    public void save(Team team) {
         Session session = getCurrentSession();
         long idSite = team.getIdSite();
 
@@ -81,14 +81,14 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public void deleteTeam(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Team WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Team> teamsByLeague(long leagueId) {
+    public List<Team> findAllByLeagueId(long leagueId) {
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.league.id = :league_id", Team.class);
         query.setParameter("league_id", leagueId);
         return query.getResultList();
@@ -97,7 +97,7 @@ public class TeamDaoImpl implements TeamDao {
 
 
     @Override
-    public Optional<Team> getTeamByIdSite(long idSite){
+    public Optional<Team> findByIdSite(long idSite){
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.idSite =: idSite", Team.class);
         query.setParameter("idSite", idSite);
         try {
@@ -112,7 +112,7 @@ public class TeamDaoImpl implements TeamDao {
 
 
     @Override
-    public Optional<Team> getTeamPlayerByLeague(long playerId, long leagueId) {
+    public Optional<Team> findByPlayerIdAndLeagueId(long playerId, long leagueId) {
         String hql = "SELECT t FROM Player p " +
                 "JOIN p.teams t " +
                 "WHERE t.league.id = :leagueId AND p.id = :playerId";

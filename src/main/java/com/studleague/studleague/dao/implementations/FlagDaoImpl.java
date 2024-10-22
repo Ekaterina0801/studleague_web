@@ -25,19 +25,19 @@ public class FlagDaoImpl implements FlagDao {
     }
 
     @Override
-    public Optional<Flag> getFlagById(long id) {
+    public Optional<Flag> findById(long id) {
         Flag flag = getCurrentSession().get(Flag.class, id);
         return Optional.ofNullable(flag);
     }
 
     @Override
-    public List<Flag> getAllFlags() {
+    public List<Flag> findAll() {
         Query<Flag> query = getCurrentSession().createQuery("FROM Flag", Flag.class);
         return query.getResultList();
     }
 
     @Override
-    public void saveFlag(Flag flag) {
+    public void save(Flag flag) {
         Session session = getCurrentSession();
         if (Objects.isNull(session.find(Flag.class, flag.getId()))) {
             session.persist(flag);
@@ -47,7 +47,7 @@ public class FlagDaoImpl implements FlagDao {
     }
 
     @Override
-    public void deleteFlag(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Flag WHERE id = :id");
         query.setParameter("id", id);
         query.executeUpdate();

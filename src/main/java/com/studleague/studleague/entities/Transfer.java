@@ -29,15 +29,15 @@ public class Transfer {
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate transferDate;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "player_id")
     private Player player;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "old_team_id")
     private Team oldTeam;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "new_team_id")
     private Team newTeam;
 

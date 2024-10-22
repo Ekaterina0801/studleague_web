@@ -1,5 +1,7 @@
 package com.studleague.studleague.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.studleague.studleague.dto.LocalDateDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,13 +23,14 @@ public class Controversial {
     @Column(name="id")
     private long id;
 
-    @Column(name="questionNumber")
+    @Column(name="question_number")
     private int questionNumber;
 
     @Column(name="answer")
     private String answer;
 
-    @Column(name="issuedAt")
+    @Column(name="issued_at")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate issuedAt;
 
     @Column(name="status")
@@ -36,13 +39,13 @@ public class Controversial {
     @Column(name="comment")
     private String comment;
 
-    @Column(name="resolvedAt")
+    @Column(name="resolved_at")
     private String resolvedAt;
 
-    @Column(name="appealJuryComment")
+    @Column(name="appeal_jury_comment")
     private String appealJuryComment;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     @JoinColumn(name="result_id")
     private FullResult fullResult;
 
@@ -51,11 +54,11 @@ public class Controversial {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Controversial that = (Controversial) o;
-        return id == that.id && questionNumber == that.questionNumber && Objects.equals(answer, that.answer) && Objects.equals(issuedAt, that.issuedAt) && Objects.equals(status, that.status) && Objects.equals(comment, that.comment) && Objects.equals(resolvedAt, that.resolvedAt) && Objects.equals(appealJuryComment, that.appealJuryComment) && Objects.equals(fullResult, that.fullResult);
+        return id == that.id && questionNumber == that.questionNumber && Objects.equals(answer, that.answer) && Objects.equals(issuedAt, that.issuedAt) && Objects.equals(status, that.status) && Objects.equals(comment, that.comment) && Objects.equals(resolvedAt, that.resolvedAt) && Objects.equals(appealJuryComment, that.appealJuryComment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment, fullResult);
+        return Objects.hash(id, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment);
     }
 }

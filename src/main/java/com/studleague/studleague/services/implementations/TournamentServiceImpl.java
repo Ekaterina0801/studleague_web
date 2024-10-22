@@ -5,86 +5,83 @@ import com.studleague.studleague.entities.*;
 import com.studleague.studleague.mappings.TournamentMapper;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.TournamentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class TournamentServiceImpl implements TournamentService {
 
     @Autowired
-    TournamentDao tournamentDao;
+    private TournamentDao tournamentRepository;
 
     @Autowired
-    FullResultDao fullResultDao;
+    private ResultDao resultRepository;
 
     @Autowired
-    PlayerDao playerDao;
+    private PlayerDao playerRepository;
 
     @Autowired
-    private TeamDao teamDao;
+    private TeamDao teamRepository;
 
     @Autowired
     private TournamentMapper tournamentMapper;
 
     @Autowired
-    private LeagueDao leagueDao;
+    private LeagueDao leagueRepository;
 
 
     @Override
     @Transactional
     public Tournament getTournamentById(long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(id), "Tournament", id);
+        return EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(id), "Tournament", id);
     }
 
     @Override
     @Transactional
     public List<Tournament> getAllTournaments() {
-        return tournamentDao.getAllTournaments();
+        return tournamentRepository.findAll();
     }
 
     @Override
     @Transactional
     public void saveTournament(Tournament tournament) {
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
     }
 
     @Override
     @Transactional
     public void deleteTournament(long id) {
-        tournamentDao.deleteTournament(id);
+        tournamentRepository.deleteByTournamentId(id);
     }
 
     @Override
     @Transactional
     public Tournament addResultToTournament(long tournamentId, long resultId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(resultId), "FullResult", resultId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         tournament.addResult(fullResult);
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
     @Override
     @Transactional
     public Tournament deleteResultFromTournament(long tournamentId, long resultId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(resultId), "FullResult", resultId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         tournament.deleteResult(fullResult);
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
     @Override
     @Transactional
     public Tournament addPlayerToTournament(long tournamentId, long playerId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
         tournament.addPlayer(player);
         player.addTournamentToPlayer(tournament);
         return tournament;
@@ -93,28 +90,28 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     @Transactional
     public Tournament deletePlayerFromTournament(long tournamentId, long playerId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
         tournament.deletePlayer(player);
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
     @Override
     @Transactional
     public Tournament deleteTeamFromTournament(long tournamentId, long teamId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         tournament.deleteTeam(team);
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
     @Override
     @Transactional
     public Tournament addTeamToTournament(long tournamentId, long teamId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         tournament.addTeam(team);
         team.addTournamentToTeam(tournament);
         return tournament;
@@ -123,15 +120,15 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     @Transactional
     public Tournament addTeamAndPlayerToTournament(long tournamentId, long teamId, long playerId) {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentById(tournamentId), "Tournament", tournamentId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(teamId), "Team", teamId);
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(playerId), "Player", playerId);
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
 
         addTeamToTournament(tournament, team);
         addPlayerToTeam(team, player);
         addPlayerToTournament(tournament, player);
 
-        tournamentDao.saveTournament(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
@@ -158,13 +155,13 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     public Tournament getTournamentBySiteId(long idSite) {
-        return EntityRetrievalUtils.getEntityOrThrow(tournamentDao.getTournamentBySiteId(idSite), "Tournament", idSite);
+        return EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(idSite), "Tournament", idSite);
     }
 
     @Override
     public boolean existsByIdSite(long idSite)
     {
-        return tournamentDao.existsByIdSite(idSite);
+        return tournamentRepository.existsByIdSite(idSite);
     }
 
 }

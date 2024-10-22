@@ -28,19 +28,19 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public Optional<Player> getPlayerById(long id) {
+    public Optional<Player> findById(long id) {
         Player player = getCurrentSession().get(Player.class, id);
         return Optional.ofNullable(player);
     }
 
     @Override
-    public List<Player> getAllPlayers() {
+    public List<Player> findAll() {
         Query<Player> query = getCurrentSession().createQuery("FROM Player", Player.class);
         return query.getResultList();
     }
 
     @Override
-    public void savePlayer(Player player) {
+    public void save(Player player) {
         Session session = getCurrentSession();
         if (Objects.isNull(session.find(Player.class, player.getId()))) {
             session.persist(player);
@@ -50,7 +50,7 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public void deletePlayer(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Player WHERE id = :id", Player.class);
         query.setParameter("id", id);
         query.executeUpdate();
@@ -58,7 +58,7 @@ public class PlayerDaoImpl implements PlayerDao {
 
 
     @Override
-    public Optional<Player> getPlayerByIdSite(long idSite) {
+    public Optional<Player> findByIdSite(long idSite) {
         Query<Player> query = getCurrentSession().createQuery("from Player p where p.idSite = :idSite", Player.class);
         query.setParameter("idSite", idSite);
 

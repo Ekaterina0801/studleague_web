@@ -29,7 +29,7 @@ public class Flag {
     @Column(name="name")
     private String name;
 
-    @ManyToMany(mappedBy = "flags")
+    @ManyToMany(mappedBy = "flags", cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
@@ -46,12 +46,12 @@ public class Flag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Flag flag = (Flag) o;
-        return id == flag.id && Objects.equals(name, flag.name) && Objects.equals(teams, flag.teams);
+        return id == flag.id && Objects.equals(name, flag.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, teams);
+        return Objects.hash(id, name);
     }
 }
 

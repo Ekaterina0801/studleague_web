@@ -7,17 +7,17 @@ import java.util.Optional;
 
 public interface TransferDao {
 
-    Optional<Transfer> getTransferById(long id);
+    Optional<Transfer> findById(long id);
 
-    List<Transfer> getAllTransfers();
+    List<Transfer> findAll();
 
-    void saveTransfer(Transfer transfer);
+    void save(Transfer transfer);
 
-    void deleteTransfer(long id);
+    void deleteById(long id);
 
-    List<Transfer> getTransfersForPlayer(long playerId);
+    List<Transfer> findAllByPlayerId(long playerId);
 
-    List<Transfer> getTransfersForTeam(long teamId);
+    List<Transfer> findAllByTeamId(long teamId);
 
     void deleteAll();
 

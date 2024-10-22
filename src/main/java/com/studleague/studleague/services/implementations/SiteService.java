@@ -40,7 +40,7 @@ public class SiteService {
 
     private final TeamService teamService;
 
-    private final FullResultService fullResultService;
+    private final ResultService resultService;
 
     private final LeagueService leagueService;
 
@@ -117,7 +117,7 @@ public class SiteService {
 
         if (teamDetails.getMask() != null) {
             FullResult fullResult = new FullResult(0, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
-            fullResultService.saveFullResult(fullResult);
+            resultService.saveFullResult(fullResult);
         }
 
         tournament.addTeam(teamEntity);
@@ -167,7 +167,7 @@ public class SiteService {
     }
 
 
-    /*public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
+/*    public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authToken);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -233,14 +233,14 @@ public class SiteService {
 
                 League league = leagueService.getLeagueById(leagueId);
                 teamEntity.setLeague(league);
-
+                teamEntity.setId(0);
+                teamService.saveTeam(teamEntity);
                 if (team.getMask() != null) {
                     FullResult fullResult = new FullResult(0, teamEntity, tournament, team.getMask(), new ArrayList<>());
-                    fullResultService.saveFullResult(fullResult);
+                    resultService.saveFullResult(fullResult);
                 }
-
                 tournament.addTeam(teamEntity);
-                teamService.saveTeam(teamEntity);
+
             }
         }
 

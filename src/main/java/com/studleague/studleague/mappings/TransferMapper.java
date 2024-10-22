@@ -24,9 +24,9 @@ public class TransferMapper {
 
         long oldTeamId = transferDTO.getOldTeamId();
         long newTeamId = transferDTO.getNewTeamId();
-        Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(oldTeamId), "Team", oldTeamId);
-        Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.getTeamById(newTeamId), "Team", newTeamId);
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(newTeamId), "Player", transferDTO.getPlayerId());
+        Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(oldTeamId), "Team", oldTeamId);
+        Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(newTeamId), "Team", newTeamId);
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.findById(newTeamId), "Player", transferDTO.getPlayerId());
 
 
         return Transfer.builder()

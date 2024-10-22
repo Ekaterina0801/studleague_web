@@ -31,20 +31,20 @@ public class TournamentDaoImpl implements TournamentDao {
 
 
     @Override
-    public Optional<Tournament> getTournamentById(long id) {
+    public Optional<Tournament> findById(long id) {
         Tournament tournament = getCurrentSession().get(Tournament.class, id);
         return Optional.ofNullable(tournament);
     }
 
     @Override
-    public List<Tournament> getAllTournaments() {
+    public List<Tournament> findAll() {
         Query<Tournament> query = getCurrentSession().createQuery("from Tournament", Tournament.class);
         return query.getResultList();
     }
 
     //TODO:change save and update
     @Override
-    public void saveTournament(Tournament tournament) {
+    public void save(Tournament tournament) {
         Session session = getCurrentSession();
         long idSite = tournament.getIdSite();
 
@@ -90,7 +90,7 @@ public class TournamentDaoImpl implements TournamentDao {
 
 
     @Override
-    public void deleteTournament(long id) {
+    public void deleteByTournamentId(long id) {
         Session session = entityManager.unwrap(Session.class);
         Query<?> query = session.createQuery("delete from Tournament where id=:id", Tournament.class);
         query.setParameter("id", id);
@@ -98,7 +98,7 @@ public class TournamentDaoImpl implements TournamentDao {
     }
 
     @Override
-    public Optional<Tournament> getTournamentBySiteId(long idSite)
+    public Optional<Tournament> findByIdSite(long idSite)
     {
         Query<Tournament> query = getCurrentSession().createQuery("from Tournament where idSite=:idSite", Tournament.class);
         query.setParameter("idSite", idSite);
@@ -113,7 +113,7 @@ public class TournamentDaoImpl implements TournamentDao {
     }
 
     @Override
-    public List<Tournament> tournamentsByTeam(long teamId) {
+    public List<Tournament> findAllByTeamId(long teamId) {
         Query<Tournament> query = getCurrentSession().createQuery("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId", Tournament.class);
         query.setParameter("teamId", teamId);
         return query.getResultList();

@@ -5,6 +5,9 @@ import com.studleague.studleague.dao.interfaces.PlayerDao;
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.repository.LeagueRepository;
+import com.studleague.studleague.repository.PlayerRepository;
+import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,36 +20,39 @@ import java.util.List;
 public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
-    PlayerDao playerDao;
+    //private PlayerDao playerRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    private TeamDao teamDao;
+    //private TeamDao teamRepository;
+    private TeamRepository teamRepository;
 
     @Autowired
-    private LeagueDao leagueDao;
+    //private LeagueDao leagueRepository;
+    private LeagueRepository leagueRepository;
 
 
     @Override
     @Transactional
     public Player getPlayerById(long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerById(id), "Player", id);
+        return EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(id), "Player", id);
     }
 
     @Override
     @Transactional
     public List<Player> getAllPlayers() {
-        return playerDao.getAllPlayers();
+        return playerRepository.findAll();
     }
 
     @Override
     @Transactional
     public void savePlayer(Player player) {
-        playerDao.savePlayer(player);
+        playerRepository.save(player);
         if (player.getTeams()!=null)
         {
             for (Team team : player.getTeams()) {
                 team.addPlayerToTeam(player);
-                teamDao.saveTeam(team);
+                teamRepository.save(team);
             }
         }
 
@@ -55,19 +61,19 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public void deletePlayer(long id) {
-        playerDao.deletePlayer(id);
+        playerRepository.deleteById(id);
     }
 
 
     @Override
     @Transactional
     public Player getPlayerByIdSite(long idSite) {
-        return EntityRetrievalUtils.getEntityOrThrow(playerDao.getPlayerByIdSite(idSite), "Player", idSite);
+        return EntityRetrievalUtils.getEntityOrThrow(playerRepository.findByIdSite(idSite), "Player", idSite);
     }
 
 
     @Override
     public boolean existsByIdSite(long idSite){
-        return playerDao.existsByIdSite(idSite);
+        return playerRepository.existsByIdSite(idSite);
     }
 }

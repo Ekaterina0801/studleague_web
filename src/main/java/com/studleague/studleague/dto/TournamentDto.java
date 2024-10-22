@@ -9,6 +9,8 @@ import jakarta.persistence.TemporalType;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,14 +30,14 @@ public class TournamentDto {
     private long idSite;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @JsonDeserialize(using = CustomJsonDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("dateStart")
     private LocalDate dateOfStart;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @JsonDeserialize(using = CustomJsonDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("dateEnd")
     private LocalDate dateOfEnd;
 

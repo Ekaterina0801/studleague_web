@@ -25,26 +25,26 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name="team_name")
+    @Column(name="teamName")
     private String teamName;
 
     @Column(name="university")
     private String university;
 
-    @Column(name="idSite")
+    @Column(name="idSite",unique = true)
     private long idSite;
 
     @ManyToOne()
-    @JoinColumn(name="league_id",nullable = false)
+    @JoinColumn(name="leagueId",nullable = false)
     private League league;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_players",
     joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     @Builder.Default
     private List<Player> players = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
     @Builder.Default
@@ -115,11 +115,11 @@ public class Team {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Team team = (Team) o;
-        return id == team.id && idSite == team.idSite && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league) && Objects.equals(players, team.players) && Objects.equals(flags, team.flags) && Objects.equals(tournaments, team.tournaments) && Objects.equals(results, team.results);
+        return id == team.id && idSite == team.idSite && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, teamName, university, idSite, league, players, flags, tournaments, results);
+        return Objects.hash(id, teamName, university, idSite, league);
     }
 }

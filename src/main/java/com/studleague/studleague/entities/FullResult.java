@@ -19,7 +19,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name="fullResults")
+@Table(name="full_results")
 @JsonIdentityInfo(scope = FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class FullResult {
 
@@ -28,7 +28,7 @@ public class FullResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="team_id",nullable = false)
     private Team team;
 
@@ -41,7 +41,7 @@ public class FullResult {
     @Column(name="mask_results")
     private String mask_results;
 
-    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL,orphanRemoval=true)
+    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.MERGE,orphanRemoval=true)
     @ToString.Exclude
     @Builder.Default
     private List<Controversial> controversials = new ArrayList<>();
@@ -64,11 +64,11 @@ public class FullResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FullResult that = (FullResult) o;
-        return id == that.id && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results) && Objects.equals(controversials, that.controversials);
+        return id == that.id && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, team, tournament, mask_results, controversials);
+        return Objects.hash(id, team, tournament, mask_results);
     }
 }

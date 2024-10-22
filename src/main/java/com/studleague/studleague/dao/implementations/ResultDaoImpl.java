@@ -1,6 +1,6 @@
 package com.studleague.studleague.dao.implementations;
 
-import com.studleague.studleague.dao.interfaces.FullResultDao;
+import com.studleague.studleague.dao.interfaces.ResultDao;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
 import jakarta.persistence.EntityManager;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public class FullResultDaoImpl implements FullResultDao {
+public class ResultDaoImpl implements ResultDao {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -26,19 +26,19 @@ public class FullResultDaoImpl implements FullResultDao {
     }
 
     @Override
-    public Optional<FullResult> getFullResultById(long id) {
+    public Optional<FullResult> findById(long id) {
         FullResult fullResult = getCurrentSession().get(FullResult.class, id);
         return Optional.ofNullable(fullResult);
     }
 
     @Override
-    public List<FullResult> getAllFullResults() {
+    public List<FullResult> findAll() {
         Query<FullResult> query = getCurrentSession().createQuery("FROM FullResult", FullResult.class);
         return query.getResultList();
     }
 
     @Override
-    public void saveFullResult(FullResult fullResult) {
+    public void save(FullResult fullResult) {
         Session session = getCurrentSession();
         if (Objects.isNull(session.find(FullResult.class, fullResult.getId()))) {
             session.persist(fullResult);
@@ -49,14 +49,14 @@ public class FullResultDaoImpl implements FullResultDao {
 
 
     @Override
-    public void deleteFullResult(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM FullResult WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<FullResult> getResultsForTeam(long teamId) {
+    public List<FullResult> findAllByTeamId(long teamId) {
         Session session = getCurrentSession();
         Query<FullResult> query = session.createQuery("from FullResult where team.id=:team_id", FullResult.class);
         query.setParameter("team_id", teamId);

@@ -23,19 +23,19 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public Optional<Controversial> getControversialById(long id) {
+    public Optional<Controversial> findById(long id) {
         Controversial controversial = getCurrentSession().get(Controversial.class, id);
         return Optional.ofNullable(controversial);
     }
 
     @Override
-    public List<Controversial> getAllControversials() {
+    public List<Controversial> findAll() {
         Query<Controversial> query = getCurrentSession().createQuery("FROM Controversial", Controversial.class);
         return query.getResultList();
     }
 
     @Override
-    public void saveControversial(Controversial controversial) {
+    public void save(Controversial controversial) {
         Session session = getCurrentSession();
         if (Objects.isNull(session.find(Controversial.class, controversial.getId()))) {
             session.persist(controversial);
@@ -45,14 +45,14 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public void deleteControversial(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Controversial WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Controversial> getControversialByTeamId(long teamId) {
+    public List<Controversial> findAllByTeamId(long teamId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial WHERE team_id = :teamId", Controversial.class);
         query.setParameter("teamId", teamId);
@@ -60,7 +60,7 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public List<Controversial> getControversialByTournamentId(long tournamentId) {
+    public List<Controversial> findAllByTournamentId(long tournamentId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId", Controversial.class);
         query.setParameter("tournamentId", tournamentId);

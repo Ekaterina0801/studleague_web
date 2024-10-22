@@ -2,10 +2,12 @@ package com.studleague.studleague.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class PlayerDTO {
     @JsonProperty("university")
     private String university;
     @JsonProperty("dateOfBirth")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;;
     @JsonProperty("idSite")
     private long idSite;

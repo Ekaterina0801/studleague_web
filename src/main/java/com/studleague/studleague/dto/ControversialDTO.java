@@ -1,9 +1,11 @@
 package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -21,6 +23,7 @@ public class ControversialDTO {
     @JsonProperty("questionNumber")
     private int questionNumber;
     private String answer;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("issuedAt")
     private LocalDate issuedAt;
     private String status;

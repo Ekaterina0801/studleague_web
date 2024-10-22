@@ -1,14 +1,18 @@
 package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dao.interfaces.ControversialDao;
-import com.studleague.studleague.dao.interfaces.FullResultDao;
+import com.studleague.studleague.dao.interfaces.ResultDao;
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
+import com.studleague.studleague.repository.ControversialRepository;
+import com.studleague.studleague.repository.ResultRepository;
+import com.studleague.studleague.repository.TeamRepository;
+import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
-import com.studleague.studleague.services.interfaces.FullResultService;
+import com.studleague.studleague.services.interfaces.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,31 +21,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class FullResultServiceImpl implements FullResultService {
+public class ResultServiceImpl implements ResultService {
 
     @Autowired
-    FullResultDao fullResultDao;
+    //private ResultDao resultRepository;
+    private ResultRepository resultRepository;
 
     @Autowired
-    ControversialDao controversialDao;
+    //private ControversialDao controversialRepository;
+    private ControversialRepository controversialRepository;
 
     @Autowired
-    TeamDao teamDao;
+    //private TeamDao teamRepository;
+    private TeamRepository teamRepository;
 
     @Autowired
-    private TournamentDao tournamentDao;
+    //private TournamentDao tournamentRepository;
+    private TournamentRepository tournamentRepository;
 
 
     @Override
     @Transactional
     public FullResult getFullResultById(long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(id), "FullResult", id);
+        return EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(id), "FullResult", id);
     }
 
     @Override
     @Transactional
     public List<FullResult> getAllFullResults() {
-        return fullResultDao.getAllFullResults();
+        return resultRepository.findAll();
     }
 
     @Override
@@ -51,38 +59,38 @@ public class FullResultServiceImpl implements FullResultService {
         for (Controversial controversial : controversials) {
             controversial.setFullResult(fullResult);
         }
-        fullResultDao.saveFullResult(fullResult);
+        resultRepository.save(fullResult);
     }
 
     @Override
     @Transactional
     public void deleteFullResult(long id) {
-        fullResultDao.deleteFullResult(id);
+        resultRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public FullResult addControversialToResult(long resultId, long controversialId) {
-        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialDao.getControversialById(controversialId), "Controversial", controversialId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(resultId), "FullResult", resultId);
+        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
+        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         fullResult.addControversialToFullResult(controversial);
-        fullResultDao.saveFullResult(fullResult);
+        resultRepository.save(fullResult);
         return fullResult;
     }
 
     @Override
     @Transactional
     public void deleteControversialFromResult(long resultId, long controversialId) {
-        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialDao.getControversialById(controversialId), "Controversial", controversialId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(resultId), "FullResult", resultId);
+        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
+        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         fullResult.deleteControversialFromFullResult(controversial);
-        fullResultDao.saveFullResult(fullResult);
+        resultRepository.save(fullResult);
     }
 
     @Override
     @Transactional
     public List<FullResult> getResultsForTeam(long teamId) {
-        return fullResultDao.getResultsForTeam(teamId);
+        return resultRepository.findAllByTeamId(teamId);
     }
 
 

@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PlayerDao {
-    Optional<Player> getPlayerById(long id);
+    Optional<Player> findById(long id);
 
-    List<Player> getAllPlayers();
+    List<Player> findAll();
 
-    void savePlayer(Player player);
+    void save(Player player);
 
-    void deletePlayer(long id);
+    void deleteById(long id);
 
-    Optional<Player> getPlayerByIdSite(long idSite);
+    Optional<Player> findByIdSite(long idSite);
 
     boolean existsByIdSite(long idSite);
 

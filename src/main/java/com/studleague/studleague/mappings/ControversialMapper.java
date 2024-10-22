@@ -1,6 +1,6 @@
 package com.studleague.studleague.mappings;
 
-import com.studleague.studleague.dao.interfaces.FullResultDao;
+import com.studleague.studleague.dao.interfaces.ResultDao;
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
@@ -15,11 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ControversialMapper {
 
-    private final FullResultDao fullResultDao;
+    private final ResultDao resultDao;
 
     public Controversial toEntity(ControversialDTO controversialDTO) {
         long resultId = controversialDTO.getFullResultId();
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(fullResultDao.getFullResultById(resultId), "FullResult", resultId);
+        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultDao.findById(resultId), "FullResult", resultId);
         return Controversial.builder()
                 .id(controversialDTO.getId())
                 .answer(controversialDTO.getAnswer())

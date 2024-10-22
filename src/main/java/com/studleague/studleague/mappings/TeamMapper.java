@@ -20,7 +20,7 @@ public class TeamMapper {
 
     public Team toEntity(TeamDTO teamDTO) {
         long leagueId = teamDTO.getLeagueId();
-        League league  = EntityRetrievalUtils.getEntityOrThrow(leagueDao.getLeagueById(leagueId), "League", leagueId);
+        League league  = EntityRetrievalUtils.getEntityOrThrow(leagueDao.findById(leagueId), "League", leagueId);
         return Team.builder()
                 .id(teamDTO.getId())
                 .teamName(teamDTO.getTeamName())

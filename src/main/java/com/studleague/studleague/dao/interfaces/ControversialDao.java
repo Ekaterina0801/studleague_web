@@ -6,17 +6,17 @@ import java.util.Optional;
 
 public interface ControversialDao {
 
-        Optional<Controversial> getControversialById(long id);
+        Optional<Controversial> findById(long id);
 
-        List<Controversial> getAllControversials();
+        List<Controversial> findAll();
 
-        void saveControversial(Controversial controversial);
+        void save(Controversial controversial);
 
-        void deleteControversial(long id);
+        void deleteById(long id);
 
-        List<Controversial> getControversialByTeamId(long teamId);
+        List<Controversial> findAllByTeamId(long teamId);
 
-        List<Controversial> getControversialByTournamentId(long tournamentId);
+        List<Controversial> findAllByTournamentId(long tournamentId);
 
         void deleteAll();
 

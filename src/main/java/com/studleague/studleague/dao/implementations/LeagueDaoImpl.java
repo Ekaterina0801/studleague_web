@@ -25,19 +25,19 @@ public class LeagueDaoImpl implements LeagueDao {
     }
 
     @Override
-    public Optional<League> getLeagueById(long id) {
+    public Optional<League> findById(long id) {
         League league = getCurrentSession().get(League.class, id);
         return Optional.ofNullable(league);
     }
 
     @Override
-    public List<League> getAllLeagues() {
+    public List<League> findAll() {
         Query<League> query = getCurrentSession().createQuery("FROM League", League.class);
         return query.getResultList();
     }
 
     @Override
-    public void saveLeague(League league) {
+    public void save(League league) {
         Session session = getCurrentSession();
         if (Objects.isNull(session.find(League.class, league.getId()))) {
             session.persist(league);
@@ -48,7 +48,7 @@ public class LeagueDaoImpl implements LeagueDao {
 
 
     @Override
-    public void deleteLeague(long id) {
+    public void deleteById(long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM League WHERE id = :id", League.class);
         query.setParameter("id", id);
         query.executeUpdate();
