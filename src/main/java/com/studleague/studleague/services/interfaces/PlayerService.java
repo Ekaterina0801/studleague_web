@@ -16,4 +16,6 @@ public interface PlayerService {
     Player getPlayerByIdSite(long idSite);
 
     boolean existsByIdSite(long idSite);
+
+    void deleteAllPlayers();
 }

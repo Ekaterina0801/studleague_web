@@ -1,6 +1,5 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.TournamentDto;
 import com.studleague.studleague.entities.Tournament;
 
 import java.util.List;
@@ -31,4 +30,6 @@ public interface TournamentService {
     Tournament getTournamentBySiteId(long idSite);
 
     boolean existsByIdSite(long idSite);
+
+    public void deleteAllTournaments();
 }

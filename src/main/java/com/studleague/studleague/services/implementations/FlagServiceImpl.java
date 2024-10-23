@@ -48,4 +48,11 @@ public class FlagServiceImpl implements FlagService {
     public void deleteFlag(long id) {
         flagRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void deleteAllFlags()
+    {
+        flagRepository.deleteAll();
+    }
 }

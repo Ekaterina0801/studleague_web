@@ -172,4 +172,11 @@ public class TournamentServiceImpl implements TournamentService {
         return tournamentRepository.existsByIdSite(idSite);
     }
 
+    @Override
+    @Transactional
+    public void deleteAllTournaments()
+    {
+        tournamentRepository.deleteAll();
+    }
+
 }

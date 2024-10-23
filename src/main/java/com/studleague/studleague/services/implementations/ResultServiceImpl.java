@@ -101,6 +101,12 @@ public class ResultServiceImpl implements ResultService {
         return resultRepository.findAllByTeamId(teamId);
     }
 
+    @Override
+    @Transactional
+    public void deleteAllResults()
+    {
+        resultRepository.deleteAll();
+    }
 
     @Override
     public List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults) {
@@ -149,6 +155,8 @@ public class ResultServiceImpl implements ResultService {
             return 0;
         }
     }
+
+
 
     /*@Override
     public List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults) {

@@ -73,7 +73,17 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
+    @Transactional
     public boolean existsByIdSite(long idSite) {
         return playerRepository.existsByIdSite(idSite);
     }
+
+    @Override
+    @Transactional
+    public void deleteAllPlayers()
+    {
+        playerRepository.deleteAll();
+    }
+
+
 }

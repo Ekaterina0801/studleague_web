@@ -83,7 +83,6 @@ public class SiteService {
 
     private Tournament fetchOrCreateTournament(long tournamentId, long leagueId, HttpEntity<Void> entity) {
         Tournament tournament;
-
         if (!tournamentService.existsByIdSite(tournamentId)) {
             TournamentDto tournamentDto = fetchTournamentFromApi(tournamentId, entity);
             tournamentDto.setIdSite(tournamentDto.getId());
@@ -91,7 +90,11 @@ public class SiteService {
 
             tournament = tournamentMapper.toEntity(tournamentDto);
             tournamentService.saveTournament(tournament);
+            League league = leagueService.getLeagueById(leagueId);
+            league.addTournamentToLeague(tournament);
+
         } else {
+
             tournament = tournamentService.getTournamentBySiteId(tournamentId);
         }
 

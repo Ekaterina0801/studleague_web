@@ -38,4 +38,6 @@ public interface TeamService {
     Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId);
 
     boolean existsByIdSite(long idSite);
+
+    public void deleteAllTeams();
 }

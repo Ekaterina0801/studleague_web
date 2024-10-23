@@ -57,29 +57,10 @@ public class WebRestController {
     @Autowired
     public PlayerMapper playerMapper;
 
-    @GetMapping("/flags")
-    public ResponseEntity<List<Flag>> getFlags()
-    {
-        return ResponseEntity.ok(flagService.getAllFlags());
-    }
 
-    @GetMapping("/results")
-    public ResponseEntity<List<FullResult>> getResults()
-    {
-        return ResponseEntity.ok(resultService.getAllFullResults());
-    }
-
-    @GetMapping("/leagues")
-    public ResponseEntity<List<League>> getLeagues()
-    {
-        return ResponseEntity.ok(leagueService.getAllLeagues());
-    }
-
-    @GetMapping("/players")
-    public ResponseEntity<List<Player>> getPlayers()
-    {
-        return ResponseEntity.ok(playerService.getAllPlayers());
-    }
+    /* -------------------------------------------
+                      Controversials
+    ------------------------------------------- */
 
     @GetMapping("/controversials")
     public ResponseEntity<List<Controversial>> getControversials()
@@ -87,22 +68,43 @@ public class WebRestController {
         return ResponseEntity.ok(controversialService.getAllControversials());
     }
 
-    @GetMapping("/teams")
-    public ResponseEntity<List<Team>> getTeams()
+    @PostMapping ("/controversials")
+    public ResponseEntity<Controversial> addNewControversial(@RequestBody Controversial controversial)
     {
-        return ResponseEntity.ok(teamService.getAllTeams());
+        controversialService.saveControversial(controversial);
+        return ResponseEntity.status(HttpStatus.CREATED).body(controversial);
     }
 
-    @GetMapping("/tournaments")
-    public ResponseEntity<List<Tournament>> getTournaments()
+    @GetMapping("/controversials/{id}")
+    public ResponseEntity<Controversial> controversialById(@PathVariable long id)
     {
-        return ResponseEntity.ok(tournamentService.getAllTournaments());
+        Controversial controversial = controversialService.getControversialById(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(controversial);
     }
 
-    @GetMapping("/transfers")
-    public ResponseEntity<List<Transfer>> getTransfers()
+    @DeleteMapping("/controversials/{id}")
+    public ResponseEntity<String> deleteControversial(@PathVariable long id)
     {
-        return ResponseEntity.ok(transferService.getAllTransfers());
+        controversialService.deleteControversial(id);
+        return ResponseEntity.ok("Controversial with ID = "+ id + "was deleted");
+    }
+
+    @DeleteMapping("/controversials")
+    public ResponseEntity<String> deleteAllControversials()
+    {
+        controversialService.deleteAllControversials();
+        return ResponseEntity.ok("Controversials were deleted");
+    }
+
+
+    /* -------------------------------------------
+                      Flags
+    ------------------------------------------- */
+
+    @GetMapping("/flags")
+    public ResponseEntity<List<Flag>> getFlags()
+    {
+        return ResponseEntity.ok(flagService.getAllFlags());
     }
 
     @GetMapping("/flags/{id}")
@@ -111,40 +113,11 @@ public class WebRestController {
         return ResponseEntity.ok(flagService.getFlagById(id));
     }
 
-    @GetMapping("/results/{id}")
-    public ResponseEntity<FullResult> getResult(@PathVariable long id)
+    @DeleteMapping("/flags/{id}")
+    public ResponseEntity<String> deleteFlag(@PathVariable long id)
     {
-        return ResponseEntity.ok(resultService.getFullResultById(id));
-    }
-
-    @GetMapping("/leagues/{id}")
-    public ResponseEntity<League> getLeague(@PathVariable long id)
-    {
-        return ResponseEntity.ok(leagueService.getLeagueById(id));
-    }
-
-    @GetMapping("/players/{id}")
-    public ResponseEntity<Player> getPlayer(@PathVariable long id)
-    {
-        return ResponseEntity.ok(playerService.getPlayerById(id));
-    }
-
-    @GetMapping("/teams/{id}")
-    public ResponseEntity<Team> getTeam(@PathVariable long id)
-    {
-        return ResponseEntity.ok(teamService.getTeamById(id));
-    }
-
-    @GetMapping("/tournaments/{id}")
-    public ResponseEntity<Tournament> getTournament(@PathVariable long id)
-    {
-        return ResponseEntity.ok(tournamentService.getTournamentById(id));
-    }
-
-    @GetMapping("/transfers/{id}")
-    public ResponseEntity<Transfer> getTransfer(@PathVariable long id)
-    {
-        return ResponseEntity.ok(transferService.getTransfer(id));
+        flagService.deleteFlag(id);
+        return ResponseEntity.ok("Flag with ID = "+ id + "was deleted");
     }
 
     @PostMapping("/flags")
@@ -154,12 +127,25 @@ public class WebRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(flag);
     }
 
-    @PostMapping("/results")
-    public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO)
+    @DeleteMapping("/flags")
+    public ResponseEntity<String> deleteAllFlags()
     {
-        FullResult fullResult = fullResultMapper.toEntity(fullResultDTO);
-        resultService.saveFullResult(fullResult);
-        return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
+        flagService.deleteAllFlags();
+        return ResponseEntity.ok("Flags were deleted");
+    }
+    /* -------------------------------------------
+                      Leagues
+    ------------------------------------------- */
+    @GetMapping("/leagues")
+    public ResponseEntity<List<League>> getLeagues()
+    {
+        return ResponseEntity.ok(leagueService.getAllLeagues());
+    }
+
+    @GetMapping("/leagues/{id}")
+    public ResponseEntity<League> getLeague(@PathVariable long id)
+    {
+        return ResponseEntity.ok(leagueService.getLeagueById(id));
     }
 
     @PostMapping("/leagues")
@@ -167,6 +153,66 @@ public class WebRestController {
     {
         leagueService.saveLeague(league);
         return ResponseEntity.status(HttpStatus.CREATED).body(league);
+    }
+
+    @DeleteMapping("/leagues/{id}")
+    public ResponseEntity<String> deleteLeague(@PathVariable long id)
+    {
+        leagueService.deleteLeague(id);
+        return ResponseEntity.ok("League with ID = "+ id + "was deleted");
+    }
+
+    @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
+    public ResponseEntity<League> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
+    {
+        League updatedLeague = leagueService.addTournamentToLeague(leagueId,tournamentId);
+        return ResponseEntity.ok(updatedLeague);
+    }
+
+    @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
+    public ResponseEntity<League> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
+    {
+        League updatedLeague = leagueService.deleteTournamentToLeague(leagueId,tournamentId);
+        return ResponseEntity.ok(updatedLeague);
+    }
+
+    @GetMapping("/leagues/{leagueId}/tournaments")
+    public ResponseEntity<List<Tournament>> allTournamentsFromLeague(@PathVariable long leagueId)
+    {
+        League league = leagueService.getLeagueById(leagueId);
+        return ResponseEntity.ok(league.getTournaments());
+    }
+
+    @GetMapping("/leagues/{leagueId}/players/{playerId}/team")
+    public ResponseEntity<Team> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId)
+    {
+        return ResponseEntity.ok(teamService.getTeamByPlayerIdAndLeagueId(leagueId,playerId));
+    }
+
+    @GetMapping("/leagues/{leagueId}/teams")
+    public ResponseEntity<List<Team>> allTeamsFromLeague(@PathVariable long leagueId){
+        return ResponseEntity.ok(teamService.teamsByLeague(leagueId));
+    }
+
+    @DeleteMapping("/leagues")
+    public ResponseEntity<String> deleteAllLeagues()
+    {
+        leagueService.deleteAllLeagues();
+        return ResponseEntity.ok("Leagues were deleted");
+    }
+    /* -------------------------------------------
+                      Players
+    ------------------------------------------- */
+    @GetMapping("/players")
+    public ResponseEntity<List<Player>> getPlayers()
+    {
+        return ResponseEntity.ok(playerService.getAllPlayers());
+    }
+
+    @GetMapping("/players/{id}")
+    public ResponseEntity<Player> getPlayer(@PathVariable long id)
+    {
+        return ResponseEntity.ok(playerService.getPlayerById(id));
     }
 
     @PostMapping("/players")
@@ -177,12 +223,95 @@ public class WebRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(playerDTO);
     }
 
-
-    @PostMapping ("/controversials")
-    public ResponseEntity<Controversial> addNewControversial(@RequestBody Controversial controversial)
+    @DeleteMapping("/players/{id}")
+    public ResponseEntity<String> deletePlayer(@PathVariable long id)
     {
-        controversialService.saveControversial(controversial);
-        return ResponseEntity.status(HttpStatus.CREATED).body(controversial);
+        playerService.deletePlayer(id);
+        return ResponseEntity.ok("Player with ID = "+ id + "was deleted");
+    }
+
+    @GetMapping("/players/{playerId}/transfers")
+    public ResponseEntity<List<Transfer>> allTransfersFromPlayer(@PathVariable long playerId){
+        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId));
+    }
+
+    @GetMapping("/players/{playerId}/tournaments")
+    public ResponseEntity<List<Tournament>> allTournamentsFromPlayer(@PathVariable long playerId){
+        Player player = playerService.getPlayerById(playerId);
+        return ResponseEntity.ok(player.getTournaments());
+    }
+
+    @DeleteMapping("/players")
+    public ResponseEntity<String> deleteAllPlayers()
+    {
+        playerService.deleteAllPlayers();
+        return ResponseEntity.ok("Players were deleted");
+    }
+    /* -------------------------------------------
+                      Results
+    ------------------------------------------- */
+
+    @GetMapping("/results")
+    public ResponseEntity<List<FullResult>> getResults()
+    {
+        return ResponseEntity.ok(resultService.getAllFullResults());
+    }
+
+    @GetMapping("/results/{id}")
+    public ResponseEntity<FullResult> getResult(@PathVariable long id)
+    {
+        return ResponseEntity.ok(resultService.getFullResultById(id));
+    }
+
+    @PostMapping("/results")
+    public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO)
+    {
+        FullResult fullResult = fullResultMapper.toEntity(fullResultDTO);
+        resultService.saveFullResult(fullResult);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
+    }
+
+    @DeleteMapping("/results/{id}")
+    public ResponseEntity<String> deleteFullResult(@PathVariable long id)
+    {
+        resultService.deleteFullResult(id);
+        return ResponseEntity.ok("FullResult with ID = "+ id + "was deleted");
+    }
+
+    @GetMapping("/results/{resultId}/controversials")
+    public ResponseEntity<List<Controversial>> allControversialsFromResult(@PathVariable long resultId)
+    {
+        FullResult fullResult = resultService.getFullResultById(resultId);
+        return ResponseEntity.ok(fullResult.getControversials());
+    }
+
+    @PutMapping("/results/{resultId}/controversials/{controversialId}")
+    public ResponseEntity<FullResult> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId)
+    {
+        FullResult fullResult = resultService.addControversialToResult(resultId,controversialId);
+        return ResponseEntity.ok(fullResult);
+    }
+
+    @DeleteMapping("/results")
+    public ResponseEntity<String> deleteAllResults()
+    {
+        resultService.deleteAllResults();
+        return ResponseEntity.ok("results were deleted");
+    }
+    /* -------------------------------------------
+                      Teams
+    ------------------------------------------- */
+
+    @GetMapping("/teams")
+    public ResponseEntity<List<Team>> getTeams()
+    {
+        return ResponseEntity.ok(teamService.getAllTeams());
+    }
+
+    @GetMapping("/teams/{id}")
+    public ResponseEntity<Team> getTeam(@PathVariable long id)
+    {
+        return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
     @PostMapping(value="/teams",consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -193,58 +322,6 @@ public class WebRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }
 
-    @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TournamentDto> addNewTournament(@RequestBody TournamentDto tournamentDto) {
-        Tournament tournament = tournamentMapper.toEntity(tournamentDto);
-        tournamentService.saveTournament(tournament);
-        return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
-    }
-
-
-    @PostMapping("/transfers")
-    public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO)
-    {
-        Transfer transfer = transferMapper.toEntity(transferDTO);
-        transferService.saveTransfer(transfer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
-    }
-
-    @DeleteMapping("/flags/{id}")
-    public ResponseEntity<String> deleteFlag(@PathVariable long id)
-    {
-        flagService.deleteFlag(id);
-        return ResponseEntity.ok("Flag with ID = "+ id + "was deleted");
-    }
-
-    @DeleteMapping("/controversials/{id}")
-    public ResponseEntity<String> deleteControversial(@PathVariable long id)
-    {
-        controversialService.deleteControversial(id);
-        return ResponseEntity.ok("Controversial with ID = "+ id + "was deleted");
-    }
-
-
-    @DeleteMapping("/results/{id}")
-    public ResponseEntity<String> deleteFullResult(@PathVariable long id)
-    {
-        resultService.deleteFullResult(id);
-        return ResponseEntity.ok("FullResult with ID = "+ id + "was deleted");
-    }
-
-    @DeleteMapping("/leagues/{id}")
-    public ResponseEntity<String> deleteLeague(@PathVariable long id)
-    {
-        leagueService.deleteLeague(id);
-        return ResponseEntity.ok("League with ID = "+ id + "was deleted");
-    }
-
-    @DeleteMapping("/players/{id}")
-    public ResponseEntity<String> deletePlayer(@PathVariable long id)
-    {
-        playerService.deletePlayer(id);
-        return ResponseEntity.ok("Player with ID = "+ id + "was deleted");
-    }
-
     @DeleteMapping("/teams/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable long id)
     {
@@ -252,21 +329,6 @@ public class WebRestController {
         return ResponseEntity.ok("Team with ID = "+ id + "was deleted");
     }
 
-    @DeleteMapping("/tournaments/{id}")
-    public ResponseEntity<String> deleteTournament(@PathVariable long id)
-    {
-        tournamentService.deleteTournament(id);
-        return ResponseEntity.ok("Tournament with ID = "+ id + "was deleted");
-    }
-
-    @DeleteMapping("/transfers/{id}")
-    public ResponseEntity<String> deleteTransfer(@PathVariable long id)
-    {
-        transferService.deleteTransfer(id);
-        return ResponseEntity.ok("Transfer with ID = "+ id + "was deleted");
-    }
-
-    //------------TEAMS------------
     @PutMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<Team> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId)
     {
@@ -326,55 +388,41 @@ public class WebRestController {
         return ResponseEntity.ok(transferService.getTransfersForTeam(teamId));
     }
 
-    @GetMapping("/players/{playerId}/transfers")
-    public ResponseEntity<List<Transfer>> allTransfersFromPlayer(@PathVariable long playerId){
-        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId));
-    }
-
-    @GetMapping("/players/{playerId}/tournaments")
-    public ResponseEntity<List<Tournament>> allTournamentsFromPlayer(@PathVariable long playerId){
-        Player player = playerService.getPlayerById(playerId);
-        return ResponseEntity.ok(player.getTournaments());
-    }
-
     @GetMapping("/teams/{teamId}/results")
     public ResponseEntity<List<FullResult>> allResultsForTeam(@PathVariable long teamId){
         return ResponseEntity.ok(resultService.getResultsForTeam(teamId));
     }
-    //------------LEAGUES------------
-    @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
-    public ResponseEntity<League> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
+
+    /* -------------------------------------------
+                      Tournaments
+    ------------------------------------------- */
+
+    @GetMapping("/tournaments")
+    public ResponseEntity<List<Tournament>> getTournaments()
     {
-        League updatedLeague = leagueService.addTournamentToLeague(leagueId,tournamentId);
-        return ResponseEntity.ok(updatedLeague);
+        return ResponseEntity.ok(tournamentService.getAllTournaments());
     }
 
-    @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
-    public ResponseEntity<League> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId)
+    @GetMapping("/tournaments/{id}")
+    public ResponseEntity<Tournament> getTournament(@PathVariable long id)
     {
-        League updatedLeague = leagueService.deleteTournamentToLeague(leagueId,tournamentId);
-        return ResponseEntity.ok(updatedLeague);
+        return ResponseEntity.ok(tournamentService.getTournamentById(id));
     }
 
-    @GetMapping("/leagues/{leagueId}/tournaments")
-    public ResponseEntity<List<Tournament>> allTournamentsFromLeague(@PathVariable long leagueId)
+    @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TournamentDto> addNewTournament(@RequestBody TournamentDto tournamentDto) {
+        Tournament tournament = tournamentMapper.toEntity(tournamentDto);
+        tournamentService.saveTournament(tournament);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
+    }
+
+    @DeleteMapping("/tournaments/{id}")
+    public ResponseEntity<String> deleteTournament(@PathVariable long id)
     {
-        League league = leagueService.getLeagueById(leagueId);
-        return ResponseEntity.ok(league.getTournaments());
+        tournamentService.deleteTournament(id);
+        return ResponseEntity.ok("Tournament with ID = "+ id + "was deleted");
     }
 
-    @GetMapping("/leagues/{leagueId}/players/{playerId}/team")
-    public ResponseEntity<Team> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId)
-    {
-        return ResponseEntity.ok(teamService.getTeamByPlayerIdAndLeagueId(leagueId,playerId));
-    }
-
-    @GetMapping("/leagues/{leagueId}/teams")
-    public ResponseEntity<List<Team>> allTeamsFromLeague(@PathVariable long leagueId){
-        return ResponseEntity.ok(teamService.teamsByLeague(leagueId));
-    }
-
-    //------------TOURNAMENTS------------
     @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<Tournament> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId)
     {
@@ -416,19 +464,37 @@ public class WebRestController {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         return ResponseEntity.ok(tournament.getPlayers());
     }
+    /* -------------------------------------------
+                      Transfers
+    ------------------------------------------- */
 
-    @GetMapping("/results/{resultId}/controversials")
-    public ResponseEntity<List<Controversial>> allControversialsFromResult(@PathVariable long resultId)
+
+    @GetMapping("/transfers")
+    public ResponseEntity<List<Transfer>> getTransfers()
     {
-        FullResult fullResult = resultService.getFullResultById(resultId);
-        return ResponseEntity.ok(fullResult.getControversials());
+        return ResponseEntity.ok(transferService.getAllTransfers());
     }
 
-    @PutMapping("/results/{resultId}/controversials/{controversialId}")
-    public ResponseEntity<FullResult> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId)
+
+    @GetMapping("/transfers/{id}")
+    public ResponseEntity<Transfer> getTransfer(@PathVariable long id)
     {
-        FullResult fullResult = resultService.addControversialToResult(resultId,controversialId);
-        return ResponseEntity.ok(fullResult);
+        return ResponseEntity.ok(transferService.getTransfer(id));
+    }
+
+    @PostMapping("/transfers")
+    public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO)
+    {
+        Transfer transfer = transferMapper.toEntity(transferDTO);
+        transferService.saveTransfer(transfer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
+    }
+
+    @DeleteMapping("/transfers/{id}")
+    public ResponseEntity<String> deleteTransfer(@PathVariable long id)
+    {
+        transferService.deleteTransfer(id);
+        return ResponseEntity.ok("Transfer with ID = "+ id + "was deleted");
     }
 
 }

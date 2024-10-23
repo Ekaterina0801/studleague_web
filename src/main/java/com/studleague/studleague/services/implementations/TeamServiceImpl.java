@@ -208,8 +208,17 @@ public class TeamServiceImpl implements TeamService {
 
     }
 
+    @Override
+    @Transactional
     public boolean existsByIdSite(long idSite){
         return teamRepository.existsByIdSite(idSite);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllTeams()
+    {
+        teamRepository.deleteAll();
     }
 
     /*@Override
@@ -270,5 +279,6 @@ public class TeamServiceImpl implements TeamService {
     public Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId) {
         return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByPlayerIdAndLeagueId(playerId, leagueId), "Team (by playerId and teamId)", playerId);
     }
+
 
 }

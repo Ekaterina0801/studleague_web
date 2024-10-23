@@ -1,7 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.Flag;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,5 +22,7 @@ public interface ControversialService {
     HashMap<Integer, Controversial> getControversialsByTeamIdWithQuestionNumber(Long teamId);
 
     List<Controversial> getControversialsByTeamId(Long teamId);
+
+    void deleteAllControversials();
 
 }

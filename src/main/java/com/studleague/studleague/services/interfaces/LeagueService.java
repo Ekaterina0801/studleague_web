@@ -16,4 +16,6 @@ public interface LeagueService {
     League addTournamentToLeague(long leagueId, long tournamentId);
 
     League deleteTournamentToLeague(long leagueId, long tournamentId);
+
+    void deleteAllLeagues();
 }

@@ -78,4 +78,11 @@ public class TransferServiceImpl implements TransferService {
     public List<Transfer> getTransfersForTeam(long teamId) {
         return transferRepository.findAllByTeamId(teamId);
     }
+
+    @Override
+    @Transactional
+    public void deleteAllTransfers()
+    {
+        transferRepository.deleteAll();
+    }
 }

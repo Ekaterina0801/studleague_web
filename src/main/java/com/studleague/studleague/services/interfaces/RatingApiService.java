@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface RatingApiService {
 
-    public List<TeamDetailsDTO> fetchTeams(String tournamentId);
-    public HttpHeaders createHeaders();
+    List<TeamDetailsDTO> fetchTeams(String tournamentId);
+    HttpHeaders createHeaders();
 }

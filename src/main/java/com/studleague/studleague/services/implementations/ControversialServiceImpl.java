@@ -80,4 +80,10 @@ public class ControversialServiceImpl implements ControversialService {
         return map;
     }
 
+    @Transactional
+    public void deleteAllControversials()
+    {
+        controversialRepository.deleteAll();
+    }
+
 }

@@ -22,4 +22,6 @@ public interface ResultService {
     List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults);
 
     List<FullResult> getResultsForTeam(long teamId);
+
+    public void deleteAllResults();
 }

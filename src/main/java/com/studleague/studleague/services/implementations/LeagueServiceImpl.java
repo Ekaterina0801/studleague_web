@@ -78,4 +78,11 @@ public class LeagueServiceImpl implements LeagueService {
         leagueRepository.save(league);
         return league;
     }
+
+    @Override
+    @Transactional
+    public void deleteAllLeagues()
+    {
+        leagueRepository.deleteAll();
+    }
 }
