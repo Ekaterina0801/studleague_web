@@ -57,7 +57,7 @@ public class SiteService {
 
         if (teams != null) {
             for (TeamDetailsDTO team : teams) {
-                processTeam(tournament, team, leagueId);
+                processAndSaveTeam(tournament, team, leagueId);
             }
         }
 
@@ -108,31 +108,42 @@ public class SiteService {
         return responseEntityTournament.getBody();
     }
 
-    private void processTeam(Tournament tournament, TeamDetailsDTO teamDetails, long leagueId) {
-        Team teamEntity = mapAndSaveTeam(teamDetails, leagueId);
-        List<Player> playersEntity = mapAndSavePlayers(teamDetails.getTeamMembers(), teamEntity, tournament);
+    private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, long leagueId) {
+        teamDetails.getTeam().setLeagueId(leagueId);
+        teamDetails.getTeam().setIdSite(teamDetails.getTeam().getId());
 
-        League league = leagueService.getLeagueById(leagueId);
-        teamEntity.setLeague(league);
+        Team teamEntity = mapAndSaveTeam(teamDetails);
+        List<Player> playersEntity = mapAndSavePlayers(teamDetails.getTeamMembers(), teamEntity, tournament);
 
         if (teamDetails.getMask() != null) {
             FullResult fullResult = new FullResult(0, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
+            fullResult.setTeam(teamEntity);
             resultService.saveFullResult(fullResult);
         }
-
         tournament.addTeam(teamEntity);
     }
 
-    private Team mapAndSaveTeam(TeamDetailsDTO teamDetails, long leagueId) {
-        TeamDTO teamDto = teamDetails.getTeam();
-        teamDto.setLeagueId(leagueId);
-        teamDto.setIdSite(teamDto.getId());
 
-        Team teamEntity = teamMapper.toEntity(teamDto);
-        teamService.saveTeam(teamEntity);
+
+    private Team mapAndSaveTeam(TeamDetailsDTO teamDetails) {
+        TeamDTO teamDto = teamDetails.getTeam();
+        Team teamEntity;
+        long idSite = teamDto.getId();
+        if(!teamService.existsByIdSite(idSite))
+        {
+            teamDto.setId(0);
+            teamEntity = teamMapper.toEntity(teamDto);
+            teamService.saveTeam(teamEntity);
+        }
+        else {
+            teamEntity = teamService.getTeamByIdSite(idSite);
+        }
 
         return teamEntity;
     }
+
+
+
 
     private List<Player> mapAndSavePlayers(List<TeamMemberDTO> teamMembers, Team teamEntity, Tournament tournament) {
         List<Player> playersEntity = new ArrayList<>();
@@ -165,89 +176,4 @@ public class SiteService {
             return playerService.getPlayerByIdSite(playerDto.getId());
         }
     }
-
-
-/*    public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<List<TeamDetailsDTO>> responseEntityTeams = restTemplate.exchange(
-                URL + "tournaments/" + tournamentId + "/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=0&includeRatingB=0&town=277",
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<TeamDetailsDTO>>() {});
-
-        List<TeamDetailsDTO> teams = responseEntityTeams.getBody();
-        Tournament tournament;
-
-        if (!tournamentService.existsByIdSite(tournamentId)) {
-            ResponseEntity<TournamentDto> responseEntityTournament = restTemplate.exchange(
-                    URL + "tournaments/" + tournamentId,
-                    HttpMethod.GET,
-                    entity,
-                    new ParameterizedTypeReference<TournamentDto>() {});
-
-            TournamentDto tournamentDto1 = responseEntityTournament.getBody();
-            List<Long> leagues = new ArrayList<>();
-            leagues.add(leagueId);
-            tournamentDto1.setLeagueIds(leagues);
-            tournamentDto1.setIdSite(tournamentDto1.getId());
-            tournament = tournamentMapper.toEntity(tournamentDto1);
-            tournamentService.saveTournament(tournament);
-        } else {
-            tournament = tournamentService.getTournamentBySiteId(tournamentId);
-        }
-
-        if (teams != null) {
-            for (TeamDetailsDTO team : teams) {
-                team.getTeam().setLeagueId(leagueId);
-                team.getTeam().setIdSite(team.getTeam().getId());
-                Team teamEntity = teamMapper.toEntity(team.getTeam());
-
-                List<Player> playersEntity = new ArrayList<>();
-                for (TeamMemberDTO member : team.getTeamMembers()) {
-                    Player existingPlayer;
-                    if (!playerService.existsByIdSite(member.getPlayer().getId())) {
-                        PlayerDTO player = new PlayerDTO(
-                                0,
-                                member.getPlayer().getName(),
-                                member.getPlayer().getPatronymic(),
-                                member.getPlayer().getSurname(),
-                                null,
-                                null,
-                                member.getPlayer().getId(),
-                                List.of(team.getId())
-                        );
-                        existingPlayer = playerMapper.toEntity(player);
-                        existingPlayer.setIdSite(member.getPlayer().getId());
-
-                        playerService.savePlayer(existingPlayer);
-                    } else {
-                        existingPlayer = playerService.getPlayerByIdSite(member.getPlayer().getId());
-                    }
-                    tournament.addPlayer(existingPlayer);
-                    teamEntity.addPlayerToTeam(existingPlayer);
-                    playersEntity.add(existingPlayer);
-                }
-
-                League league = leagueService.getLeagueById(leagueId);
-                teamEntity.setLeague(league);
-                teamEntity.setId(0);
-                teamService.saveTeam(teamEntity);
-                if (team.getMask() != null) {
-                    FullResult fullResult = new FullResult(0, teamEntity, tournament, team.getMask(), new ArrayList<>());
-                    resultService.saveFullResult(fullResult);
-                }
-                tournament.addTeam(teamEntity);
-
-            }
-        }
-
-        tournamentService.saveTournament(tournament);
-
-        return teams;
-    }*/
-
-
 }

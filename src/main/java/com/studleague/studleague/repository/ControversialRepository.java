@@ -17,4 +17,6 @@ public interface ControversialRepository extends JpaRepository<Controversial, Lo
 
     @Query("SELECT c FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId")
     List<Controversial> findAllByTournamentId(@Param("tournamentId") long tournamentId);
+
+
 }

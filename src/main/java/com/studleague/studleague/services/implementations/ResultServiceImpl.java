@@ -59,7 +59,15 @@ public class ResultServiceImpl implements ResultService {
         for (Controversial controversial : controversials) {
             controversial.setFullResult(fullResult);
         }
-        resultRepository.save(fullResult);
+        long teamId = fullResult.getTeam().getId();
+        long tournamentId = fullResult.getTournament().getId();
+        if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId))
+        {
+            resultRepository.save(EntityRetrievalUtils.getEntityByTwoIdOrThrow(resultRepository.findByTeamIdAndTournamentId(teamId, tournamentId), "FullResult",teamId, tournamentId));
+        }
+        else {
+            resultRepository.save(fullResult);
+        }
     }
 
     @Override

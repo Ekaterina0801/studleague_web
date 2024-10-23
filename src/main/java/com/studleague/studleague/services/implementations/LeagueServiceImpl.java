@@ -41,7 +41,15 @@ public class LeagueServiceImpl implements LeagueService {
     @Override
     @Transactional
     public void saveLeague(League league) {
-        leagueRepository.save(league);
+
+        String name = league.getName();
+        if (leagueRepository.existsByNameIgnoreCase(name))
+        {
+            leagueRepository.save(EntityRetrievalUtils.getEntityByNameOrThrow(leagueRepository.findByNameIgnoreCase(name), "Flag", name));
+        }
+        else {
+            leagueRepository.save(league);
+        }
     }
 
     @Override

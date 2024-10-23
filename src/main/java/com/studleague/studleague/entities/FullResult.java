@@ -28,13 +28,13 @@ public class FullResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name="team_id",nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="team_id")
     private Team team;
 
     @ManyToOne()
     //cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
-    @JoinColumn(name="tournament_id",nullable = false)
+    @JoinColumn(name="tournament_id")
     @JsonBackReference
     private Tournament tournament;
 

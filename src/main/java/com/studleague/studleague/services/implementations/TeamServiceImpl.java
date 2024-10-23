@@ -58,8 +58,17 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public void saveTeam(Team team) {
-        teamRepository.save(team);
+
+        long idSite = team.getIdSite();
+        if (teamRepository.existsByIdSite(idSite))
+        {
+            teamRepository.save(EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team", idSite));
+        }
+        else {
+            teamRepository.save(team);
+        }
     }
+
 
     @Override
     @Transactional
@@ -126,7 +135,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team getTeamByIdSite(long idSite) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(idSite), "Team (by idSite)", idSite);
+        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team (by idSite)", idSite);
     }
 
     @Override

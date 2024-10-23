@@ -48,7 +48,15 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     @Transactional
     public void saveTournament(Tournament tournament) {
-        tournamentRepository.save(tournament);
+
+        long idSite = tournament.getIdSite();
+        if (tournamentRepository.existsByIdSite(idSite))
+        {
+            tournamentRepository.save(EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(idSite), "Tournament", idSite));
+        }
+        else {
+            tournamentRepository.save(tournament);
+        }
     }
 
     @Override

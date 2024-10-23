@@ -48,14 +48,14 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public void savePlayer(Player player) {
         playerRepository.save(player);
-        if (player.getTeams()!=null)
-        {
+        if (player.getTeams() != null) {
             for (Team team : player.getTeams()) {
-                team.addPlayerToTeam(player);
-                teamRepository.save(team);
+                if (!teamRepository.existsByIdSite(team.getIdSite())) {
+                    team.addPlayerToTeam(player);
+                    teamRepository.save(team);
+                }
             }
         }
-
     }
 
     @Override
@@ -73,7 +73,7 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
-    public boolean existsByIdSite(long idSite){
+    public boolean existsByIdSite(long idSite) {
         return playerRepository.existsByIdSite(idSite);
     }
 }

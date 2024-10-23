@@ -1,6 +1,5 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.implementations.FlagDaoImpl;
 import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.repository.FlagRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -28,8 +27,14 @@ public class FlagServiceImpl implements FlagService {
     @Override
     @Transactional
     public void saveFlag(Flag flag) {
-        flagRepository.save(flag);
-
+        String name = flag.getName();
+        if (flagRepository.existsByNameIgnoreCase(name))
+        {
+            flagRepository.save(EntityRetrievalUtils.getEntityByNameOrThrow(flagRepository.findByNameIgnoreCase(name), "Flag", name));
+        }
+        else {
+            flagRepository.save(flag);
+        }
     }
 
     @Override
