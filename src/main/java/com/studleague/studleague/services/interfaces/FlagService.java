@@ -1,5 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.dto.FlagDTO;
 import com.studleague.studleague.entities.Flag;
 
 

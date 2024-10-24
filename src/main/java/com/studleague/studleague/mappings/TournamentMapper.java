@@ -2,9 +2,10 @@ package com.studleague.studleague.mappings;
 
 
 import com.studleague.studleague.dao.interfaces.LeagueDao;
-import com.studleague.studleague.dto.TournamentDto;
+import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.repository.LeagueRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,9 @@ import java.util.List;
 public class TournamentMapper {
 
     @Autowired
-    private LeagueDao leagueDao;
+    private LeagueRepository leagueDao;
 
-    public Tournament toEntity(TournamentDto tournamentDto) {
+    public Tournament toEntity(TournamentDTO tournamentDto) {
         Tournament tournament = Tournament.builder()
                 .id(tournamentDto.getId())
                 .name(tournamentDto.getName())
@@ -37,13 +38,13 @@ public class TournamentMapper {
         return tournament;
     }
 
-    public TournamentDto toDTO(Tournament tournament) {
+    public TournamentDTO toDTO(Tournament tournament) {
         List<Long> leaguesIds = new ArrayList<>();
         for (League league : tournament.getLeagues()) {
             leaguesIds.add(league.getId());
         }
 
-        return TournamentDto.builder()
+        return TournamentDTO.builder()
                 .id(tournament.getId())
                 .name(tournament.getName())
                 .idSite(tournament.getIdSite())

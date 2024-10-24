@@ -4,13 +4,12 @@ package com.studleague.studleague.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @ToString
-public class TournamentDto {
+public class TournamentDTO {
     private long id;
     @JsonProperty("name")
     private String name;
@@ -47,7 +46,7 @@ public class TournamentDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TournamentDto entity = (TournamentDto) o;
+        TournamentDTO entity = (TournamentDTO) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.name, entity.name) &&
                 Objects.equals(this.idSite, entity.idSite) &&

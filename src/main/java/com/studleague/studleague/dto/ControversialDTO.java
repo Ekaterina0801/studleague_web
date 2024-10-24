@@ -2,10 +2,10 @@ package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**

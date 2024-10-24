@@ -84,7 +84,7 @@ public class SiteService {
     private Tournament fetchOrCreateTournament(long tournamentId, long leagueId, HttpEntity<Void> entity) {
         Tournament tournament;
         if (!tournamentService.existsByIdSite(tournamentId)) {
-            TournamentDto tournamentDto = fetchTournamentFromApi(tournamentId, entity);
+            TournamentDTO tournamentDto = fetchTournamentFromApi(tournamentId, entity);
             tournamentDto.setIdSite(tournamentDto.getId());
             tournamentDto.setLeagueIds(Collections.singletonList(leagueId));
 
@@ -101,12 +101,12 @@ public class SiteService {
         return tournament;
     }
 
-    private TournamentDto fetchTournamentFromApi(long tournamentId, HttpEntity<Void> entity) {
-        ResponseEntity<TournamentDto> responseEntityTournament = restTemplate.exchange(
+    private TournamentDTO fetchTournamentFromApi(long tournamentId, HttpEntity<Void> entity) {
+        ResponseEntity<TournamentDTO> responseEntityTournament = restTemplate.exchange(
                 URL + "tournaments/" + tournamentId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<TournamentDto>() {}
+                new ParameterizedTypeReference<TournamentDTO>() {}
         );
         return responseEntityTournament.getBody();
     }

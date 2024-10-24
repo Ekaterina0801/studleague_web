@@ -14,8 +14,8 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-public class FlagDto {
-    long id;
-    String name;
-    List<Long> teamIds;
+public class FlagDTO {
+    private long id;
+    private String name;
+    private List<Long> teamIds;
 }

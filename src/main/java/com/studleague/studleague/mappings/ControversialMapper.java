@@ -4,6 +4,7 @@ import com.studleague.studleague.dao.interfaces.ResultDao;
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
+import com.studleague.studleague.repository.ResultRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ControversialMapper {
 
-    private final ResultDao resultDao;
+    private final ResultRepository resultDao;
 
     public Controversial toEntity(ControversialDTO controversialDTO) {
         long resultId = controversialDTO.getFullResultId();

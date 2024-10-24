@@ -15,13 +15,13 @@
             </tr>
             </thead>
             <tbody>
-            <th:block th:each="team : ${teamsPlayers.keySet()}">
+            <th:block th:each="row : ${tableResult}">
                 <tr>
-                    <td th:text="${team.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${team.id})}" class="name-ref" th:text="${team.teamName}"></a></td>
+                    <td th:text="${row.team.id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${row.team.id})}" class="name-ref" th:text="${row.team.teamName}"></a></td>
                     <td>
                     <ul>
-                        <th:block th:each="player:${teamsPlayers.get(team)}">
+                        <th:block th:each="player:${row.players}">
                             <li th:text="${player.getFullName()}"></li>
                         </th:block>
                     </ul>

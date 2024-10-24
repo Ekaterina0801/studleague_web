@@ -3,7 +3,7 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.dto.TeamDetailsDTO;
-import com.studleague.studleague.dto.TournamentDto;
+import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.mappings.TeamMapper;
@@ -37,15 +37,15 @@ public class RatingSiteController {
     private final SiteService siteService;
 
     @PostMapping("/tournaments")
-    public TournamentDto addTournament(@RequestBody TournamentDto tournamentDto)
+    public TournamentDTO addTournament(@RequestBody TournamentDTO tournamentDto)
     {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authToken);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<TournamentDto> responseEntityTournament = restTemplate.exchange(URL + "tournaments/"+tournamentDto.getIdSite(), HttpMethod.GET, entity, new ParameterizedTypeReference<TournamentDto>() {
+        ResponseEntity<TournamentDTO> responseEntityTournament = restTemplate.exchange(URL + "tournaments/"+tournamentDto.getIdSite(), HttpMethod.GET, entity, new ParameterizedTypeReference<TournamentDTO>() {
         });
-        TournamentDto tournamentDto1 = responseEntityTournament.getBody();
+        TournamentDTO tournamentDto1 = responseEntityTournament.getBody();
         tournamentDto1.setLeagueIds(tournamentDto.getLeagueIds());
         tournamentDto1.setIdSite(tournamentDto1.getId());
         Tournament tournament = tournamentMapper.toEntity(tournamentDto1);
@@ -70,7 +70,7 @@ public class RatingSiteController {
     }
 
     @PostMapping("leagues/{leagueId}/tournaments/{tournamentId}/teams")
-    public List<TeamDetailsDTO> addTeams(@PathVariable long leagueId, @PathVariable long tournamentId, @RequestBody TournamentDto tournamentDto)
+    public List<TeamDetailsDTO> addTeams(@PathVariable long leagueId, @PathVariable long tournamentId, @RequestBody TournamentDTO tournamentDto)
     {
         return siteService.addTeams(tournamentId,leagueId);
     }

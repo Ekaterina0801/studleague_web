@@ -4,6 +4,8 @@ import com.studleague.studleague.dao.interfaces.PlayerDao;
 import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.repository.PlayerRepository;
+import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class TransferMapper {
 
     @Autowired
-    PlayerDao playerDao;
+    PlayerRepository playerDao;
 
     @Autowired
-    TeamDao teamDao;
+    TeamRepository teamDao;
 
     public Transfer toEntity(TransferDTO transferDTO) {
         if (transferDTO == null) {

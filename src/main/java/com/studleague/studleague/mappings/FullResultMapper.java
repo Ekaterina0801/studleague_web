@@ -7,6 +7,9 @@ import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.repository.ResultRepository;
+import com.studleague.studleague.repository.TeamRepository;
+import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,13 +18,13 @@ import org.springframework.stereotype.Component;
 public class FullResultMapper {
 
     @Autowired
-    ResultDao resultDao;
+    ResultRepository resultDao;
 
     @Autowired
-    TeamDao teamDao;
+    TeamRepository teamDao;
 
     @Autowired
-    TournamentDao tournamentDao;
+    TournamentRepository tournamentDao;
 
     @Autowired
     ControversialMapper controversialMapper;

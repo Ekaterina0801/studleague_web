@@ -1,7 +1,7 @@
 package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 

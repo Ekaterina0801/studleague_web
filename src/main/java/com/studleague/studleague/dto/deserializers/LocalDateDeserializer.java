@@ -1,4 +1,4 @@
-package com.studleague.studleague.dto;
+package com.studleague.studleague.dto.deserializers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

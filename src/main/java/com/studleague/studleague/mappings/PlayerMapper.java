@@ -5,6 +5,7 @@ import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ import java.util.List;
 public class PlayerMapper {
 
     @Autowired
-    TeamDao teamDao;
+    TeamRepository teamDao;
 
     public PlayerMapper() {
     }
