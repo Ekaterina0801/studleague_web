@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -50,11 +51,18 @@ public class TournamentServiceImpl implements TournamentService {
     public void saveTournament(Tournament tournament) {
 
         long idSite = tournament.getIdSite();
+        if (idSite!=0)
+        {
         if (tournamentRepository.existsByIdSite(idSite))
         {
             tournamentRepository.save(EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(idSite), "Tournament", idSite));
         }
         else {
+            tournamentRepository.save(tournament);
+        }
+        }
+        else
+        {
             tournamentRepository.save(tournament);
         }
     }
@@ -166,6 +174,7 @@ public class TournamentServiceImpl implements TournamentService {
         return EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(idSite), "Tournament", idSite);
     }
 
+
     @Override
     public boolean existsByIdSite(long idSite)
     {
@@ -178,5 +187,20 @@ public class TournamentServiceImpl implements TournamentService {
     {
         tournamentRepository.deleteAll();
     }
+
+    @Override
+    @Transactional
+    public HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(long tournamentId) {
+        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+        HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();
+        List<Team> teams = tournament.getTeams();
+        for (Team team : teams) {
+            List<Player> players = team.getPlayers();
+            teamsPlayers.put(team, players);
+        }
+
+        return teamsPlayers;
+    }
+
 
 }

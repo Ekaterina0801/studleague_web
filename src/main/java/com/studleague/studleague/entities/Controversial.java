@@ -7,6 +7,7 @@ import lombok.*;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -31,7 +32,7 @@ public class Controversial {
 
     @Column(name="issued_at")
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate issuedAt;
+    private LocalDateTime issuedAt;
 
     @Column(name="status")
     private String status;

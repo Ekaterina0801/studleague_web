@@ -1,10 +1,9 @@
 package com.studleague.studleague.services.implementations;
-
-import com.studleague.studleague.dao.interfaces.*;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,29 +17,28 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService {
 
     @Autowired
-    //private TeamDao teamRepository;
     private TeamRepository teamRepository;
 
     @Autowired
-    //private PlayerDao playerRepository;
     private PlayerRepository playerRepository;
 
     @Autowired
-    //private FlagDao flagRepository;
     private FlagRepository flagRepository;
 
     @Autowired
-    //private LeagueDao leagueRepository;
     private LeagueRepository leagueRepository;
 
     @Autowired
-    //private ResultDao resultRepository;
     private ResultRepository resultRepository;
 
     @Autowired
-    //private TournamentDao tournamentRepository;
     private TournamentRepository tournamentRepository;
 
+    @Autowired
+    private TeamCompositionRepository teamCompositionRepository;
+
+    @Autowired
+    private TeamCompositionService teamCompositionService;
 
 
     @Override
@@ -60,11 +58,16 @@ public class TeamServiceImpl implements TeamService {
     public void saveTeam(Team team) {
 
         long idSite = team.getIdSite();
-        if (teamRepository.existsByIdSite(idSite))
-        {
-            teamRepository.save(EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team", idSite));
+        if (idSite!=0) {
+
+            if (teamRepository.existsByIdSite(idSite)) {
+                teamRepository.save(EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team", idSite));
+            } else {
+                teamRepository.save(team);
+            }
         }
-        else {
+        else
+        {
             teamRepository.save(team);
         }
     }
@@ -140,6 +143,14 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
+    public List<Team> getTeamsByPlayerId(long playerId) {
+        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+
+        return player.getTeams();
+    }
+
+    @Override
+    @Transactional
     public List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId) {
         List<InfoTeamResults> infoTeamResults = new ArrayList<>();
         Team team = getTeamById(teamId);
@@ -150,18 +161,18 @@ public class TeamServiceImpl implements TeamService {
             tournamentsResults.put(result.getTournament(), result);
         }
 
-        HashMap<Tournament, List<Player>> tournamentsPlayers = getTournamentsPlayersByTeam(teamId);
-
+        //HashMap<Tournament, List<Player>> tournamentsPlayers = getTournamentsPlayersByTeam(teamId);
+        List<TeamComposition> teamCompositions = teamCompositionService.findByParentTeamId(teamId);
         int counter = 1;
-        for (Tournament tournament : tournamentsPlayers.keySet()) {
+        for (TeamComposition teamComposition : teamCompositions) {
             InfoTeamResults row = new InfoTeamResults();
             row.setNumber(counter++);
-            row.setPlayers(tournamentsPlayers.get(tournament));
+            row.setPlayers(teamComposition.getPlayers());
             row.setTeam(team);
-            row.setTournament(tournament);
+            row.setTournament(teamComposition.getTournament());
 
-            if (tournamentsResults.containsKey(tournament)) {
-                setScoreDetails(row, tournamentsResults.get(tournament));
+            if (tournamentsResults.containsKey(teamComposition.getTournament())) {
+                setScoreDetails(row, tournamentsResults.get(teamComposition.getTournament()));
             }
 
             infoTeamResults.add(row);
@@ -195,21 +206,6 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(long teamId) {
-
-        List<Tournament> tournaments = tournamentRepository.findAllByTeamId(teamId);
-        HashMap<Tournament, List<Player>> tournamentsPlayers = new HashMap<>();
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
-        for (Tournament tournament : tournaments) {
-            List<Player> players = tournament.getPlayers().stream().filter(x -> x.getTeams().contains(team)).toList();
-            tournamentsPlayers.put(tournament, players);
-        }
-        return tournamentsPlayers;
-
-    }
-
-    @Override
-    @Transactional
     public boolean existsByIdSite(long idSite){
         return teamRepository.existsByIdSite(idSite);
     }
@@ -219,6 +215,12 @@ public class TeamServiceImpl implements TeamService {
     public void deleteAllTeams()
     {
         teamRepository.deleteAll();
+    }
+
+    @Override
+    public List<Team> getTeamsByFlagId(long flagId) {
+        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
+        return flag.getTeams();
     }
 
     /*@Override
@@ -276,8 +278,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByPlayerIdAndLeagueId(playerId, leagueId), "Team (by playerId and teamId)", playerId);
+    public List<Team> getTeamsByPlayerIdAndLeagueId(long playerId, long leagueId) {
+        return teamRepository.findAllByPlayerIdAndLeagueId(playerId, leagueId);
     }
 
 

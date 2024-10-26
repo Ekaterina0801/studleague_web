@@ -13,16 +13,20 @@ import java.util.List;
 @Builder
 public class TeamDTO {
     private long id;
-    @JsonProperty("name")
+
     private String teamName;
-    @JsonProperty("university")
+
     private String university;
-    @JsonProperty("leagueId")
+
     private long leagueId;
-    @JsonProperty("idSite")
+
     private long idSite;
-    @JsonProperty("teamMembers")
-    private List<PlayerDTO> players = new ArrayList<>();
+
+    @Builder.Default
+    private List<Long> playersIds = new ArrayList<>();
+
+    @Builder.Default
+    private List<Long> tournamentsIds = new ArrayList<>();
 
 
 }

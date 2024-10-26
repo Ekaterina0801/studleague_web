@@ -19,7 +19,9 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Query("SELECT t FROM Player p " +
                        "JOIN p.teams t " +
                        "WHERE t.league.id = :leagueId AND p.id = :playerId")
-    Optional<Team> findByPlayerIdAndLeagueId(@Param("playerId") long playerId, @Param("leagueId")long leagueId);
+    List<Team> findAllByPlayerIdAndLeagueId(@Param("playerId") long playerId, @Param("leagueId")long leagueId);
 
     boolean existsByIdSite(long idSite);
+
+
 }

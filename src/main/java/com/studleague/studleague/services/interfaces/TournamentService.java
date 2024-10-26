@@ -1,7 +1,10 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.entities.Player;
+import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface TournamentService {
@@ -31,5 +34,7 @@ public interface TournamentService {
 
     boolean existsByIdSite(long idSite);
 
-    public void deleteAllTournaments();
+    void deleteAllTournaments();
+
+    HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(long tournamentId);
 }

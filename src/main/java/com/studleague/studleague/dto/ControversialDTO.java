@@ -6,6 +6,7 @@ import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -25,7 +26,7 @@ public class ControversialDTO {
     private String answer;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("issuedAt")
-    private LocalDate issuedAt;
+    private LocalDateTime issuedAt;
     private String status;
     private String comment;
     @JsonProperty("resolvedAt")

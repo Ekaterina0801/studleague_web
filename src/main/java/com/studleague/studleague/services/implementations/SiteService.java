@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class SiteService {
@@ -46,6 +45,7 @@ public class SiteService {
 
     private final PlayerService playerService;
 
+    private final TeamCompositionService teamCompositionService;
 
 
     public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
@@ -76,7 +76,8 @@ public class SiteService {
                 URL + "tournaments/" + tournamentId + "/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=0&includeRatingB=0&town=277",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<List<TeamDetailsDTO>>() {}
+                new ParameterizedTypeReference<List<TeamDetailsDTO>>() {
+                }
         );
         return responseEntityTeams.getBody();
     }
@@ -106,7 +107,8 @@ public class SiteService {
                 URL + "tournaments/" + tournamentId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<TournamentDTO>() {}
+                new ParameterizedTypeReference<TournamentDTO>() {
+                }
         );
         return responseEntityTournament.getBody();
     }
@@ -118,6 +120,8 @@ public class SiteService {
         Team teamEntity = mapAndSaveTeam(teamDetails);
         List<Player> playersEntity = mapAndSavePlayers(teamDetails.getTeamMembers(), teamEntity, tournament);
 
+
+
         if (teamDetails.getMask() != null) {
             FullResult fullResult = new FullResult(0, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
             fullResult.setTeam(teamEntity);
@@ -127,25 +131,20 @@ public class SiteService {
     }
 
 
-
     private Team mapAndSaveTeam(TeamDetailsDTO teamDetails) {
         TeamDTO teamDto = teamDetails.getTeam();
         Team teamEntity;
         long idSite = teamDto.getId();
-        if(!teamService.existsByIdSite(idSite))
-        {
+        if (!teamService.existsByIdSite(idSite)) {
             teamDto.setId(0);
             teamEntity = teamMapper.toEntity(teamDto);
             teamService.saveTeam(teamEntity);
-        }
-        else {
+        } else {
             teamEntity = teamService.getTeamByIdSite(idSite);
         }
 
         return teamEntity;
     }
-
-
 
 
     private List<Player> mapAndSavePlayers(List<TeamMemberDTO> teamMembers, Team teamEntity, Tournament tournament) {
@@ -157,7 +156,15 @@ public class SiteService {
             tournament.addPlayer(playerEntity);
             playersEntity.add(playerEntity);
         }
-
+        TeamComposition teamComposition =
+                TeamComposition
+                        .builder()
+                        .players(playersEntity)
+                        .parentTeam(teamEntity)
+                        .tournament(tournament)
+                        .build();
+        teamCompositionService.save(teamComposition);
+        tournament.addTeamComposition(teamComposition);
         return playersEntity;
     }
 
@@ -169,7 +176,7 @@ public class SiteService {
                     playerDto.getPatronymic(),
                     playerDto.getSurname(),
                     null, null, playerDto.getId(),
-                    Collections.emptyList()
+                    Collections.emptyList(), new ArrayList<>()
             );
             Player playerEntity = playerMapper.toEntity(newPlayer);
             playerEntity.setIdSite(playerDto.getId());

@@ -18,4 +18,5 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     List<Tournament> findAllByTeamId(@Param("teamId") long teamId);
 
     boolean existsByIdSite(long idSite);
+
 }

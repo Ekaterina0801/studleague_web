@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public class LocalDateDeserializer extends JsonDeserializer<LocalDate> {
+public class LocalDateDeserializer extends JsonDeserializer<LocalDateTime> {
     @Override
-    public LocalDate deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String dateTimeString = p.getText();
-        // Extract the date part
-        String dateString = dateTimeString.split("T")[0]; // Get the date part before 'T'
-        return LocalDate.parse(dateString); // Parse to LocalDate
+    public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        String dateTimeString = p.getText().split("\\+")[0];
+                //.split("T")[0]; // Get the date part before 'T'
+        return LocalDateTime.parse(dateTimeString); // Parse to LocalDate
     }
 }
 

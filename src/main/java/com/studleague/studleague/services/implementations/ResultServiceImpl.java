@@ -7,17 +7,18 @@ import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.repository.ControversialRepository;
-import com.studleague.studleague.repository.ResultRepository;
-import com.studleague.studleague.repository.TeamRepository;
-import com.studleague.studleague.repository.TournamentRepository;
+import com.studleague.studleague.entities.Player;
+import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ResultService;
+import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -38,6 +39,12 @@ public class ResultServiceImpl implements ResultService {
     @Autowired
     //private TournamentDao tournamentRepository;
     private TournamentRepository tournamentRepository;
+
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
+    private TournamentService tournamentService;
 
 
     @Override
@@ -131,16 +138,22 @@ public class ResultServiceImpl implements ResultService {
         List<Integer> answers = new ArrayList<>();
         List<Integer> questionNumbers = new ArrayList<>();
         int totalScore = 0;
-
+        int countQuestions = 0;
+        List<Player> players = playerRepository.findAllByTeamIdAndTournamentId(fullResult.getTeam().getId(), fullResult.getTournament().getId());
+        //HashMap<Team,List<Player>> teamsPlayers = tournamentService.getTeamsPlayersByTournamentId(fullResult.getTournament().getId());
+        if (maskResults!=null)
+        {
         for (int i = 0; i < maskResults.length(); i++) {
             String answer = String.valueOf(maskResults.charAt(i));
             questionNumbers.add(i + 1);
             totalScore += parseAnswer(answer, answers);
         }
-
+        countQuestions = maskResults.length();
+        }
+        resultRow.setPlayers(players);
         resultRow.setAnswers(answers);
         resultRow.setTotalScore(totalScore);
-        resultRow.setCountQuestions(maskResults.length());
+        resultRow.setCountQuestions(countQuestions);
         resultRow.setQuestionNumbers(questionNumbers);
         resultRow.setTournament(fullResult.getTournament());
         return resultRow;

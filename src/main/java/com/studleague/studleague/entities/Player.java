@@ -28,6 +28,8 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    //
+
     @Column(name = "name")
     private String name;
 
@@ -57,6 +59,17 @@ public class Player {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.MERGE,
+                    CascadeType.REFRESH,
+                    CascadeType.DETACH
+            },
+            mappedBy = "players")
+    @ToString.Exclude
+    @Builder.Default
+    private List<TeamComposition> teamsCompositions = new ArrayList<>();
+
     @ManyToMany(mappedBy = "players", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,})
     @ToString.Exclude
     @Builder.Default
@@ -66,6 +79,7 @@ public class Player {
     @ToString.Exclude
     @Builder.Default
     private List<Transfer> transfers = new ArrayList<>();
+
 
     public void addTeamToPlayer(Team team) {
 

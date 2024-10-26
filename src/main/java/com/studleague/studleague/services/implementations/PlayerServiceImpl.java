@@ -47,14 +47,30 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public void savePlayer(Player player) {
-        playerRepository.save(player);
+        /*playerRepository.save(player);
         if (player.getTeams() != null) {
             for (Team team : player.getTeams()) {
-                if (!teamRepository.existsByIdSite(team.getIdSite())) {
-                    team.addPlayerToTeam(player);
-                    teamRepository.save(team);
+                if (team.getIdSite()!=0) {
+                    if (!teamRepository.existsByIdSite(team.getIdSite())) {
+                        team.addPlayerToTeam(player);
+                        teamRepository.save(team);
+                    }
                 }
             }
+        }*/
+        long idSite = player.getIdSite();
+        if (idSite!=0)
+        {
+            if (playerRepository.existsByIdSite(idSite))
+            {
+                playerRepository.save(EntityRetrievalUtils.getEntityOrThrow(playerRepository.findByIdSite(idSite), "Player (by idSite)", idSite));
+            }
+            else {
+                playerRepository.save(player);
+            }
+        }
+        else {
+            playerRepository.save(player);
         }
     }
 
@@ -84,6 +100,7 @@ public class PlayerServiceImpl implements PlayerService {
     {
         playerRepository.deleteAll();
     }
+
 
 
 }

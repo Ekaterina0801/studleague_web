@@ -10,6 +10,7 @@ import jakarta.persistence.TemporalType;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,18 +30,25 @@ public class TournamentDTO {
     private long idSite;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("dateStart")
-    private LocalDate dateOfStart;
+    private LocalDateTime dateOfStart;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("dateEnd")
-    private LocalDate dateOfEnd;
+    private LocalDateTime dateOfEnd;
 
+    @Builder.Default
     private List<Long> leagueIds = new ArrayList<>();
+
+    @Builder.Default
+    private List<Long> playerIds = new ArrayList<>();
+
+    @Builder.Default
+    private List<Long> teamIds = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

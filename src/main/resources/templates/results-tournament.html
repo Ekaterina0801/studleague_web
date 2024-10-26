@@ -6,6 +6,7 @@
     <div layout:fragment="content">
         <h1 th:text="${tournament.name}"></h1>
         <h2>Команды</h2>
+        <div th:if="${teamCompositions.size() > 0}">
         <table class="table">
             <thead>
             <tr>
@@ -15,21 +16,33 @@
             </tr>
             </thead>
             <tbody>
-            <th:block th:each="row : ${tableResult}">
+
+            <th:block th:each="teamComposition : ${teamCompositions}">
                 <tr>
-                    <td th:text="${row.team.id}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${row.team.id})}" class="name-ref" th:text="${row.team.teamName}"></a></td>
+                    <td th:text="${teamComposition.parentTeam.id}"></td>
                     <td>
-                    <ul>
-                        <th:block th:each="player:${row.players}">
-                            <li th:text="${player.getFullName()}"></li>
-                        </th:block>
-                    </ul>
+                        <a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${teamComposition.parentTeam.id})}"
+                           class="name-ref"
+                           th:text="${teamComposition.parentTeam.teamName}"></a>
+                    </td>
+                    <td>
+                        <ul>
+                            <th:block th:each="player : ${teamComposition.players}">
+                                <li th:text="${player.fullName}"></li>
+                            </th:block>
+                        </ul>
                     </td>
                 </tr>
             </th:block>
+
+
+
             </tbody>
         </table>
+        </div>
+        <div th:unless="${teamCompositions.size() > 0}">
+            <p>Составы пока скрыты</p>
+        </div>
         <h2>Результаты</h2>
         <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}/controversials(league_id=${leagueId}, tournament_id=${tournament.id})}" class="name-ref">Перейти к спорным</a></td>
 

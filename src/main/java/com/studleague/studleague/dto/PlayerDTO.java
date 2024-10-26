@@ -4,6 +4,7 @@ package com.studleague.studleague.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.entities.TeamComposition;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ public class PlayerDTO {
     private long idSite;
     @JsonProperty("teams")
     private List<Long> teamIds = new ArrayList<>();
+    private List<Long> teamsCompositionsIds = new ArrayList<>();
 
 }
 

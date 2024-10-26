@@ -1,0 +1,51 @@
+package com.studleague.studleague.entities;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@Table(name="team_compositions")
+@Builder
+@NoArgsConstructor
+@ToString
+@JsonIdentityInfo(scope = TeamComposition.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@AllArgsConstructor
+public class TeamComposition {
+
+    @Id
+    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @ManyToOne()
+    private Team parentTeam;
+
+    @ManyToOne
+    private Tournament tournament;
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(name="teamCompositions_players",
+            joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
+    @Builder.Default
+    private List<Player> players = new ArrayList<>();
+
+    public void addPlayer(Player player)
+    {
+        if (!players.contains(player))
+        {
+            players.add(player);
+        }
+    }
+
+    public void deletePlayer(Player player)
+    {
+        players.remove(player);
+    }
+}

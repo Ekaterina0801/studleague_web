@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,14 +37,14 @@ public class Tournament {
     @Column(name = "dateOfStart")
     @JsonProperty("dateOfStart")
     //@Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfStart;
+    //@JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime dateOfStart;
 
     @Column(name = "dateOfFinal")
     @JsonProperty("dateOfEnd")
     //@Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfEnd;
+    //@JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime dateOfEnd;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH}
     )
@@ -78,6 +79,13 @@ public class Tournament {
     @ToString.Exclude
     @Builder.Default
     private List<Player> players = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament")
+    @ToString.Exclude
+    @Builder.Default
+    private List<TeamComposition> teamCompositions = new ArrayList<>();
+
+
 
     public void addResult(FullResult fullResult) {
         if (!results.contains(fullResult)){
@@ -123,6 +131,14 @@ public class Tournament {
         {
             leagues.add(league);
             league.getTournaments().add(this);
+        }
+    }
+
+    public void addTeamComposition(TeamComposition teamComposition){
+        if (!teamCompositions.contains(teamComposition))
+        {
+            teamCompositions.add(teamComposition);
+            teamComposition.setTournament(this);
         }
     }
 

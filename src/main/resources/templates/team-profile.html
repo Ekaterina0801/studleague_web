@@ -78,11 +78,11 @@
                 </tr>
             </thead>
             <tbody>
-            <th:block th:each="result : ${resultsTable}">
+            <th:block th:each="result : ${results}">
                 <tr>
                     <td th:text="${result.team.id}"></td>
+                    <td><a th:href="@{/leagues/{league_id}/tournaments/{tournament_id}(league_id=${leagueId}, tournament_id=${result.tournament.id})}" class="name-ref" th:text="${result.tournament.name}"></a></td>
                     <td th:text="${result.totalScore} + '/' + ${result.countQuestions}"></td>
-                    <td><a th:href="@{/leagues/{league_id}/teams/{team_id}(league_id=${leagueId}, team_id=${result.team.id})}" class="name-ref" th:text="${result.team.teamName}"></a></td>
                     <td>
                         <ul>
                             <th:block th:each="player:${result.players}">

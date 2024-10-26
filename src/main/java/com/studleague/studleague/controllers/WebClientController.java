@@ -1,7 +1,9 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.mappings.*;
+import com.studleague.studleague.repository.TeamCompositionRepository;
 import com.studleague.studleague.services.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,9 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,6 +32,36 @@ public class WebClientController {
     private final TeamService teamService;
 
     @Autowired
+    private TournamentMapper tournamentMapper;
+
+    @Autowired
+    private TeamMapper teamMapper;
+
+    @Autowired
+    private LeagueMapper leagueMapper;
+
+    @Autowired
+    private ControversialMapper controversialMapper;
+
+    @Autowired
+    private FullResultMapper fullResultMapper;
+
+    @Autowired
+    private PlayerMapper playerMapper;
+
+    @Autowired
+    private FlagMapper flagMapper;
+
+    @Autowired
+    private TransferMapper transferMapper;
+
+    @Autowired
+    private TeamCompositionRepository teamCompositionRepository;
+
+    @Autowired
+    private TeamCompositionService teamCompositionService;
+
+    @Autowired
     public WebClientController(ResultService resultService, TournamentService tournamentService,
                                ControversialService controversialService, PlayerService playerService,
                                TeamService teamService) {
@@ -44,8 +74,8 @@ public class WebClientController {
         return IntStream.rangeClosed(1, n).boxed().collect(Collectors.toList());
     }
 
-    private List<League> fetchLeagues() {
-        return fetchFromApi(BASE_URL + "/leagues", new ParameterizedTypeReference<List<League>>() {});
+    private List<LeagueDTO> fetchLeagues() {
+        return fetchFromApi(BASE_URL + "/leagues", new ParameterizedTypeReference<List<LeagueDTO>>() {});
     }
 
     private <T> T fetchFromApi(String url, ParameterizedTypeReference<T> responseType) {
@@ -59,51 +89,55 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/results")
     public String leagueResultsView(@PathVariable long league_id, Model model) {
-        model.addAttribute("leagues", fetchLeagues());
+        List<LeagueDTO> leagueDTOs = fetchLeagues();
+        model.addAttribute("leagues", leagueDTOs != null ? leagueDTOs : null);
         model.addAttribute("leagueId", league_id);
         return "leagueResults";
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/controversials")
     public String controversialsTournamentView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
-        Tournament tournament = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id, new ParameterizedTypeReference<Tournament>() {});
-        List<League> leagues = fetchLeagues();
+        TournamentDTO tournamentDTO = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id, new ParameterizedTypeReference<TournamentDTO>() {});
+        Tournament tournament = tournamentDTO != null ? tournamentMapper.toEntity(tournamentDTO) : null;
+
+        List<LeagueDTO> leagueDTOs = fetchLeagues();
+        List<League> leagues = leagueDTOs != null
+                ? leagueDTOs.stream().map(leagueMapper::toEntity).toList()
+                : null;
+
         List<Controversial> controversials = controversialService.getControversialsByTournamentId(tournament_id);
+
 
         model.addAttribute("leagueId", league_id);
         model.addAttribute("leagues", leagues);
         model.addAttribute("controversials", controversials);
-        model.addAttribute("numbers", generateNumbers(controversials.size()));
+        model.addAttribute("numbers", generateNumbers(controversials != null ? controversials.size() : 0));
         model.addAttribute("tournament", tournament);
         return "controversials";
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/results")
     public String tournamentResultsView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
-        List<FullResult> results = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id + "/results", new ParameterizedTypeReference<List<FullResult>>() {});
-        List<InfoTeamResults> tableResult = resultService.fullResultsToTable(results);
-        Tournament tournament = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id, new ParameterizedTypeReference<Tournament>() {});
+        List<FullResultDTO> resultsDTO = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id + "/results", new ParameterizedTypeReference<List<FullResultDTO>>() {});
+        List<FullResult> results = resultsDTO != null
+                ? resultsDTO.stream().map(fullResultMapper::toEntity).toList()
+                : null;
 
-        List<League> leagues = fetchLeagues();
-        List<Team> teams = tournament.getTeams();
-        List<Player> players = tournament.getPlayers();
-        HashMap<Team, List<Player>> teamsPlayers = organizePlayersByTeam(players, league_id);
+        TournamentDTO tournamentDTO = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id, new ParameterizedTypeReference<TournamentDTO>() {});
+        Tournament tournament = tournamentDTO != null ? tournamentMapper.toEntity(tournamentDTO) : null;
 
+        List<LeagueDTO> leagueDTOs = fetchLeagues();
+        List<League> leagues = leagueDTOs != null
+                ? leagueDTOs.stream().map(leagueMapper::toEntity).toList()
+                : null;
+
+        List<TeamComposition> teamCompositions = teamCompositionService.findByTournamentId(tournament_id);
         model.addAttribute("tournament", tournament);
-        model.addAttribute("teams", teams);
         model.addAttribute("leagues", leagues);
         model.addAttribute("leagueId", league_id);
-        model.addAttribute("tableResult", tableResult);
+        model.addAttribute("tableResult", resultService.fullResultsToTable(results));
+        model.addAttribute("teamCompositions", teamCompositions);
         return "results-tournament";
-    }
-
-    private HashMap<Team, List<Player>> organizePlayersByTeam(List<Player> players, long leagueId) {
-        HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();
-        for (Player player : players) {
-            Team team = teamService.getTeamByPlayerIdAndLeagueId(player.getId(), leagueId);
-            teamsPlayers.computeIfAbsent(team, k -> new ArrayList<>()).add(player);
-        }
-        return teamsPlayers;
     }
 
     @RequestMapping("/leagues/{league_id}/teams/{team_id}/results")
@@ -115,8 +149,8 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/teams")
     public String teamsView(@PathVariable long league_id, Model model) {
-        List<Team> teams = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/teams", new ParameterizedTypeReference<List<Team>>() {});
-        model.addAttribute("teams", teams);
+        List<TeamDTO> teamDTOs = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/teams", new ParameterizedTypeReference<List<TeamDTO>>() {});
+        model.addAttribute("teams", teamDTOs != null ? teamDTOs.stream().map(teamMapper::toEntity).toList() : null);
         model.addAttribute("leagues", fetchLeagues());
         model.addAttribute("leagueId", league_id);
         return "teams";
@@ -124,27 +158,27 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/tournaments")
     public String tournamentsView(@PathVariable long league_id, Model model) {
-        List<Tournament> tournaments = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/tournaments", new ParameterizedTypeReference<List<Tournament>>() {});
-        model.addAttribute("tournaments", tournaments);
+        List<TournamentDTO> tournamentDTOs =  fetchFromApi(BASE_URL + "/leagues/" + league_id + "/tournaments", new ParameterizedTypeReference<>() {
+        });
+        model.addAttribute("tournaments", tournamentDTOs != null ? tournamentDTOs.stream().map(tournamentMapper::toEntity).toList() : null);
         model.addAttribute("leagues", fetchLeagues());
         model.addAttribute("leagueId", league_id);
-        List<Tournament> allTournaments = fetchFromApi(BASE_URL + "/tournaments", new ParameterizedTypeReference<List<Tournament>>() {});
-        model.addAttribute("allTournaments", allTournaments);
         return "tournaments";
     }
 
     @RequestMapping("/leagues/{league_id}/teams/{team_id}")
     public String teamProfileView(@PathVariable long league_id, @PathVariable long team_id, Model model) {
         model.addAttribute("leagues", fetchLeagues());
-        List<Flag> allFlags = fetchFromApi(BASE_URL + "/flags", new ParameterizedTypeReference<List<Flag>>() {});
 
-        Team team = fetchFromApi(BASE_URL + "/teams/" + team_id, new ParameterizedTypeReference<Team>() {});
-        List<Transfer> transfers = fetchFromApi(BASE_URL + "/teams/" + team_id + "/transfers", new ParameterizedTypeReference<List<Transfer>>() {});
-        List<FullResult> results = fetchFromApi(BASE_URL + "/teams/" + team_id + "/results", new ParameterizedTypeReference<List<FullResult>>() {});
+        TeamDTO teamDTO = fetchFromApi(BASE_URL + "/teams/" + team_id, new ParameterizedTypeReference<TeamDTO>() {});
+        Team team = teamDTO != null ? teamMapper.toEntity(teamDTO) : null;
 
+        List<Flag> allFlags = fetchFromApi(BASE_URL + "/flags", new ParameterizedTypeReference<List<FlagDTO>>() {}).stream().map(x->flagMapper.toEntity(x)).toList();
+        List<Transfer> transfers = fetchFromApi(BASE_URL + "/teams/" + team_id + "/transfers", new ParameterizedTypeReference<List<TransferDTO>>() {}).stream().map(x->transferMapper.toEntity(x)).toList();
         List<InfoTeamResults> resultsTable = teamService.getInfoTeamResultsByTeam(team_id);
-        List<Integer> numbers = generateNumbers(team.getTournaments().size());
-        HashMap<Tournament, List<Player>> tournamentsPlayers = teamService.getTournamentsPlayersByTeam(team.getId());
+        List<Integer> numbers = generateNumbers(team != null ? team.getTournaments().size() : 0);
+        List<TeamComposition> teamCompositions = teamCompositionService.findByParentTeamId(team_id);
+        //HashMap<Tournament, List<Player>> tournamentsPlayers = team != null ? teamService.getTournamentsPlayersByTeam(team.getId()) : new HashMap<>();
 
         model.addAttribute("leagueId", league_id);
         model.addAttribute("transfers", transfers);
@@ -152,8 +186,7 @@ public class WebClientController {
         model.addAttribute("numbers", numbers);
         model.addAttribute("allFlags", allFlags);
         model.addAttribute("team", team);
-        model.addAttribute("resultsTable", resultsTable);
-        // model.addAttribute("tournamentsPlayers", tournamentsPlayers);
+        model.addAttribute("teamCompositions", teamCompositions);
         return "team-profile";
     }
 
@@ -161,11 +194,16 @@ public class WebClientController {
     public String playerProfileView(@PathVariable long league_id, @PathVariable long team_id, @PathVariable long player_id, Model model) {
         model.addAttribute("leagues", fetchLeagues());
 
-        Player player = fetchFromApi(BASE_URL + "/players/" + player_id, new ParameterizedTypeReference<Player>() {});
-        List<Team> allTeams = fetchFromApi(BASE_URL + "/teams", new ParameterizedTypeReference<List<Team>>() {});
+        PlayerDTO playerDTO = fetchFromApi(BASE_URL + "/players/" + player_id, new ParameterizedTypeReference<PlayerDTO>() {});
+        Player player = playerDTO != null ? playerMapper.toEntity(playerDTO) : null;
 
-        List<Team> currentTeams = player.getTeams();
-        allTeams.removeAll(currentTeams);
+        List<TeamDTO> allTeamsDTO = fetchFromApi(BASE_URL + "/teams", new ParameterizedTypeReference<List<TeamDTO>>() {});
+        List<Team> allTeams = new ArrayList<>(allTeamsDTO != null ? allTeamsDTO.stream().map(teamMapper::toEntity).toList() : null);
+
+        List<Team> currentTeams = player != null ? player.getTeams() : null;
+        if (currentTeams != null) {
+            allTeams.removeAll(currentTeams);
+        }
 
         model.addAttribute("oldTeams", currentTeams);
         model.addAttribute("newTeams", allTeams);
@@ -179,7 +217,6 @@ public class WebClientController {
     public String playersView() {
         return "players-view";
     }
-
 }
 
 /*

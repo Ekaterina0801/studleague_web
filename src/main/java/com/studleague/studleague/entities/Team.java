@@ -60,6 +60,12 @@ public class Team {
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();
 
+    @OneToMany(mappedBy="parentTeam")
+    @ToString.Exclude
+    @Builder.Default
+    private List<TeamComposition> teamCompositions = new ArrayList<>();
+
+
     public void addPlayerToTeam(Player player)
     {
         if(!players.contains(player))

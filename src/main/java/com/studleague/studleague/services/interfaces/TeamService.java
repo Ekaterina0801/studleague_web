@@ -31,13 +31,16 @@ public interface TeamService {
 
     Team getTeamByIdSite(long idSite);
 
-    HashMap<Tournament, List<Player>> getTournamentsPlayersByTeam(long teamId);
-
     List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId);
 
-    Team getTeamByPlayerIdAndLeagueId(long playerId, long leagueId);
+    List<Team> getTeamsByPlayerIdAndLeagueId(long playerId, long leagueId);
 
     boolean existsByIdSite(long idSite);
 
-    public void deleteAllTeams();
+    void deleteAllTeams();
+
+    List<Team> getTeamsByFlagId(long flagId);
+
+    List<Team> getTeamsByPlayerId(long playerId);
+
 }
