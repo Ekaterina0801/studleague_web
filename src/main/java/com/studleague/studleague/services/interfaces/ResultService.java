@@ -7,21 +7,21 @@ import java.util.List;
 
 public interface ResultService {
 
-    FullResult getFullResultById(long id);
+    FullResult getFullResultById(Long id);
 
     List<FullResult> getAllFullResults();
 
     void saveFullResult(FullResult fullResult);
 
-    void deleteFullResult(long id);
+    void deleteFullResult(Long id);
 
-    FullResult addControversialToResult(long resultId, long controversialId);
+    FullResult addControversialToResult(Long resultId, Long controversialId);
 
-    void deleteControversialFromResult(long resultId, long controversialId);
+    void deleteControversialFromResult(Long resultId, Long controversialId);
 
     List<InfoTeamResults> fullResultsToTable(List<FullResult> fullResults);
 
-    List<FullResult> getResultsForTeam(long teamId);
+    List<FullResult> getResultsForTeam(Long teamId);
 
     public void deleteAllResults();
 }

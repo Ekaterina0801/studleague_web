@@ -36,7 +36,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament getTournamentById(long id) {
+    public Tournament getTournamentById(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(id), "Tournament", id);
     }
 
@@ -50,7 +50,7 @@ public class TournamentServiceImpl implements TournamentService {
     @Transactional
     public void saveTournament(Tournament tournament) {
 
-        long idSite = tournament.getIdSite();
+        Long idSite = tournament.getIdSite();
         if (idSite!=0)
         {
         if (tournamentRepository.existsByIdSite(idSite))
@@ -69,13 +69,13 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public void deleteTournament(long id) {
+    public void deleteTournament(Long id) {
         tournamentRepository.deleteByTournamentId(id);
     }
 
     @Override
     @Transactional
-    public Tournament addResultToTournament(long tournamentId, long resultId) {
+    public Tournament addResultToTournament(Long tournamentId, Long resultId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         tournament.addResult(fullResult);
@@ -85,7 +85,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament deleteResultFromTournament(long tournamentId, long resultId) {
+    public Tournament deleteResultFromTournament(Long tournamentId, Long resultId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         tournament.deleteResult(fullResult);
@@ -95,7 +95,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament addPlayerToTournament(long tournamentId, long playerId) {
+    public Tournament addPlayerToTournament(Long tournamentId, Long playerId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
         tournament.addPlayer(player);
@@ -105,7 +105,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament deletePlayerFromTournament(long tournamentId, long playerId) {
+    public Tournament deletePlayerFromTournament(Long tournamentId, Long playerId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
         tournament.deletePlayer(player);
@@ -115,7 +115,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament deleteTeamFromTournament(long tournamentId, long teamId) {
+    public Tournament deleteTeamFromTournament(Long tournamentId, Long teamId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         tournament.deleteTeam(team);
@@ -125,7 +125,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament addTeamToTournament(long tournamentId, long teamId) {
+    public Tournament addTeamToTournament(Long tournamentId, Long teamId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         tournament.addTeam(team);
@@ -135,7 +135,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public Tournament addTeamAndPlayerToTournament(long tournamentId, long teamId, long playerId) {
+    public Tournament addTeamAndPlayerToTournament(Long tournamentId, Long teamId, Long playerId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
         Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
@@ -170,13 +170,13 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
-    public Tournament getTournamentBySiteId(long idSite) {
+    public Tournament getTournamentBySiteId(Long idSite) {
         return EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(idSite), "Tournament", idSite);
     }
 
 
     @Override
-    public boolean existsByIdSite(long idSite)
+    public boolean existsByIdSite(Long idSite)
     {
         return tournamentRepository.existsByIdSite(idSite);
     }
@@ -190,7 +190,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
-    public HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(long tournamentId) {
+    public HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(Long tournamentId) {
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();
         List<Team> teams = tournament.getTeams();

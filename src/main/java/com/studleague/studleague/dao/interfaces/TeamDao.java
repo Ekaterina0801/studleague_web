@@ -6,21 +6,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamDao {
-    Optional<Team> findById(long id);
+    Optional<Team> findById(Long id);
 
     List<Team> findAll();
 
     void save(Team team);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 
-    List<Team> findAllByLeagueId(long leagueId);
+    List<Team> findAllByLeagueId(Long leagueId);
 
-    Optional<Team> findByIdSite(long idSite);
+    Optional<Team> findByIdSite(Long idSite);
 
-    Optional<Team> findByPlayerIdAndLeagueId(long playerId, long leagueId);
+    Optional<Team> findByPlayerIdAndLeagueId(Long playerId, Long leagueId);
 
-    public boolean existsByIdSite(long idSite);
+    public boolean existsByIdSite(Long idSite);
 
     void deleteAll();
 

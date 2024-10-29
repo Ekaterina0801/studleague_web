@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @Builder
 public class PlayerDTO {
-    private long id;
+    private Long id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("patronymic")
@@ -31,7 +31,7 @@ public class PlayerDTO {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;;
     @JsonProperty("idSite")
-    private long idSite;
+    private Long idSite;
     @JsonProperty("teams")
     private List<Long> teamIds = new ArrayList<>();
     private List<Long> teamsCompositionsIds = new ArrayList<>();

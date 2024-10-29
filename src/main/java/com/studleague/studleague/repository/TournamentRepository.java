@@ -12,11 +12,11 @@ import java.util.Optional;
 @Repository
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
-    Optional<Tournament> findByIdSite(long idSite);
+    Optional<Tournament> findByIdSite(Long idSite);
 
     @Query("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId")
-    List<Tournament> findAllByTeamId(@Param("teamId") long teamId);
+    List<Tournament> findAllByTeamId(@Param("teamId") Long teamId);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
 }

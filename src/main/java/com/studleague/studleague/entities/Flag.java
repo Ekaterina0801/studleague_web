@@ -24,7 +24,7 @@ public class Flag {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name="name")
     private String name;
@@ -46,7 +46,7 @@ public class Flag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Flag flag = (Flag) o;
-        return id == flag.id && Objects.equals(name, flag.name);
+        return Objects.equals(id, flag.id) && Objects.equals(name, flag.name);
     }
 
     @Override

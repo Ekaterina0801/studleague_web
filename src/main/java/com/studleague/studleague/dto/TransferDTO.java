@@ -14,15 +14,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class TransferDTO {
-    private long id;
+    private Long id;
     @JsonDeserialize(using = CustomJsonDateDeserializer.class)
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate transferDate;
     @JsonProperty("playerId")
-    private long playerId;
+    private Long playerId;
     @JsonProperty("oldTeamId")
-    private long oldTeamId;
+    private Long oldTeamId;
     @JsonProperty("newTeamId")
-    private long newTeamId;
+    private Long newTeamId;
     private String comments;
 }

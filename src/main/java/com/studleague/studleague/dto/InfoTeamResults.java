@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class InfoTeamResults {
-    private long number;
+    private int number;
     private Team team;
     private List<Integer> answers = new ArrayList<>();
     private int totalScore = 0;

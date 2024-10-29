@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface ResultRepository extends JpaRepository<FullResult,Long> {
-    List<FullResult> findAllByTeamId(long teamId);
+    List<FullResult> findAllByTeamId(Long teamId);
 
-    boolean existsByTeamIdAndTournamentId(long teamId, long tournamentId);
+    boolean existsByTeamIdAndTournamentId(Long teamId, Long tournamentId);
 
-    Optional<FullResult> findByTeamIdAndTournamentId(long teamId, long tournamentId);
+    Optional<FullResult> findByTeamIdAndTournamentId(Long teamId, Long tournamentId);
 }

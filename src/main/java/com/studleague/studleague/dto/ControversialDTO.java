@@ -20,7 +20,7 @@ import java.util.Objects;
 @ToString
 @Builder
 public class ControversialDTO {
-    private long id;
+    private Long id;
     @JsonProperty("questionNumber")
     private int questionNumber;
     private String answer;
@@ -33,7 +33,7 @@ public class ControversialDTO {
     private String resolvedAt;
     @JsonProperty("appealJuryComment")
     private String appealJuryComment;
-    private long fullResultId;
+    private Long fullResultId;
 
 
     @Override

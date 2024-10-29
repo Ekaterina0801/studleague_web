@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PlayerDao {
-    Optional<Player> findById(long id);
+    Optional<Player> findById(Long id);
 
     List<Player> findAll();
 
     void save(Player player);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 
-    Optional<Player> findByIdSite(long idSite);
+    Optional<Player> findByIdSite(Long idSite);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
     void deleteAll();
 }

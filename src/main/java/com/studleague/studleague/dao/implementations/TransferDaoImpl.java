@@ -25,7 +25,7 @@ public class TransferDaoImpl implements TransferDao {
     }
 
     @Override
-    public Optional<Transfer> findById(long id) {
+    public Optional<Transfer> findById(Long id) {
         Transfer transfer = getCurrentSession().get(Transfer.class,id);
         return Optional.ofNullable(transfer);
     }
@@ -47,14 +47,14 @@ public class TransferDaoImpl implements TransferDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("delete from Transfer where id=:id", Transfer.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Transfer> findAllByPlayerId(long playerId) {
+    public List<Transfer> findAllByPlayerId(Long playerId) {
         Query<Transfer> query = getCurrentSession().createQuery("from Transfer where player.id=:player_id", Transfer.class);
         query.setParameter("player_id",playerId);
         return query.getResultList();
@@ -62,7 +62,7 @@ public class TransferDaoImpl implements TransferDao {
     }
 
     @Override
-    public List<Transfer> findAllByTeamId(long teamId) {
+    public List<Transfer> findAllByTeamId(Long teamId) {
         Query<Transfer> query = getCurrentSession().createQuery("select t from Transfer t left join fetch t.oldTeam o left join fetch t.newTeam n where o.id=:team_id or n.id=:team_id", Transfer.class);
         query.setParameter("team_id",teamId);
         return query.getResultList();

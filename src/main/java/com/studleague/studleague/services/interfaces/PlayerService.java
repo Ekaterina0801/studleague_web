@@ -5,17 +5,17 @@ import com.studleague.studleague.entities.Player;
 import java.util.List;
 
 public interface PlayerService {
-    Player getPlayerById(long id);
+    Player getPlayerById(Long id);
 
     List<Player> getAllPlayers();
 
     void savePlayer(Player player);
 
-    void deletePlayer(long id);
+    void deletePlayer(Long id);
 
-    Player getPlayerByIdSite(long idSite);
+    Player getPlayerByIdSite(Long idSite);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
     void deleteAllPlayers();
 }

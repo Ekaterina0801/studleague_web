@@ -13,13 +13,13 @@ import java.util.List;
 @Builder
 public class FullResultDTO {
 
-    private long id;
+    private Long id;
 
     @JsonProperty("teamId")
-    private long team_id;
+    private Long team_id;
 
     @JsonProperty("tournamentId")
-    private long tournament_id;
+    private Long tournament_id;
 
     @JsonProperty("maskResults")
     private String mask_results;

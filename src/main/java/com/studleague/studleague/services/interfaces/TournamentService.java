@@ -8,33 +8,33 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface TournamentService {
-    Tournament getTournamentById(long id);
+    Tournament getTournamentById(Long id);
 
     List<Tournament> getAllTournaments();
 
     void saveTournament(Tournament tournament);
 
-    void deleteTournament(long id);
+    void deleteTournament(Long id);
 
-    Tournament addResultToTournament(long tournamentId, long resultId);
+    Tournament addResultToTournament(Long tournamentId, Long resultId);
 
-    Tournament deleteResultFromTournament(long tournamentId, long resultId);
+    Tournament deleteResultFromTournament(Long tournamentId, Long resultId);
 
-    Tournament addPlayerToTournament(long tournamentId, long playerId);
+    Tournament addPlayerToTournament(Long tournamentId, Long playerId);
 
-    Tournament deletePlayerFromTournament(long tournamentId, long playerId);
+    Tournament deletePlayerFromTournament(Long tournamentId, Long playerId);
 
-    Tournament deleteTeamFromTournament(long tournamentId, long teamId);
+    Tournament deleteTeamFromTournament(Long tournamentId, Long teamId);
 
-    Tournament addTeamToTournament(long tournamentId, long teamId);
+    Tournament addTeamToTournament(Long tournamentId, Long teamId);
 
-    Tournament addTeamAndPlayerToTournament(long tournamentId, long teamId, long playerId);
+    Tournament addTeamAndPlayerToTournament(Long tournamentId, Long teamId, Long playerId);
 
-    Tournament getTournamentBySiteId(long idSite);
+    Tournament getTournamentBySiteId(Long idSite);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
     void deleteAllTournaments();
 
-    HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(long tournamentId);
+    HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(Long tournamentId);
 }

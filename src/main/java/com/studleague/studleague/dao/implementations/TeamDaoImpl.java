@@ -28,7 +28,7 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public Optional<Team> findById(long id) {
+    public Optional<Team> findById(Long id) {
         Team team = getCurrentSession().get(Team.class, id);
         return Optional.ofNullable(team);
     }
@@ -81,14 +81,14 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Team WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Team> findAllByLeagueId(long leagueId) {
+    public List<Team> findAllByLeagueId(Long leagueId) {
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.league.id = :league_id", Team.class);
         query.setParameter("league_id", leagueId);
         return query.getResultList();
@@ -97,7 +97,7 @@ public class TeamDaoImpl implements TeamDao {
 
 
     @Override
-    public Optional<Team> findByIdSite(long idSite){
+    public Optional<Team> findByIdSite(Long idSite){
         Query<Team> query = getCurrentSession().createQuery("from Team t where t.idSite =: idSite", Team.class);
         query.setParameter("idSite", idSite);
         try {
@@ -112,7 +112,7 @@ public class TeamDaoImpl implements TeamDao {
 
 
     @Override
-    public Optional<Team> findByPlayerIdAndLeagueId(long playerId, long leagueId) {
+    public Optional<Team> findByPlayerIdAndLeagueId(Long playerId, Long leagueId) {
         String hql = "SELECT t FROM Player p " +
                 "JOIN p.teams t " +
                 "WHERE t.league.id = :leagueId AND p.id = :playerId";
@@ -131,7 +131,7 @@ public class TeamDaoImpl implements TeamDao {
 
     @Transactional
     @Override
-    public boolean existsByIdSite(long idSite) {
+    public boolean existsByIdSite(Long idSite) {
         Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Team p WHERE p.idSite = :idSite", Long.class);
         query.setParameter("idSite", idSite);
         Long count = query.getSingleResult();

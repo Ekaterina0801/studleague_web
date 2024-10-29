@@ -31,7 +31,7 @@ public class TournamentDaoImpl implements TournamentDao {
 
 
     @Override
-    public Optional<Tournament> findById(long id) {
+    public Optional<Tournament> findById(Long id) {
         Tournament tournament = getCurrentSession().get(Tournament.class, id);
         return Optional.ofNullable(tournament);
     }
@@ -90,7 +90,7 @@ public class TournamentDaoImpl implements TournamentDao {
 
 
     @Override
-    public void deleteByTournamentId(long id) {
+    public void deleteByTournamentId(Long id) {
         Session session = entityManager.unwrap(Session.class);
         Query<?> query = session.createQuery("delete from Tournament where id=:id", Tournament.class);
         query.setParameter("id", id);
@@ -98,7 +98,7 @@ public class TournamentDaoImpl implements TournamentDao {
     }
 
     @Override
-    public Optional<Tournament> findByIdSite(long idSite)
+    public Optional<Tournament> findByIdSite(Long idSite)
     {
         Query<Tournament> query = getCurrentSession().createQuery("from Tournament where idSite=:idSite", Tournament.class);
         query.setParameter("idSite", idSite);
@@ -113,7 +113,7 @@ public class TournamentDaoImpl implements TournamentDao {
     }
 
     @Override
-    public List<Tournament> findAllByTeamId(long teamId) {
+    public List<Tournament> findAllByTeamId(Long teamId) {
         Query<Tournament> query = getCurrentSession().createQuery("SELECT t FROM Tournament t JOIN t.teams te WHERE te.id = :teamId", Tournament.class);
         query.setParameter("teamId", teamId);
         return query.getResultList();
@@ -121,7 +121,7 @@ public class TournamentDaoImpl implements TournamentDao {
 
     @Transactional
     @Override
-    public boolean existsByIdSite(long idSite) {
+    public boolean existsByIdSite(Long idSite) {
         Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Tournament p WHERE p.idSite = :idSite", Long.class);
         query.setParameter("idSite", idSite);
         List<Long> results = query.getResultList();

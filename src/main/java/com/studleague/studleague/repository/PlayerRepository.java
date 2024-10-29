@@ -8,14 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 
-    Optional<Player> findByIdSite(long idSite);
+    Optional<Player> findByIdSite(Long idSite);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
     /*@Query("SELECT p FROM Player p " +
                          "JOIN Tournament t WITH p MEMBER OF t.players " +

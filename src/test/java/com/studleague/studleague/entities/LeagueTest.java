@@ -85,7 +85,7 @@ class LeagueTest {
 
     @Test
     void toString_ShouldContainLeagueName() {
-        String expected = "League(id=0, name=Stud League)";
+        String expected = "League(id=null, name=Stud League)";
         assertEquals(expected, league.toString());
     }
 }

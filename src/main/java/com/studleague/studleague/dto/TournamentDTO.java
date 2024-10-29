@@ -22,12 +22,12 @@ import java.util.Objects;
 @Builder
 @ToString
 public class TournamentDTO {
-    private long id;
+    private Long id;
     @JsonProperty("name")
     private String name;
 
     @JsonProperty("idSite")
-    private long idSite;
+    private Long idSite;
 
     @Temporal(TemporalType.DATE)
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")

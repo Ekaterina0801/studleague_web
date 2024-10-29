@@ -9,38 +9,38 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface TeamService {
-    Team getTeamById(long id);
+    Team getTeamById(Long id);
 
     List<Team> getAllTeams();
 
     void saveTeam(Team team);
 
-    void deleteTeam(long id);
+    void deleteTeam(Long id);
 
-    List<Team> teamsByLeague(long leagueId);
+    List<Team> teamsByLeague(Long leagueId);
 
-    Team addPlayerToTeam(long teamId, long playerId);
+    Team addPlayerToTeam(Long teamId, Long playerId);
 
-    Team deletePlayerFromTeam(long teamId, long playerId);
+    Team deletePlayerFromTeam(Long teamId, Long playerId);
 
-    Team addFlagToTeam(long teamId, long flagId);
+    Team addFlagToTeam(Long teamId, Long flagId);
 
-    Team deleteFlagFromTeam(long teamId, long flagId);
+    Team deleteFlagFromTeam(Long teamId, Long flagId);
 
-    Team addLeagueToTeam(long teamId, long leagueId);
+    Team addLeagueToTeam(Long teamId, Long leagueId);
 
-    Team getTeamByIdSite(long idSite);
+    Team getTeamByIdSite(Long idSite);
 
-    List<InfoTeamResults> getInfoTeamResultsByTeam(long teamId);
+    List<InfoTeamResults> getInfoTeamResultsByTeam(Long teamId);
 
-    List<Team> getTeamsByPlayerIdAndLeagueId(long playerId, long leagueId);
+    List<Team> getTeamsByPlayerIdAndLeagueId(Long playerId, Long leagueId);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
     void deleteAllTeams();
 
-    List<Team> getTeamsByFlagId(long flagId);
+    List<Team> getTeamsByFlagId(Long flagId);
 
-    List<Team> getTeamsByPlayerId(long playerId);
+    List<Team> getTeamsByPlayerId(Long playerId);
 
 }

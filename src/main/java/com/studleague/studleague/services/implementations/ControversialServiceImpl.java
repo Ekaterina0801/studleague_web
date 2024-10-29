@@ -16,7 +16,6 @@ import java.util.List;
 public class ControversialServiceImpl implements ControversialService {
 
     @Autowired
-    //private ControversialDao controversialRepository;
     private ControversialRepository controversialRepository;
 
 

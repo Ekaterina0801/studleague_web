@@ -22,7 +22,7 @@ public class TeamComposition {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne()
     private Team parentTeam;
@@ -34,6 +34,7 @@ public class TeamComposition {
     @JoinTable(name="teamCompositions_players",
             joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     @Builder.Default
+    @ToString.Exclude
     private List<Player> players = new ArrayList<>();
 
     public void addPlayer(Player player)

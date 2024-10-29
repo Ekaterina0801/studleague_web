@@ -9,13 +9,13 @@ public interface TransferService {
 
     void saveTransfer(Transfer transfer);
 
-    Transfer getTransfer(long id);
+    Transfer getTransfer(Long id);
 
-    void deleteTransfer(long id);
+    void deleteTransfer(Long id);
 
-    List<Transfer> getTransfersForPlayer(long player_id);
+    List<Transfer> getTransfersForPlayer(Long player_id);
 
-    List<Transfer> getTransfersForTeam(long team_id);
+    List<Transfer> getTransfersForTeam(Long team_id);
 
     void deleteAllTransfers();
 }

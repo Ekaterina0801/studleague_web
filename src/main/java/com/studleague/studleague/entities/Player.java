@@ -26,9 +26,7 @@ public class Player {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    //
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -46,7 +44,7 @@ public class Player {
     private LocalDate dateOfBirth;
 
     @Column(name = "id_site")
-    private long idSite;
+    private Long idSite;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
@@ -106,7 +104,7 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return id == player.id && idSite == player.idSite && Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(university, player.university) && Objects.equals(dateOfBirth, player.dateOfBirth);
+        return Objects.equals(id, player.id) && Objects.equals(idSite, player.idSite) && Objects.equals(name, player.name) && Objects.equals(patronymic, player.patronymic) && Objects.equals(surname, player.surname) && Objects.equals(university, player.university) && Objects.equals(dateOfBirth, player.dateOfBirth);
     }
 
     @Override

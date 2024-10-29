@@ -12,15 +12,15 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TeamDTO {
-    private long id;
+    private Long id;
 
     private String teamName;
 
     private String university;
 
-    private long leagueId;
+    private Long leagueId;
 
-    private long idSite;
+    private Long idSite;
 
     @Builder.Default
     private List<Long> playersIds = new ArrayList<>();

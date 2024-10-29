@@ -13,10 +13,10 @@ import java.util.Optional;
 public interface ControversialRepository extends JpaRepository<Controversial, Long> {
 
     @Query("SELECT c FROM Controversial c WHERE c.fullResult.team.id = :teamId")
-    List<Controversial> findAllByTeamId(@Param("teamId") long teamId);
+    List<Controversial> findAllByTeamId(@Param("teamId") Long teamId);
 
     @Query("SELECT c FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId")
-    List<Controversial> findAllByTournamentId(@Param("tournamentId") long tournamentId);
+    List<Controversial> findAllByTournamentId(@Param("tournamentId") Long tournamentId);
 
 
 }

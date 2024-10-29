@@ -12,16 +12,16 @@ import java.util.Optional;
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
-    List<Team> findAllByLeagueId(long leagueId);
+    List<Team> findAllByLeagueId(Long leagueId);
 
-    Optional<Team> findByIdSite(long idSite);
+    Optional<Team> findByIdSite(Long idSite);
 
     @Query("SELECT t FROM Player p " +
                        "JOIN p.teams t " +
                        "WHERE t.league.id = :leagueId AND p.id = :playerId")
-    List<Team> findAllByPlayerIdAndLeagueId(@Param("playerId") long playerId, @Param("leagueId")long leagueId);
+    List<Team> findAllByPlayerIdAndLeagueId(@Param("playerId") Long playerId, @Param("leagueId")Long leagueId);
 
-    boolean existsByIdSite(long idSite);
+    boolean existsByIdSite(Long idSite);
 
 
 }

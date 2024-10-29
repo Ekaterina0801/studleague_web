@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+
 
 public class ControversialTest {
 
@@ -13,13 +15,13 @@ public class ControversialTest {
     @BeforeEach
     public void setUp() {
         controversial = Controversial.builder()
-                .id(1)
+                .id(1L)
                 .questionNumber(5)
                 .answer("Yes")
-                .issuedAt(LocalDate.parse("1990-01-01"))
+                .issuedAt(LocalDateTime.parse("2024-10-28T17:28:53"))
                 .status("Pending")
                 .comment("Test comment")
-                .resolvedAt("2024-10-19")
+                .resolvedAt("2024-10-28T17:28:53")
                 .appealJuryComment("No appeal")
                 .fullResult(new FullResult())
                 .build();
@@ -33,14 +35,14 @@ public class ControversialTest {
         assertNotNull(controversial.getIssuedAt());
         assertEquals("Pending", controversial.getStatus());
         assertEquals("Test comment", controversial.getComment());
-        assertEquals("2024-10-19", controversial.getResolvedAt());
+        assertEquals("2024-10-28T17:28:53", controversial.getResolvedAt());
         assertEquals("No appeal", controversial.getAppealJuryComment());
         assertNotNull(controversial.getFullResult());
     }
 
     @Test
     public void testToString() {
-        String expected = "Controversial(id=1, questionNumber=5, answer=Yes, issuedAt=..., status=Pending, comment=Test comment, resolvedAt=2024-10-19, appealJuryComment=No appeal, fullResult=null)"; // Adjust expected based on your actual toString output format
+        String expected = "Controversial(id=1, questionNumber=5, answer=Yes, issuedAt=..., status=Pending, comment=Test comment, resolvedAt=2024-10-28T17:28:53, appealJuryComment=No appeal, fullResult=null)"; // Adjust expected based on your actual toString output format
         String actual = controversial.toString();
         assertTrue(actual.contains("id=1"));
         assertTrue(actual.contains("questionNumber=5"));
@@ -48,7 +50,7 @@ public class ControversialTest {
 
     @Test
     public void testAllArgsConstructor() {
-        Controversial controversial2 = new Controversial(2, 10, "No", LocalDate.parse("1990-01-01"), "Resolved", "Comment", "2024-10-20", "Jury comments", null);
+        Controversial controversial2 = new Controversial(2L, 10, "No", LocalDateTime.parse("2024-10-28T17:28:53"), "Resolved", "Comment", "2024-10-28T17:28:53", "Jury comments", null);
         assertEquals(2, controversial2.getId());
         assertEquals(10, controversial2.getQuestionNumber());
     }

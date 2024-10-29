@@ -25,7 +25,7 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
     public void save(TeamComposition teamComposition) {
         Long tournamentId = teamComposition.getTournament().getId();
         Long parentTeamId = teamComposition.getParentTeam().getId();
-        if (!teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId).isEmpty())
+        if (teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId).isPresent())
         {
             TeamComposition teamCompositionExisting = EntityRetrievalUtils.getEntityByTwoIdOrThrow(teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId),"TeamComposition", tournamentId,parentTeamId);
             teamCompositionRepository.save(teamCompositionExisting);

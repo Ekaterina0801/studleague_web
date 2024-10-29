@@ -25,14 +25,14 @@ public class Tournament {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "idSite")
     @JsonProperty("idSite")
-    private long idSite;
+    private Long idSite;
 
     @Column(name = "dateOfStart")
     @JsonProperty("dateOfStart")
@@ -147,7 +147,7 @@ public class Tournament {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tournament that = (Tournament) o;
-        return id == that.id && idSite == that.idSite && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
+        return Objects.equals(id, that.id) && Objects.equals(idSite, that.idSite) && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Team {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name="teamName")
     private String teamName;
@@ -32,22 +32,24 @@ public class Team {
     private String university;
 
     @Column(name="idSite",unique = true)
-    private long idSite;
+    private Long idSite;
 
     @ManyToOne()
-    @JoinColumn(name="leagueId",nullable = false)
+    @JoinColumn(name="leagueId")
     private League league;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_players",
     joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     @Builder.Default
+    @ToString.Exclude
     private List<Player> players = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
     @Builder.Default
+    @ToString.Exclude
     private List<Flag> flags = new ArrayList<>();
 
     @ManyToMany(mappedBy = "teams",cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})

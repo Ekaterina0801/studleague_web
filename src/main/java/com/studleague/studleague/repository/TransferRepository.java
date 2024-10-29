@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface TransferRepository extends JpaRepository<Transfer, Long> {
 
-    List<Transfer> findAllByPlayerId(long playerId);
+    List<Transfer> findAllByPlayerId(Long playerId);
 
     @Query("select t from Transfer t left join fetch t.oldTeam o left join fetch t.newTeam n where o.id=:teamId or n.id=:teamId")
-    List<Transfer> findAllByTeamId(@Param("teamId")long teamId);
+    List<Transfer> findAllByTeamId(@Param("teamId")Long teamId);
 
 }

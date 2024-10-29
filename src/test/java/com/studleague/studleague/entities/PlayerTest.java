@@ -1,8 +1,10 @@
 package com.studleague.studleague.entities;
+import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +19,7 @@ class PlayerTest {
         player.setName("John");
         player.setPatronymic("Michael");
         player.setSurname("Doe");
-        player.setIdSite(123);
+        player.setIdSite(123L);
     }
 
     @Test
@@ -47,8 +49,8 @@ class PlayerTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("2024-10-28"), 123L, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("2024-10-28"), 123L, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
         assertEquals(player1, player2);
         assertEquals(player1.hashCode(), player2.hashCode());
@@ -56,8 +58,8 @@ class PlayerTest {
 
     @Test
     void testNotEqualDifferentIdSite() {
-        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 123, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("1990-01-01"), 456, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Player player1 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("2024-10-28"), 123L, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
+        Player player2 = new Player(1L, "John", "Michael", "Doe", "University", LocalDate.parse("2024-10-28"), 456L, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
 
         assertNotEquals(player1, player2);
     }

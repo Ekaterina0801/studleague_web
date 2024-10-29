@@ -48,7 +48,7 @@ public class SiteService {
     private final TeamCompositionService teamCompositionService;
 
 
-    public List<TeamDetailsDTO> addTeams(long tournamentId, long leagueId) {
+    public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
         HttpHeaders headers = createHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -71,7 +71,7 @@ public class SiteService {
         return headers;
     }
 
-    private List<TeamDetailsDTO> fetchTeamsFromApi(long tournamentId, HttpEntity<Void> entity) {
+    private List<TeamDetailsDTO> fetchTeamsFromApi(Long tournamentId, HttpEntity<Void> entity) {
         ResponseEntity<List<TeamDetailsDTO>> responseEntityTeams = restTemplate.exchange(
                 URL + "tournaments/" + tournamentId + "/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=0&includeRatingB=0&town=277",
                 HttpMethod.GET,
@@ -82,7 +82,7 @@ public class SiteService {
         return responseEntityTeams.getBody();
     }
 
-    private Tournament fetchOrCreateTournament(long tournamentId, long leagueId, HttpEntity<Void> entity) {
+    private Tournament fetchOrCreateTournament(Long tournamentId, Long leagueId, HttpEntity<Void> entity) {
         Tournament tournament;
         if (!tournamentService.existsByIdSite(tournamentId)) {
             TournamentDTO tournamentDto = fetchTournamentFromApi(tournamentId, entity);
@@ -102,7 +102,7 @@ public class SiteService {
         return tournament;
     }
 
-    private TournamentDTO fetchTournamentFromApi(long tournamentId, HttpEntity<Void> entity) {
+    private TournamentDTO fetchTournamentFromApi(Long tournamentId, HttpEntity<Void> entity) {
         ResponseEntity<TournamentDTO> responseEntityTournament = restTemplate.exchange(
                 URL + "tournaments/" + tournamentId,
                 HttpMethod.GET,
@@ -113,7 +113,7 @@ public class SiteService {
         return responseEntityTournament.getBody();
     }
 
-    private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, long leagueId) {
+    private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, Long leagueId) {
         teamDetails.getTeam().setLeagueId(leagueId);
         teamDetails.getTeam().setIdSite(teamDetails.getTeam().getId());
 
@@ -123,7 +123,7 @@ public class SiteService {
 
 
         if (teamDetails.getMask() != null) {
-            FullResult fullResult = new FullResult(0, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
+            FullResult fullResult = new FullResult(0L, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
             fullResult.setTeam(teamEntity);
             resultService.saveFullResult(fullResult);
         }
@@ -134,9 +134,9 @@ public class SiteService {
     private Team mapAndSaveTeam(TeamDetailsDTO teamDetails) {
         TeamDTO teamDto = teamDetails.getTeam();
         Team teamEntity;
-        long idSite = teamDto.getId();
+        Long idSite = teamDto.getId();
         if (!teamService.existsByIdSite(idSite)) {
-            teamDto.setId(0);
+            teamDto.setId(0L);
             teamEntity = teamMapper.toEntity(teamDto);
             teamService.saveTeam(teamEntity);
         } else {
@@ -171,7 +171,7 @@ public class SiteService {
     private Player findOrCreatePlayer(PlayerDTO playerDto) {
         if (!playerService.existsByIdSite(playerDto.getId())) {
             PlayerDTO newPlayer = new PlayerDTO(
-                    0,
+                    0L,
                     playerDto.getName(),
                     playerDto.getPatronymic(),
                     playerDto.getSurname(),

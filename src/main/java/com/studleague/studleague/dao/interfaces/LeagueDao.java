@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LeagueDao {
-    Optional<League> findById(long id);
+    Optional<League> findById(Long id);
 
     List<League> findAll();
 
     void save(League league);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 
     void deleteAll();
 

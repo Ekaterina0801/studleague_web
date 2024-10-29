@@ -26,7 +26,7 @@ public class FullResult {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="team_id")
@@ -64,7 +64,7 @@ public class FullResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FullResult that = (FullResult) o;
-        return id == that.id && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results);
+        return Objects.equals(id, that.id) && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results);
     }
 
     @Override

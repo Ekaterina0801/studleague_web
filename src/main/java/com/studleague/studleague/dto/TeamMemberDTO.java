@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TeamMemberDTO {
-    private int id;
+    private Long id;
     private String flag;
     private Integer usedRating;
     private Integer rating;

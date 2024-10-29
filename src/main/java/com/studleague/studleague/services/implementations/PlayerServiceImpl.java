@@ -1,10 +1,6 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.interfaces.LeagueDao;
-import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.repository.LeagueRepository;
 import com.studleague.studleague.repository.PlayerRepository;
 import com.studleague.studleague.repository.TeamRepository;
@@ -20,21 +16,18 @@ import java.util.List;
 public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
-    //private PlayerDao playerRepository;
     private PlayerRepository playerRepository;
 
     @Autowired
-    //private TeamDao teamRepository;
     private TeamRepository teamRepository;
 
     @Autowired
-    //private LeagueDao leagueRepository;
     private LeagueRepository leagueRepository;
 
 
     @Override
     @Transactional
-    public Player getPlayerById(long id) {
+    public Player getPlayerById(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(id), "Player", id);
     }
 
@@ -47,18 +40,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public void savePlayer(Player player) {
-        /*playerRepository.save(player);
-        if (player.getTeams() != null) {
-            for (Team team : player.getTeams()) {
-                if (team.getIdSite()!=0) {
-                    if (!teamRepository.existsByIdSite(team.getIdSite())) {
-                        team.addPlayerToTeam(player);
-                        teamRepository.save(team);
-                    }
-                }
-            }
-        }*/
-        long idSite = player.getIdSite();
+        Long idSite = player.getIdSite();
         if (idSite!=0)
         {
             if (playerRepository.existsByIdSite(idSite))
@@ -76,21 +58,21 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public void deletePlayer(long id) {
+    public void deletePlayer(Long id) {
         playerRepository.deleteById(id);
     }
 
 
     @Override
     @Transactional
-    public Player getPlayerByIdSite(long idSite) {
+    public Player getPlayerByIdSite(Long idSite) {
         return EntityRetrievalUtils.getEntityOrThrow(playerRepository.findByIdSite(idSite), "Player", idSite);
     }
 
 
     @Override
     @Transactional
-    public boolean existsByIdSite(long idSite) {
+    public boolean existsByIdSite(Long idSite) {
         return playerRepository.existsByIdSite(idSite);
     }
 

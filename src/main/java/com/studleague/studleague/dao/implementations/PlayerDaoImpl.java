@@ -28,7 +28,7 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public Optional<Player> findById(long id) {
+    public Optional<Player> findById(Long id) {
         Player player = getCurrentSession().get(Player.class, id);
         return Optional.ofNullable(player);
     }
@@ -50,7 +50,7 @@ public class PlayerDaoImpl implements PlayerDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Player WHERE id = :id", Player.class);
         query.setParameter("id", id);
         query.executeUpdate();
@@ -58,7 +58,7 @@ public class PlayerDaoImpl implements PlayerDao {
 
 
     @Override
-    public Optional<Player> findByIdSite(long idSite) {
+    public Optional<Player> findByIdSite(Long idSite) {
         Query<Player> query = getCurrentSession().createQuery("from Player p where p.idSite = :idSite", Player.class);
         query.setParameter("idSite", idSite);
 
@@ -74,7 +74,7 @@ public class PlayerDaoImpl implements PlayerDao {
 
     @Transactional
     @Override
-    public boolean existsByIdSite(long idSite) {
+    public boolean existsByIdSite(Long idSite) {
         Query<Long> query = getCurrentSession().createQuery("SELECT count(p.id) FROM Player p WHERE p.idSite = :idSite", Long.class);
         query.setParameter("idSite", idSite);
         Long count = query.getSingleResult();

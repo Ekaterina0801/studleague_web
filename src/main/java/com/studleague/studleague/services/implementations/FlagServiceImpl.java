@@ -14,7 +14,6 @@ import java.util.List;
 public class FlagServiceImpl implements FlagService {
 
     @Autowired
-    //private FlagDao flagRepository;
     private FlagRepository flagRepository;
 
 
@@ -39,13 +38,13 @@ public class FlagServiceImpl implements FlagService {
 
     @Override
     @Transactional
-    public Flag getFlagById(long id) {
+    public Flag getFlagById(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(id), "Flag", id);
     }
 
     @Override
     @Transactional
-    public void deleteFlag(long id) {
+    public void deleteFlag(Long id) {
         flagRepository.deleteById(id);
     }
 

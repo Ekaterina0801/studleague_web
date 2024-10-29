@@ -26,7 +26,7 @@ public class ResultDaoImpl implements ResultDao {
     }
 
     @Override
-    public Optional<FullResult> findById(long id) {
+    public Optional<FullResult> findById(Long id) {
         FullResult fullResult = getCurrentSession().get(FullResult.class, id);
         return Optional.ofNullable(fullResult);
     }
@@ -49,14 +49,14 @@ public class ResultDaoImpl implements ResultDao {
 
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM FullResult WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<FullResult> findAllByTeamId(long teamId) {
+    public List<FullResult> findAllByTeamId(Long teamId) {
         Session session = getCurrentSession();
         Query<FullResult> query = session.createQuery("from FullResult where team.id=:team_id", FullResult.class);
         query.setParameter("team_id", teamId);

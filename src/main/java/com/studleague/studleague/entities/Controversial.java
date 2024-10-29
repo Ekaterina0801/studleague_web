@@ -22,7 +22,7 @@ public class Controversial {
 
     @Id
     @Column(name="id")
-    private long id;
+    private Long id;
 
     @Column(name="question_number")
     private int questionNumber;
@@ -55,7 +55,7 @@ public class Controversial {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Controversial that = (Controversial) o;
-        return id == that.id && questionNumber == that.questionNumber && Objects.equals(answer, that.answer) && Objects.equals(issuedAt, that.issuedAt) && Objects.equals(status, that.status) && Objects.equals(comment, that.comment) && Objects.equals(resolvedAt, that.resolvedAt) && Objects.equals(appealJuryComment, that.appealJuryComment);
+        return Objects.equals(id, that.id) && questionNumber == that.questionNumber && Objects.equals(answer, that.answer) && Objects.equals(issuedAt, that.issuedAt) && Objects.equals(status, that.status) && Objects.equals(comment, that.comment) && Objects.equals(resolvedAt, that.resolvedAt) && Objects.equals(appealJuryComment, that.appealJuryComment);
     }
 
     @Override

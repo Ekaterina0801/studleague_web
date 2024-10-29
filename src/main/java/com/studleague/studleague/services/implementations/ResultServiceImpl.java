@@ -25,19 +25,15 @@ import java.util.List;
 public class ResultServiceImpl implements ResultService {
 
     @Autowired
-    //private ResultDao resultRepository;
     private ResultRepository resultRepository;
 
     @Autowired
-    //private ControversialDao controversialRepository;
     private ControversialRepository controversialRepository;
 
     @Autowired
-    //private TeamDao teamRepository;
     private TeamRepository teamRepository;
 
     @Autowired
-    //private TournamentDao tournamentRepository;
     private TournamentRepository tournamentRepository;
 
     @Autowired
@@ -49,7 +45,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public FullResult getFullResultById(long id) {
+    public FullResult getFullResultById(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(id), "FullResult", id);
     }
 
@@ -66,8 +62,8 @@ public class ResultServiceImpl implements ResultService {
         for (Controversial controversial : controversials) {
             controversial.setFullResult(fullResult);
         }
-        long teamId = fullResult.getTeam().getId();
-        long tournamentId = fullResult.getTournament().getId();
+        Long teamId = fullResult.getTeam().getId();
+        Long tournamentId = fullResult.getTournament().getId();
         if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId))
         {
             resultRepository.save(EntityRetrievalUtils.getEntityByTwoIdOrThrow(resultRepository.findByTeamIdAndTournamentId(teamId, tournamentId), "FullResult",teamId, tournamentId));
@@ -79,13 +75,13 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public void deleteFullResult(long id) {
+    public void deleteFullResult(Long id) {
         resultRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public FullResult addControversialToResult(long resultId, long controversialId) {
+    public FullResult addControversialToResult(Long resultId, Long controversialId) {
         Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
         FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         fullResult.addControversialToFullResult(controversial);
@@ -95,7 +91,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public void deleteControversialFromResult(long resultId, long controversialId) {
+    public void deleteControversialFromResult(Long resultId, Long controversialId) {
         Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
         FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
         fullResult.deleteControversialFromFullResult(controversial);
@@ -104,7 +100,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public List<FullResult> getResultsForTeam(long teamId) {
+    public List<FullResult> getResultsForTeam(Long teamId) {
         return resultRepository.findAllByTeamId(teamId);
     }
 
@@ -140,7 +136,6 @@ public class ResultServiceImpl implements ResultService {
         int totalScore = 0;
         int countQuestions = 0;
         List<Player> players = playerRepository.findAllByTeamIdAndTournamentId(fullResult.getTeam().getId(), fullResult.getTournament().getId());
-        //HashMap<Team,List<Player>> teamsPlayers = tournamentService.getTeamsPlayersByTournamentId(fullResult.getTournament().getId());
         if (maskResults!=null)
         {
         for (int i = 0; i < maskResults.length(); i++) {

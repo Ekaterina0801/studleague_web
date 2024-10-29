@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResultDao {
-    Optional<FullResult> findById(long id);
+    Optional<FullResult> findById(Long id);
 
     List<FullResult> findAll();
 
     void save(FullResult fullResult);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 
-    List<FullResult> findAllByTeamId(long teamId);
+    List<FullResult> findAllByTeamId(Long teamId);
 
     void deleteAll();
 }

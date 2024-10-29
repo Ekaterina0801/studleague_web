@@ -3,6 +3,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,9 +16,9 @@ class TournamentTest {
     void setUp() {
         tournament = new Tournament();
         tournament.setName("Test Tournament");
-        tournament.setIdSite(1234);
-        tournament.setDateOfStart(LocalDate.parse("1990-01-01"));
-        tournament.setDateOfEnd(LocalDate.parse("1990-01-01"));
+        tournament.setIdSite(1234L);
+        tournament.setDateOfStart(LocalDateTime.parse("2024-10-28T17:28:53"));
+        tournament.setDateOfEnd(LocalDateTime.parse("2024-10-28T17:28:53"));
     }
 
     @Test
@@ -80,7 +81,7 @@ class TournamentTest {
     void testEqualsAndHashCode() {
         Tournament anotherTournament = new Tournament();
         anotherTournament.setName("Test Tournament");
-        anotherTournament.setIdSite(1234);
+        anotherTournament.setIdSite(1234L);
         anotherTournament.setDateOfStart(tournament.getDateOfStart());
         anotherTournament.setDateOfEnd(tournament.getDateOfEnd());
 

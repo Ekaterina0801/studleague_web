@@ -41,8 +41,8 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public void saveTransfer(Transfer transfer) {
-        long oldTeamId = transfer.getOldTeam().getId();
-        long newTeamId = transfer.getNewTeam().getId();
+        Long oldTeamId = transfer.getOldTeam().getId();
+        Long newTeamId = transfer.getNewTeam().getId();
         Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(oldTeamId), "Team", oldTeamId);
         Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(newTeamId), "Team", newTeamId);
         Player player = transfer.getPlayer();
@@ -57,25 +57,25 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     @Transactional
-    public Transfer getTransfer(long id) {
+    public Transfer getTransfer(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(transferRepository.findById(id), "Transfer", id);
     }
 
     @Override
     @Transactional
-    public void deleteTransfer(long id) {
+    public void deleteTransfer(Long id) {
         transferRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public List<Transfer> getTransfersForPlayer(long playerId) {
+    public List<Transfer> getTransfersForPlayer(Long playerId) {
         return transferRepository.findAllByPlayerId(playerId);
     }
 
     @Override
     @Transactional
-    public List<Transfer> getTransfersForTeam(long teamId) {
+    public List<Transfer> getTransfersForTeam(Long teamId) {
         return transferRepository.findAllByTeamId(teamId);
     }
 

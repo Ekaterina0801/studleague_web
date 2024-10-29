@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 @Builder
 public class LeagueDTO {
-    private long id;
+    private Long id;
     private String name;
     private List<Long> tournamentIds;
     private List<Long> teamIds;

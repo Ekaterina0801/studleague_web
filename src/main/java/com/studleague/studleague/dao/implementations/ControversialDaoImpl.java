@@ -23,7 +23,7 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public Optional<Controversial> findById(long id) {
+    public Optional<Controversial> findById(Long id) {
         Controversial controversial = getCurrentSession().get(Controversial.class, id);
         return Optional.ofNullable(controversial);
     }
@@ -45,14 +45,14 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Controversial WHERE id = :id", Controversial.class);
         query.setParameter("id", id);
         query.executeUpdate();
     }
 
     @Override
-    public List<Controversial> findAllByTeamId(long teamId) {
+    public List<Controversial> findAllByTeamId(Long teamId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial WHERE team_id = :teamId", Controversial.class);
         query.setParameter("teamId", teamId);
@@ -60,7 +60,7 @@ public class ControversialDaoImpl implements ControversialDao {
     }
 
     @Override
-    public List<Controversial> findAllByTournamentId(long tournamentId) {
+    public List<Controversial> findAllByTournamentId(Long tournamentId) {
         Query<Controversial> query = getCurrentSession()
                 .createQuery("FROM Controversial c WHERE c.fullResult.tournament.id = :tournamentId", Controversial.class);
         query.setParameter("tournamentId", tournamentId);

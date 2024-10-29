@@ -24,7 +24,7 @@ public class Transfer {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate transferDate;

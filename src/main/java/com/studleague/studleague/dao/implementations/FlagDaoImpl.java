@@ -25,7 +25,7 @@ public class FlagDaoImpl implements FlagDao {
     }
 
     @Override
-    public Optional<Flag> findById(long id) {
+    public Optional<Flag> findById(Long id) {
         Flag flag = getCurrentSession().get(Flag.class, id);
         return Optional.ofNullable(flag);
     }
@@ -47,7 +47,7 @@ public class FlagDaoImpl implements FlagDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         Query<?> query = getCurrentSession().createQuery("DELETE FROM Flag WHERE id = :id");
         query.setParameter("id", id);
         query.executeUpdate();

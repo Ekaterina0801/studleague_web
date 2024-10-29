@@ -11,9 +11,9 @@ public interface FlagService {
 
     void saveFlag(Flag flag);
 
-    Flag getFlagById(long id);
+    Flag getFlagById(Long id);
 
-    void deleteFlag(long id);
+    void deleteFlag(Long id);
 
     void deleteAllFlags();
 

@@ -13,10 +13,10 @@ import java.util.List;
 @Builder
 @ToString
 public class TeamDetailsDTO {
-    private long id;
+    private Long id;
     private TeamDTO team;
-    private long leagueId;
-    private long idSite;
+    private Long leagueId;
+    private Long idSite;
     private String mask;
     private Integer questionsTotal;
     private String position;

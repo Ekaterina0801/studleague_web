@@ -18,17 +18,15 @@ import java.util.List;
 public class LeagueServiceImpl implements LeagueService {
 
     @Autowired
-    //private LeagueDao leagueRepository;
     private LeagueRepository leagueRepository;
 
     @Autowired
-    //private TournamentDao tournamentRepository;
     private TournamentRepository tournamentRepository;
 
 
     @Override
     @Transactional
-    public League getLeagueById(long id) {
+    public League getLeagueById(Long id) {
         return EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(id), "League", id);
     }
 
@@ -54,13 +52,13 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
-    public void deleteLeague(long id) {
+    public void deleteLeague(Long id) {
         leagueRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public League addTournamentToLeague(long leagueId, long tournamentId) {
+    public League addTournamentToLeague(Long leagueId, Long tournamentId) {
         League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
         league.addTournamentToLeague(tournament);
@@ -71,7 +69,7 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
-    public League deleteTournamentToLeague(long leagueId, long tournamentId) {
+    public League deleteTournamentToLeague(Long leagueId, Long tournamentId) {
         League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
         Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(leagueId), "Tournament", tournamentId);
         league.deleteTournamentFromLeague(tournament);
