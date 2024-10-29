@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layout}">
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div layout:fragment="content">
+    <div sec:authorize="isAuthenticated()">
     <button id="openModal">Добавить новый или существующий турнир к лиге</button>
     <div id="myModal" class="modal">
         <div class="modal-content">
@@ -50,6 +51,7 @@
                 <button type="submit">Добавить турнир</button>
             </form>
         </div>
+    </div>
     </div>
     <div th:if="${tournaments.size() > 0}">
         <table class="table">

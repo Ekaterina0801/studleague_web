@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layout}">
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
         <div layout:fragment="content">
         <h1 th:text="${team.teamName}"></h1>
         <h2>Флаги</h2>
+            <div sec:authorize="isAuthenticated()">
             <h3>Добавление флага к команде</h3>
             <form id="flagTeamForm" method="post">
                 <div>
@@ -18,6 +19,7 @@
                 </div>
                 <button type="submit">Добавить флаг к команде</button>
             </form>
+                </div>
             <div th:if="${team.flags.size() > 0}">
         <th:block th:each="flag : ${team.flags}">
         <h3 th:text="${flag.name}"></h3>

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layout}">
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
         <div layout:fragment="content">
+            <h2>Команды</h2>
+            <div sec:authorize="isAuthenticated()">
             <button id="openModal">Добавить новую команду</button>
             <div id="myModal" class="modal">
                 <div class="modal-content">
@@ -40,6 +42,7 @@
                         <button type="submit">Добавить команду</button>
                     </form>
                 </div>
+            </div>
             </div>
             <div th:if="${teams.size() > 0}">
         <table class="table">
