@@ -1,7 +1,5 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
-import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.repository.PlayerRepository;
@@ -11,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TransferMapper {
+public class TransferFactory {
 
     @Autowired
     PlayerRepository playerDao;

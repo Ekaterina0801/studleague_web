@@ -2,7 +2,10 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -26,7 +29,13 @@ public class League {
     private Long id;
 
     @Column(name="name")
+    @NotBlank
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @NotNull
+    private User createdBy;
 
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
@@ -63,7 +72,7 @@ public class League {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         League league = (League) o;
-        return id == league.id && Objects.equals(name, league.name);
+        return Objects.equals(id, league.id) && Objects.equals(name, league.name);
     }
 
     @Override

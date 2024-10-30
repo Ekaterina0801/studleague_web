@@ -2,7 +2,7 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dao.interfaces.*;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappings.TournamentMapper;
+import com.studleague.studleague.factory.TournamentFactory;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class TournamentServiceImpl implements TournamentService {
     private TeamDao teamRepository;
 
     @Autowired
-    private TournamentMapper tournamentMapper;
+    private TournamentFactory tournamentFactory;
 
     @Autowired
     private LeagueDao leagueRepository;

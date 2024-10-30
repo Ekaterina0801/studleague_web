@@ -1,24 +1,5 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.PlayerDTO;
-import com.studleague.studleague.dto.TeamDTO;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.mappings.PlayerMapper;
-import com.studleague.studleague.mappings.TeamMapper;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ExcelTeamsParser {
 
     /*public List<TeamDTO> teams = new ArrayList<>();

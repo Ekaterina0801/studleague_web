@@ -1,7 +1,6 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
 
-import com.studleague.studleague.dao.interfaces.TeamDao;
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class PlayerMapper {
+public class PlayerFactory {
 
     @Autowired
     TeamRepository teamDao;
@@ -24,7 +23,7 @@ public class PlayerMapper {
     @Autowired
     TeamCompositionRepository teamCompositionRepository;
 
-    public PlayerMapper() {
+    public PlayerFactory() {
     }
 
     public Player toEntity(PlayerDTO playerDTO) {

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -29,18 +32,21 @@ public class Player {
     private Long id;
 
     @Column(name = "name")
+    @NotBlank
     private String name;
 
     @Column(name = "patronymic")
     private String patronymic;
 
     @Column(name = "surname")
+    @NotBlank
     private String surname;
 
     @Column(name = "university")
     private String university;
 
     @Column(name = "date_of_birth")
+    @Past
     private LocalDate dateOfBirth;
 
     @Column(name = "id_site")

@@ -3,6 +3,7 @@ package com.studleague.studleague.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -25,9 +26,11 @@ public class TeamComposition {
     private Long id;
 
     @ManyToOne()
+    @NotNull
     private Team parentTeam;
 
     @ManyToOne
+    @NotNull
     private Tournament tournament;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})

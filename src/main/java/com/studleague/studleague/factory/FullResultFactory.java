@@ -1,8 +1,5 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
-import com.studleague.studleague.dao.interfaces.ResultDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
-import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.Team;
@@ -15,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FullResultMapper {
+public class FullResultFactory {
 
     @Autowired
     ResultRepository resultDao;
@@ -27,9 +24,9 @@ public class FullResultMapper {
     TournamentRepository tournamentDao;
 
     @Autowired
-    ControversialMapper controversialMapper;
+    ControversialFactory controversialFactory;
 
-    FullResultMapper() {
+    FullResultFactory() {
     }
 
     public FullResult toEntity(FullResultDTO fullResultDTO) {
@@ -42,7 +39,7 @@ public class FullResultMapper {
                 .team(team)
                 .tournament(tournament)
                 .mask_results(fullResultDTO.getMask_results())
-                .controversials(controversialMapper.convertDTOListToEntityList(fullResultDTO.getControversials()))
+                .controversials(controversialFactory.convertDTOListToEntityList(fullResultDTO.getControversials()))
                 .build();
     }
 
@@ -52,7 +49,7 @@ public class FullResultMapper {
                 .mask_results(fullResult.getMask_results())
                 .team_id(fullResult.getTeam().getId())
                 .tournament_id(fullResult.getTournament().getId())
-                .controversials(controversialMapper.convertEntityListToDTOList(fullResult.getControversials()))
+                .controversials(controversialFactory.convertEntityListToDTOList(fullResult.getControversials()))
                 .build();
     }
 

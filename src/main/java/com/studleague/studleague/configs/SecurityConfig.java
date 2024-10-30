@@ -2,6 +2,7 @@ package com.studleague.studleague.configs;
 
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.UserRepository;
+import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepo) {
         return username -> {
-            User user = userRepo.findByUsername(username);
+            User user = EntityRetrievalUtils.getEntityByNameOrThrow(userRepo.findByUsername(username), "User", username);
             if (user != null) return user;
             throw new UsernameNotFoundException("User ‘" + username + "’ not found");
         };
@@ -30,11 +31,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/register").anonymous()
+                        .requestMatchers("/login", "/register").permitAll()
                         .requestMatchers("/logout").authenticated()
-                        .requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST).hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .formLogin(formLogin ->
                         formLogin

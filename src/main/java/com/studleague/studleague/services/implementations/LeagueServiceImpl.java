@@ -4,11 +4,14 @@ import com.studleague.studleague.dao.interfaces.LeagueDao;
 import com.studleague.studleague.dao.interfaces.TournamentDao;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.LeagueRepository;
 import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,4 +86,12 @@ public class LeagueServiceImpl implements LeagueService {
     {
         leagueRepository.deleteAll();
     }
+
+    @Override
+    @Transactional
+    public List<League> getLeaguesForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+        return leagueRepository.findAllByCreatedById(currentUser.getId());
+            }
 }

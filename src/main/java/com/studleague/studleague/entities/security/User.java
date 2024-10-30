@@ -1,16 +1,15 @@
 package com.studleague.studleague.entities.security;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -23,18 +22,42 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
-    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+
+    @Column(name="username", unique = true)
+    @Size(min = 3, message = "Не меньше 3 знаков")
     private String username;
+
+
+    @Column(name="password")
+    @Size(min = 8, message = "Не меньше 8 знаков")
     private String password;
+
+    @Column(name="fullname")
+    @NotBlank
     private String fullname;
+
+    @Column(name="email", unique = true)
+    @Email
     private String email;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    @ToString.Exclude
+    private List<Role> roles;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_EDITOR"));
     }
     @Override
     public boolean isAccountNonExpired() {

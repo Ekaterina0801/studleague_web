@@ -3,7 +3,11 @@ package com.studleague.studleague.entities;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 
 import java.time.LocalDate;
@@ -25,12 +29,15 @@ public class Controversial {
     private Long id;
 
     @Column(name="question_number")
+    @Positive
     private int questionNumber;
 
     @Column(name="answer")
+    @NotBlank
     private String answer;
 
     @Column(name="issued_at")
+    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDateTime issuedAt;
 

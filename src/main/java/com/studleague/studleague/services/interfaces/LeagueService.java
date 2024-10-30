@@ -1,6 +1,5 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.LeagueDTO;
 import com.studleague.studleague.entities.League;
 
 import java.util.List;
@@ -19,4 +18,6 @@ public interface LeagueService {
     League deleteTournamentToLeague(Long leagueId, Long tournamentId);
 
     void deleteAllLeagues();
+
+    List<League> getLeaguesForCurrentUser();
 }

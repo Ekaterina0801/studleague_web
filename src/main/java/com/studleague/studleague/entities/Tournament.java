@@ -3,7 +3,10 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +31,7 @@ public class Tournament {
     private Long id;
 
     @Column(name = "name")
+    @NotBlank
     private String name;
 
     @Column(name = "idSite")
@@ -38,12 +42,14 @@ public class Tournament {
     @JsonProperty("dateOfStart")
     //@Temporal(TemporalType.DATE)
     //@JsonFormat(pattern = "yyyy-MM-dd")
+    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfStart;
 
     @Column(name = "dateOfFinal")
     @JsonProperty("dateOfEnd")
     //@Temporal(TemporalType.DATE)
     //@JsonFormat(pattern = "yyyy-MM-dd")
+    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfEnd;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH}

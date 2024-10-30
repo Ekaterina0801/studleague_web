@@ -1,4 +1,4 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.TeamCompositionDTO;
 import com.studleague.studleague.entities.Team;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Component
 @NoArgsConstructor
-public class TeamCompositionMapper {
+public class TeamCompositionFactory {
 
     @Autowired
     private TeamRepository teamRepository;

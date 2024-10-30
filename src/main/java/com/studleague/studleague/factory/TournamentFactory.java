@@ -1,4 +1,4 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.League;
@@ -17,7 +17,7 @@ import java.util.List;
 
 
 @Component
-public class TournamentMapper {
+public class TournamentFactory {
 
     @Autowired
     private LeagueRepository leagueDao;

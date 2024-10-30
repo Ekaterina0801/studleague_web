@@ -1,13 +1,8 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
-import com.studleague.studleague.dao.interfaces.FlagDao;
-import com.studleague.studleague.dao.interfaces.LeagueDao;
 import com.studleague.studleague.dto.FlagDTO;
-import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.Flag;
-import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.repository.FlagRepository;
 import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class FlagMapper {
+public class FlagFactory {
 
     @Autowired
     private TeamRepository teamRepository;
 
-    public FlagMapper() {
+    public FlagFactory() {
     }
 
     public Flag toEntity(FlagDTO flagDTO) {

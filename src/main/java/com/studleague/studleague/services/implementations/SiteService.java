@@ -3,9 +3,9 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappings.PlayerMapper;
-import com.studleague.studleague.mappings.TeamMapper;
-import com.studleague.studleague.mappings.TournamentMapper;
+import com.studleague.studleague.factory.PlayerFactory;
+import com.studleague.studleague.factory.TeamFactory;
+import com.studleague.studleague.factory.TournamentFactory;
 import com.studleague.studleague.services.interfaces.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,13 +29,13 @@ public class SiteService {
     private RestTemplate restTemplate = new RestTemplate();
     private String authToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MjgwNzAyMjYsImV4cCI6MTcyODA3MzgyNiwicm9sZXMiOltdLCJ1c2VybmFtZSI6ImRzLmthdHJpbkBtYWlsLnJ1In0.J9sp_b_nlSCQLaHkaN79MFrhMM8HSGTDj_fqhm0-DUNEWA9CakwJinqqCmYJnY0GNKLocd6-sxaKUVz_zpzVcZKAKBDR3purJVdXQ8bVuPTWktOOremEMrJqJGxHGPU6ZyYddsT2oxEbeDyPomiPMZg_GQiR4bdTXmYCxw0c0cYkiS3hHnHsELwlrkJzNU6DL4nZlm4yto8jir9mb51BYIk8rS9jQXgG-8reB8sYf4i_K6GE5STpve3hFfr4C64S9aIu_uQSxcnD8BxLkmLVFHarf0v5BKkjcmgYMNh2ymR-1KHMDyqkoZ58DaXPQEsV1wE6YZZR9PTn94MtqNZpog";
 
-    private final TeamMapper teamMapper;
+    private final TeamFactory teamFactory;
 
-    private final TournamentMapper tournamentMapper;
+    private final TournamentFactory tournamentFactory;
 
     private final TournamentService tournamentService;
 
-    private final PlayerMapper playerMapper;
+    private final PlayerFactory playerFactory;
 
     private final TeamService teamService;
 
@@ -89,7 +89,7 @@ public class SiteService {
             tournamentDto.setIdSite(tournamentDto.getId());
             tournamentDto.setLeagueIds(Collections.singletonList(leagueId));
 
-            tournament = tournamentMapper.toEntity(tournamentDto);
+            tournament = tournamentFactory.toEntity(tournamentDto);
             tournamentService.saveTournament(tournament);
             League league = leagueService.getLeagueById(leagueId);
             league.addTournamentToLeague(tournament);
@@ -137,7 +137,7 @@ public class SiteService {
         Long idSite = teamDto.getId();
         if (!teamService.existsByIdSite(idSite)) {
             teamDto.setId(0L);
-            teamEntity = teamMapper.toEntity(teamDto);
+            teamEntity = teamFactory.toEntity(teamDto);
             teamService.saveTeam(teamEntity);
         } else {
             teamEntity = teamService.getTeamByIdSite(idSite);
@@ -178,7 +178,7 @@ public class SiteService {
                     null, null, playerDto.getId(),
                     Collections.emptyList(), new ArrayList<>()
             );
-            Player playerEntity = playerMapper.toEntity(newPlayer);
+            Player playerEntity = playerFactory.toEntity(newPlayer);
             playerEntity.setIdSite(playerDto.getId());
             playerService.savePlayer(playerEntity);
             return playerEntity;

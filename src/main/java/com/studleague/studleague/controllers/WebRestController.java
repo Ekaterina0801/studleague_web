@@ -1,13 +1,14 @@
 package com.studleague.studleague.controllers;
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappings.*;
+import com.studleague.studleague.factory.*;
 import com.studleague.studleague.services.interfaces.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,31 +38,31 @@ public class WebRestController {
     public TransferService transferService;
 
     @Autowired
-    public TransferMapper transferMapper;
+    public TransferFactory transferFactory;
 
     @Autowired
-    public TeamMapper teamMapper;
+    public TeamFactory teamFactory;
 
     @Autowired
-    public FullResultMapper fullResultMapper;
+    public FullResultFactory fullResultFactory;
 
     @Autowired
-    public ControversialMapper controversialMapper;
+    public ControversialFactory controversialFactory;
 
     @Autowired
-    public TournamentMapper tournamentMapper;
+    public TournamentFactory tournamentFactory;
 
     @Autowired
     public ControversialService controversialService;
 
     @Autowired
-    public PlayerMapper playerMapper;
+    public PlayerFactory playerFactory;
 
     @Autowired
-    private FlagMapper flagMapper;
+    private FlagFactory flagFactory;
 
     @Autowired
-    private LeagueMapper leagueMapper;
+    private LeagueFactory leagueFactory;
 
     /* -------------------------------------------
                       Controversials
@@ -78,7 +79,7 @@ public class WebRestController {
     )
     @GetMapping("/controversials")
     public ResponseEntity<List<ControversialDTO>> getControversials() {
-        return ResponseEntity.ok(controversialService.getAllControversials().stream().map(x -> controversialMapper.toDto(x)).toList());
+        return ResponseEntity.ok(controversialService.getAllControversials().stream().map(x -> controversialFactory.toDto(x)).toList());
     }
 
     /**
@@ -91,9 +92,10 @@ public class WebRestController {
             summary = "Создать новый спорный",
             description = "Использовать для создания нового спорного"
     )
+    @PreAuthorize("hasRole('EDITOR') and @leagueService.isLeagueOwner(#leagueId, authentication)")
     @PostMapping("/controversials")
     public ResponseEntity<ControversialDTO> addNewControversial(@RequestBody ControversialDTO controversialDto) {
-        Controversial controversial = controversialMapper.toEntity(controversialDto);
+        Controversial controversial = controversialFactory.toEntity(controversialDto);
         controversialService.saveControversial(controversial);
         return ResponseEntity.status(HttpStatus.CREATED).body(controversialDto);
     }
@@ -111,7 +113,7 @@ public class WebRestController {
     @GetMapping("/controversials/{id}")
     public ResponseEntity<ControversialDTO> controversialById(@PathVariable long id) {
         Controversial controversial = controversialService.getControversialById(id);
-        ControversialDTO controversialDTO = controversialMapper.toDto(controversial);
+        ControversialDTO controversialDTO = controversialFactory.toDto(controversial);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(controversialDTO);
     }
 
@@ -161,7 +163,7 @@ public class WebRestController {
     )
     @GetMapping("/flags")
     public ResponseEntity<List<FlagDTO>> getFlags() {
-        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagFactory.toDTO(x)).toList());
     }
 
     /**
@@ -176,7 +178,7 @@ public class WebRestController {
     )
     @GetMapping("/flags/{id}")
     public ResponseEntity<FlagDTO> getFlag(@PathVariable long id) {
-        return ResponseEntity.ok(flagMapper.toDTO(flagService.getFlagById(id)));
+        return ResponseEntity.ok(flagFactory.toDTO(flagService.getFlagById(id)));
     }
 
     /**
@@ -207,7 +209,7 @@ public class WebRestController {
     )
     @PostMapping("/flags")
     public ResponseEntity<FlagDTO> addNewFlag(@RequestBody FlagDTO flagDto) {
-        flagService.saveFlag(flagMapper.toEntity(flagDto));
+        flagService.saveFlag(flagFactory.toEntity(flagDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(flagDto);
     }
 
@@ -238,7 +240,7 @@ public class WebRestController {
     )
     @GetMapping("/flags/{id}/teams")
     public ResponseEntity<List<TeamDTO>> getTeamsByFlagId(@PathVariable long id) {
-        return ResponseEntity.ok(teamService.getTeamsByFlagId(id).stream().map(x->teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByFlagId(id).stream().map(x-> teamFactory.toDTO(x)).toList());
     }
 
     /* -------------------------------------------
@@ -256,7 +258,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues")
     public ResponseEntity<List<LeagueDTO>> getLeagues() {
-        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueFactory.toDTO(x)).toList());
     }
 
     /**
@@ -271,7 +273,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{id}")
     public ResponseEntity<LeagueDTO> getLeague(@PathVariable long id) {
-        return ResponseEntity.ok(leagueMapper.toDTO(leagueService.getLeagueById(id)));
+        return ResponseEntity.ok(leagueFactory.toDTO(leagueService.getLeagueById(id)));
     }
 
     /**
@@ -286,7 +288,7 @@ public class WebRestController {
     )
     @PostMapping("/leagues")
     public ResponseEntity<LeagueDTO> addNewLeague(@RequestBody LeagueDTO leagueDto) {
-        leagueService.saveLeague(leagueMapper.toEntity(leagueDto));
+        leagueService.saveLeague(leagueFactory.toEntity(leagueDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(leagueDto);
     }
 
@@ -320,7 +322,7 @@ public class WebRestController {
     @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.addTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueMapper.toDTO(updatedLeague));
+        return ResponseEntity.ok(leagueFactory.toDTO(updatedLeague));
     }
 
     /**
@@ -337,7 +339,7 @@ public class WebRestController {
     @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.deleteTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueMapper.toDTO(updatedLeague));
+        return ResponseEntity.ok(leagueFactory.toDTO(updatedLeague));
     }
 
     /**
@@ -353,7 +355,7 @@ public class WebRestController {
     @GetMapping("/leagues/{leagueId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromLeague(@PathVariable long leagueId) {
         League league = leagueService.getLeagueById(leagueId);
-        return ResponseEntity.ok(league.getTournaments().stream().map(x -> tournamentMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(league.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
     }
 
     /**
@@ -369,7 +371,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{leagueId}/players/{playerId}/team")
     public ResponseEntity<List<TeamDTO>> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId) {
-        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x->teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x-> teamFactory.toDTO(x)).toList());
     }
 
     /**
@@ -384,7 +386,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{leagueId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromLeague(@PathVariable long leagueId) {
-        return ResponseEntity.ok(teamService.teamsByLeague(leagueId).stream().map(x -> teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.teamsByLeague(leagueId).stream().map(x -> teamFactory.toDTO(x)).toList());
     }
 
     /**
@@ -418,7 +420,7 @@ public class WebRestController {
     )
     @GetMapping("/players")
     public ResponseEntity<List<PlayerDTO>> getPlayers() {
-        return ResponseEntity.ok(playerService.getAllPlayers().stream().map(x -> playerMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(playerService.getAllPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
     }
 
     /**
@@ -433,7 +435,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{id}")
     public ResponseEntity<PlayerDTO> getPlayer(@PathVariable long id) {
-        return ResponseEntity.ok(playerMapper.toDTO(playerService.getPlayerById(id)));
+        return ResponseEntity.ok(playerFactory.toDTO(playerService.getPlayerById(id)));
     }
 
     /**
@@ -448,7 +450,7 @@ public class WebRestController {
     )
     @PostMapping("/players")
     public ResponseEntity<PlayerDTO> addNewPlayer(@RequestBody PlayerDTO playerDTO) {
-        Player player = playerMapper.toEntity(playerDTO);
+        Player player = playerFactory.toEntity(playerDTO);
         playerService.savePlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).body(playerDTO);
     }
@@ -481,7 +483,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{playerId}/transfers")
     public ResponseEntity<List<TransferDTO>> allTransfersFromPlayer(@PathVariable long playerId) {
-        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId).stream().map(x -> transferMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId).stream().map(x -> transferFactory.toDTO(x)).toList());
     }
 
     /**
@@ -496,7 +498,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{playerId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromPlayer(@PathVariable long playerId) {
-        return ResponseEntity.ok(teamService.getTeamsByPlayerId(playerId).stream().map(x -> teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByPlayerId(playerId).stream().map(x -> teamFactory.toDTO(x)).toList());
     }
 
     /**
@@ -512,7 +514,7 @@ public class WebRestController {
     @GetMapping("/players/{playerId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromPlayer(@PathVariable long playerId) {
         Player player = playerService.getPlayerById(playerId);
-        return ResponseEntity.ok(player.getTournaments().stream().map(x -> tournamentMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(player.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
     }
 
     /**
@@ -545,7 +547,7 @@ public class WebRestController {
     )
     @GetMapping("/results")
     public ResponseEntity<List<FullResultDTO>> getResults() {
-        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultFactory.toDTO(x)).toList());
     }
 
     /**
@@ -560,7 +562,7 @@ public class WebRestController {
     )
     @GetMapping("/results/{id}")
     public ResponseEntity<FullResultDTO> getResult(@PathVariable long id) {
-        return ResponseEntity.ok(fullResultMapper.toDTO(resultService.getFullResultById(id)));
+        return ResponseEntity.ok(fullResultFactory.toDTO(resultService.getFullResultById(id)));
     }
 
     /**
@@ -575,7 +577,7 @@ public class WebRestController {
     )
     @PostMapping("/results")
     public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO) {
-        FullResult fullResult = fullResultMapper.toEntity(fullResultDTO);
+        FullResult fullResult = fullResultFactory.toEntity(fullResultDTO);
         resultService.saveFullResult(fullResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
     }
@@ -609,7 +611,7 @@ public class WebRestController {
     @GetMapping("/results/{resultId}/controversials")
     public ResponseEntity<List<ControversialDTO>> allControversialsFromResult(@PathVariable long resultId) {
         FullResult fullResult = resultService.getFullResultById(resultId);
-        return ResponseEntity.ok(fullResult.getControversials().stream().map(x -> controversialMapper.toDto(x)).toList());
+        return ResponseEntity.ok(fullResult.getControversials().stream().map(x -> controversialFactory.toDto(x)).toList());
     }
 
     /**
@@ -626,7 +628,7 @@ public class WebRestController {
     @PutMapping("/results/{resultId}/controversials/{controversialId}")
     public ResponseEntity<FullResultDTO> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId) {
         FullResult fullResult = resultService.addControversialToResult(resultId, controversialId);
-        return ResponseEntity.ok(fullResultMapper.toDTO(fullResult));
+        return ResponseEntity.ok(fullResultFactory.toDTO(fullResult));
     }
 
     /**
@@ -659,7 +661,7 @@ public class WebRestController {
     )
     @GetMapping("/teams")
     public ResponseEntity<List<TeamDTO>> getTeams() {
-        return ResponseEntity.ok(teamService.getAllTeams().stream().map(x -> teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getAllTeams().stream().map(x -> teamFactory.toDTO(x)).toList());
     }
 
     /**
@@ -674,7 +676,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{id}")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable long id) {
-        return ResponseEntity.ok(teamMapper.toDTO(teamService.getTeamById(id)));
+        return ResponseEntity.ok(teamFactory.toDTO(teamService.getTeamById(id)));
     }
 
     /**
@@ -689,7 +691,7 @@ public class WebRestController {
     )
     @PostMapping(value = "/teams", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TeamDTO> addNewTeam(@RequestBody TeamDTO teamDTO) {
-        Team team = teamMapper.toEntity(teamDTO);
+        Team team = teamFactory.toEntity(teamDTO);
         teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }
@@ -724,7 +726,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
-        return ResponseEntity.ok(teamMapper.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
     }
 
     /**
@@ -741,7 +743,7 @@ public class WebRestController {
     @DeleteMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> deletePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.deletePlayerFromTeam(teamId, playerId);
-        return ResponseEntity.ok(teamMapper.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
     }
 
     /**
@@ -758,7 +760,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> addFlagToTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.addFlagToTeam(teamId, flagId);
-        return ResponseEntity.ok(teamMapper.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
     }
 
     /**
@@ -775,7 +777,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/leagues/{leagueId}")
     public ResponseEntity<TeamDTO> addLeagueToTeam(@PathVariable long teamId, @PathVariable long leagueId) {
         Team updatedTeam = teamService.addLeagueToTeam(teamId, leagueId);
-        return ResponseEntity.ok(teamMapper.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
     }
 
     /**
@@ -792,7 +794,7 @@ public class WebRestController {
     @DeleteMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> deleteFlagFromTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
-        return ResponseEntity.ok(teamMapper.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
     }
 
     /**
@@ -808,7 +810,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/players")
     public ResponseEntity<List<PlayerDTO>> allPlayersFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getPlayers().stream().map(x -> playerMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
     }
 
     /**
@@ -824,7 +826,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getTournaments().stream().map(x -> tournamentMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
     }
 
     /**
@@ -840,7 +842,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/flags")
     public ResponseEntity<List<FlagDTO>> allFlagsFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getFlags().stream().map(x -> flagMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getFlags().stream().map(x -> flagFactory.toDTO(x)).toList());
     }
 
     /**
@@ -855,7 +857,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{teamId}/transfers")
     public ResponseEntity<List<TransferDTO>> allTransfersFromTeam(@PathVariable long teamId) {
-        return ResponseEntity.ok(transferService.getTransfersForTeam(teamId).stream().map(x -> transferMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getTransfersForTeam(teamId).stream().map(x -> transferFactory.toDTO(x)).toList());
     }
 
     /**
@@ -870,7 +872,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{teamId}/results")
     public ResponseEntity<List<FullResultDTO>> allResultsForTeam(@PathVariable long teamId) {
-        return ResponseEntity.ok(resultService.getResultsForTeam(teamId).stream().map(x -> fullResultMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(resultService.getResultsForTeam(teamId).stream().map(x -> fullResultFactory.toDTO(x)).toList());
     }
 
     /* -------------------------------------------
@@ -888,7 +890,7 @@ public class WebRestController {
     )
     @GetMapping("/tournaments")
     public ResponseEntity<List<TournamentDTO>> getTournaments() {
-        return ResponseEntity.ok(tournamentService.getAllTournaments().stream().map(x -> tournamentMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(tournamentService.getAllTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
     }
 
     /**
@@ -903,7 +905,7 @@ public class WebRestController {
     )
     @GetMapping("/tournaments/{id}")
     public ResponseEntity<TournamentDTO> getTournament(@PathVariable long id) {
-        return ResponseEntity.ok(tournamentMapper.toDTO(tournamentService.getTournamentById(id)));
+        return ResponseEntity.ok(tournamentFactory.toDTO(tournamentService.getTournamentById(id)));
     }
 
     /**
@@ -918,7 +920,7 @@ public class WebRestController {
     )
     @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TournamentDTO> addNewTournament(@RequestBody TournamentDTO tournamentDto) {
-        Tournament tournament = tournamentMapper.toEntity(tournamentDto);
+        Tournament tournament = tournamentFactory.toEntity(tournamentDto);
         tournamentService.saveTournament(tournament);
         return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
     }
@@ -953,7 +955,7 @@ public class WebRestController {
     @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentMapper.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
     }
 
     /**
@@ -970,7 +972,7 @@ public class WebRestController {
     @DeleteMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> deleteResultFromTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentMapper.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
     }
 
     /**
@@ -986,7 +988,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/results")
     public ResponseEntity<List<FullResultDTO>> allResultsFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getResults().stream().map(x -> fullResultMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getResults().stream().map(x -> fullResultFactory.toDTO(x)).toList());
     }
 
     /**
@@ -1004,7 +1006,7 @@ public class WebRestController {
     @PutMapping("/tournaments/{tournamentId}/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TournamentDTO> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId) {
         Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId, teamId, playerId);
-        return ResponseEntity.ok(tournamentMapper.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
     }
 
     /**
@@ -1020,7 +1022,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getTeams().stream().map(x -> teamMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getTeams().stream().map(x -> teamFactory.toDTO(x)).toList());
     }
 
     /**
@@ -1036,7 +1038,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/players")
     public ResponseEntity<List<PlayerDTO>> allPlayersFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getPlayers().stream().map(x -> playerMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
     }
 
     /* -------------------------------------------
@@ -1054,7 +1056,7 @@ public class WebRestController {
     )
     @GetMapping("/transfers")
     public ResponseEntity<List<TransferDTO>> getTransfers() {
-        return ResponseEntity.ok(transferService.getAllTransfers().stream().map(x -> transferMapper.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getAllTransfers().stream().map(x -> transferFactory.toDTO(x)).toList());
     }
 
     /**
@@ -1069,7 +1071,7 @@ public class WebRestController {
     )
     @GetMapping("/transfers/{id}")
     public ResponseEntity<TransferDTO> getTransfer(@PathVariable long id) {
-        return ResponseEntity.ok(transferMapper.toDTO(transferService.getTransfer(id)));
+        return ResponseEntity.ok(transferFactory.toDTO(transferService.getTransfer(id)));
     }
 
     /**
@@ -1084,7 +1086,7 @@ public class WebRestController {
     )
     @PostMapping("/transfers")
     public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO) {
-        Transfer transfer = transferMapper.toEntity(transferDTO);
+        Transfer transfer = transferFactory.toEntity(transferDTO);
         transferService.saveTransfer(transfer);
         return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
     }

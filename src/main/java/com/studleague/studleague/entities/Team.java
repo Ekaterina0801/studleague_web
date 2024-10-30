@@ -3,6 +3,7 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Team {
     private Long id;
 
     @Column(name="teamName")
+    @NotBlank
     private String teamName;
 
     @Column(name="university")

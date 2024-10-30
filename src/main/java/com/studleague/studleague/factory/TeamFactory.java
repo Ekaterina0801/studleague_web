@@ -1,4 +1,4 @@
-package com.studleague.studleague.mappings;
+package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.League;
@@ -17,16 +17,16 @@ import java.util.List;
 
 
 @Component
-public class TeamMapper {
+public class TeamFactory {
 
     @Autowired
     private LeagueRepository leagueDao;
 
     @Autowired
-    private PlayerMapper playerMapper;
+    private PlayerFactory playerFactory;
 
     @Autowired
-    private TournamentMapper tournamentMapper;
+    private TournamentFactory tournamentFactory;
 
     @Autowired
     private PlayerRepository playerRepository;
@@ -34,7 +34,7 @@ public class TeamMapper {
     @Autowired
     private TournamentRepository tournamentRepository;
 
-    public TeamMapper() {
+    public TeamFactory() {
     }
 
     public Team toEntity(TeamDTO teamDTO) {
