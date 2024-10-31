@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -53,7 +50,7 @@ public class Controversial {
     @Column(name="appeal_jury_comment")
     private String appealJuryComment;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne()
     @JoinColumn(name="result_id")
     private FullResult fullResult;
 

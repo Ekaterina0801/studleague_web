@@ -48,6 +48,7 @@ public class SiteService {
     private final TeamCompositionService teamCompositionService;
 
 
+
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
         HttpHeaders headers = createHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -120,11 +121,14 @@ public class SiteService {
         Team teamEntity = mapAndSaveTeam(teamDetails);
         List<Player> playersEntity = mapAndSavePlayers(teamDetails.getTeamMembers(), teamEntity, tournament);
 
-
-
         if (teamDetails.getMask() != null) {
-            FullResult fullResult = new FullResult(0L, teamEntity, tournament, teamDetails.getMask(), new ArrayList<>());
+            FullResult fullResult = FullResult.builder()
+                    .team(teamEntity)
+                    .tournament(tournament)
+                    .mask_results(teamDetails.getMask())
+                    .build();
             fullResult.setTeam(teamEntity);
+            fullResult.setControversials(teamDetails.getControversials());
             resultService.saveFullResult(fullResult);
         }
         tournament.addTeam(teamEntity);

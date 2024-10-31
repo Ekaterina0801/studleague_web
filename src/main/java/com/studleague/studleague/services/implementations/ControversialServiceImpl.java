@@ -1,6 +1,5 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.interfaces.ControversialDao;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -27,9 +26,18 @@ public class ControversialServiceImpl implements ControversialService {
 
     @Override
     @Transactional
-    public void saveControversial(Controversial Controversial) {
-        controversialRepository.save(Controversial);
+    public void saveControversial(Controversial controversial) {
+        Long resultId = controversial.getFullResult().getId();
+        int questionNumber = controversial.getQuestionNumber();
+        if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId,questionNumber))
+        {
 
+            controversialRepository.save(EntityRetrievalUtils.getEntityByTwoIdOrThrow(controversialRepository.findByFullResultIdAndQuestionNumber(resultId, questionNumber), "Controversial", resultId, questionNumber));
+        }
+        else
+        {
+            controversialRepository.save(controversial);
+        }
     }
 
     @Override

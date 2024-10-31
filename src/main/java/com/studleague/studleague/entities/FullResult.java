@@ -41,7 +41,7 @@ public class FullResult {
     @Column(name="mask_results")
     private String mask_results;
 
-    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.MERGE,orphanRemoval=true)
+    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL,orphanRemoval=true)
     @ToString.Exclude
     @Builder.Default
     private List<Controversial> controversials = new ArrayList<>();

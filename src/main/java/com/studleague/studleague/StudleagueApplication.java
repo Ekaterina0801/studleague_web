@@ -2,18 +2,12 @@ package com.studleague.studleague;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.services.interfaces.PlayerService;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
+@EnableAdminServer
 @SpringBootApplication
 public class StudleagueApplication {
 

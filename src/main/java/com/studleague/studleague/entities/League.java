@@ -33,7 +33,7 @@ public class League {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_leagues_user"))
     @NotNull
     private User createdBy;
 
