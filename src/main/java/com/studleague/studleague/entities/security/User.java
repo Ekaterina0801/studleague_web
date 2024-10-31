@@ -44,15 +44,9 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    @ManyToMany
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
-    @ToString.Exclude
-    private List<Role> roles;
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private Role role;
 
 
     @Override

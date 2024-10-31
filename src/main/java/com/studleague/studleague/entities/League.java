@@ -55,8 +55,6 @@ public class League {
             tournaments.add(tournament);
             tournament.getLeagues().add(this);
         }
-
-
     }
 
     public void deleteTournamentFromLeague(Tournament tournament)

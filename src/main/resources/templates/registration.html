@@ -6,28 +6,37 @@
 </head>
 <body>
 <h1>Register</h1>
-<form method="POST" th:action="@{/register}" id="registerForm" th:object="${form}">
+<form method="POST" th:action="@{/sign-up}" id="registerForm" th:object="${signUpRequest}">
     <label for="username">Username: </label>
     <input type="text" th:field="*{username}" /><br/>
-    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Ошибка в поле Username</p>
+    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
 
-    <label for="password">Password: </label>
+    <label for="password">Password:</label>
     <input type="password" th:field="*{password}" /><br/>
-    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Ошибка в поле Password</p>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
 
-    <label for="confirm">Confirm password: </label>
+    <label for="confirm">Confirm Password:</label>
     <input type="password" th:field="*{confirm}" /><br/>
-    <p th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}">Ошибка в поле Confirm</p>
+    <span th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}"></span>
+
 
     <label for="fullname">Full name: </label>
     <input type="text" th:field="*{fullname}" /><br/>
-    <p th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}">Ошибка в поле Full name</p>
+    <p th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}"></p>
 
     <label for="email">Email: </label>
     <input type="text" th:field="*{email}" /><br/>
-    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Ошибка в поле Email</p>
+    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
 
     <input type="submit" value="Register"/>
 </form>
+
+<div th:if="${session.error}">
+    <p th:text="${session.error}">Ошибка регистрации.</p>
+</div>
+
+<div th:if="${session.message}">
+    <p th:text="${session.message}">Сообщение регистрации.</p>
+</div>
 </body>
 </html>
