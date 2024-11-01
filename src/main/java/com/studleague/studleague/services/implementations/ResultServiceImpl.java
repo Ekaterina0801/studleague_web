@@ -1,16 +1,14 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.interfaces.ControversialDao;
-import com.studleague.studleague.dao.interfaces.ResultDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
-import com.studleague.studleague.dao.interfaces.TournamentDao;
+import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.factory.FullResultFactory;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-@Service
+@Service("resultService")
 public class ResultServiceImpl implements ResultService {
 
     @Autowired
@@ -42,11 +39,20 @@ public class ResultServiceImpl implements ResultService {
     @Autowired
     private TournamentService tournamentService;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
+    private FullResultFactory fullResultFactory;
+
 
     @Override
     @Transactional
     public FullResult getFullResultById(Long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(id), "FullResult", id);
+        return entityRetrievalUtils.getResultOrThrow(id);
     }
 
     @Override
@@ -66,7 +72,7 @@ public class ResultServiceImpl implements ResultService {
         Long tournamentId = fullResult.getTournament().getId();
         if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId))
         {
-            resultRepository.save(EntityRetrievalUtils.getEntityByTwoIdOrThrow(resultRepository.findByTeamIdAndTournamentId(teamId, tournamentId), "FullResult",teamId, tournamentId));
+            resultRepository.save(entityRetrievalUtils.getResultByTeamIdAndTournamentIdOrThrow(teamId, tournamentId));
         }
         else {
             resultRepository.save(fullResult);
@@ -82,8 +88,8 @@ public class ResultServiceImpl implements ResultService {
     @Override
     @Transactional
     public FullResult addControversialToResult(Long resultId, Long controversialId) {
-        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
+        Controversial controversial = entityRetrievalUtils.getControversialOrThrow(controversialId);
+        FullResult fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
         fullResult.addControversialToFullResult(controversial);
         resultRepository.save(fullResult);
         return fullResult;
@@ -92,8 +98,8 @@ public class ResultServiceImpl implements ResultService {
     @Override
     @Transactional
     public void deleteControversialFromResult(Long resultId, Long controversialId) {
-        Controversial controversial = EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(controversialId), "Controversial", controversialId);
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultRepository.findById(resultId), "FullResult", resultId);
+        Controversial controversial = entityRetrievalUtils.getControversialOrThrow(controversialId);
+        FullResult fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
         fullResult.deleteControversialFromFullResult(controversial);
         resultRepository.save(fullResult);
     }
@@ -109,6 +115,24 @@ public class ResultServiceImpl implements ResultService {
     public void deleteAllResults()
     {
         resultRepository.deleteAll();
+    }
+
+    @Override
+    public boolean isManager(Long userId, Long resultId) {
+        if (userId==null)
+            return false;
+        FullResult result = entityRetrievalUtils.getResultOrThrow(resultId);
+        Long leagueId = result.getTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public boolean isManager(Long userId, FullResultDTO resultDTO) {
+        if (userId==null)
+            return false;
+        FullResult result = fullResultFactory.toEntity(resultDTO);
+        Long leagueId = result.getTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
     }
 
     @Override

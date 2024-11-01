@@ -2,9 +2,17 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layout}">
 <html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
         <div layout:fragment="content">
             <h2>Команды</h2>
+            <div sec:authorize="isAuthenticated()">
+                <p>Добро пожаловать, <span th:text="${#authentication.principal.username}"></span>!</p>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <p>Вы не авторизованы.</p>
+            </div>
+
             <div sec:authorize="isAuthenticated()">
             <button id="openModal">Добавить новую команду</button>
             <div id="myModal" class="modal">

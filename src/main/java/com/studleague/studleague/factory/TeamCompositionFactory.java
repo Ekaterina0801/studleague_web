@@ -29,6 +29,9 @@ public class TeamCompositionFactory {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
 
     public TeamCompositionDTO toDTO(TeamComposition teamComposition) {
         return TeamCompositionDTO.builder()
@@ -44,12 +47,12 @@ public class TeamCompositionFactory {
         List<Player> players = new ArrayList<>();
         for (Long playerId:teamCompositionDTO.getPlayerIds())
         {
-            Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+            Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
             players.add(player);
         }
 
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamCompositionDTO.getParentId()), "Team", teamCompositionDTO.getParentId());
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(teamCompositionDTO.getTournamentId()), "Tournament", teamCompositionDTO.getTournamentId());
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamCompositionDTO.getParentId());
+        Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(teamCompositionDTO.getTournamentId());
         return TeamComposition.builder()
                 .id(teamCompositionDTO.getId())
                 .parentTeam(team)

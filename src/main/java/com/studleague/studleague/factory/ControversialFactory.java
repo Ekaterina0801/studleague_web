@@ -6,6 +6,7 @@ import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.repository.ResultRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,9 +18,12 @@ public class ControversialFactory {
 
     private final ResultRepository resultDao;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     public Controversial toEntity(ControversialDTO controversialDTO) {
-        long resultId = controversialDTO.getFullResultId();
-        FullResult fullResult = EntityRetrievalUtils.getEntityOrThrow(resultDao.findById(resultId), "FullResult", resultId);
+        Long resultId = controversialDTO.getFullResultId();
+        FullResult fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
         return Controversial.builder()
                 .id(controversialDTO.getId())
                 .answer(controversialDTO.getAnswer())

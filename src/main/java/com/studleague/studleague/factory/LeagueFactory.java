@@ -28,6 +28,9 @@ public class LeagueFactory {
     @Autowired
     TournamentRepository tournamentRepository;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     public LeagueFactory() {
     }
 
@@ -38,7 +41,7 @@ public class LeagueFactory {
         if (!leagueDTO.getTeamIds().isEmpty()) {
             teams.addAll(
                     leagueDTO.getTeamIds().stream()
-                            .map(teamId -> EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId))
+                            .map(teamId -> entityRetrievalUtils.getTeamOrThrow(teamId))
                             .toList()
             );
         }
@@ -46,7 +49,7 @@ public class LeagueFactory {
         if (!leagueDTO.getTournamentIds().isEmpty()) {
             tournaments.addAll(
                     leagueDTO.getTournamentIds().stream()
-                            .map(tournamentId -> EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId))
+                            .map(tournamentId -> entityRetrievalUtils.getTournamentOrThrow(tournamentId))
                             .toList()
             );
         }

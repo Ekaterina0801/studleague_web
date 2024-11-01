@@ -17,4 +17,8 @@ public interface FlagService {
 
     void deleteAllFlags();
 
+    boolean isManager(Long userId, Long flagId);
+
+    boolean isManager(Long userId, FlagDTO flagDTO);
+
 }

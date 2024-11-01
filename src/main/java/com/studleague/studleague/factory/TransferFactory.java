@@ -17,17 +17,16 @@ public class TransferFactory {
     @Autowired
     TeamRepository teamDao;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     public Transfer toEntity(TransferDTO transferDTO) {
         if (transferDTO == null) {
             return null;
         }
-
-        long oldTeamId = transferDTO.getOldTeamId();
-        long newTeamId = transferDTO.getNewTeamId();
-        Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(oldTeamId), "Team", oldTeamId);
-        Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(newTeamId), "Team", newTeamId);
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerDao.findById(newTeamId), "Player", transferDTO.getPlayerId());
-
+        Team oldTeam = entityRetrievalUtils.getTeamOrThrow(transferDTO.getOldTeamId());
+        Team newTeam = entityRetrievalUtils.getTeamOrThrow(transferDTO.getNewTeamId());
+        Player player = entityRetrievalUtils.getPlayerOrThrow(transferDTO.getPlayerId());
 
         return Transfer.builder()
                 .id(transferDTO.getId())

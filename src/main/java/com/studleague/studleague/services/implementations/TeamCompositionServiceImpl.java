@@ -1,7 +1,10 @@
 package com.studleague.studleague.services.implementations;
+import com.studleague.studleague.dto.TeamCompositionDTO;
 import com.studleague.studleague.entities.TeamComposition;
+import com.studleague.studleague.factory.TeamCompositionFactory;
 import com.studleague.studleague.repository.TeamCompositionRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,16 +12,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
+@Service("teamCompositionService")
 public class TeamCompositionServiceImpl implements TeamCompositionService {
 
     @Autowired
-    TeamCompositionRepository teamCompositionRepository;
+    private TeamCompositionRepository teamCompositionRepository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
+    private TeamCompositionFactory teamCompositionFactory;
 
     @Override
     @Transactional
     public TeamComposition findById(Long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamCompositionRepository.findById(id), "TeamComposition", id);
+        return entityRetrievalUtils.getTeamCompositionOrThrow(id);
     }
 
     @Override
@@ -27,7 +39,7 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         Long parentTeamId = teamComposition.getParentTeam().getId();
         if (teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId).isPresent())
         {
-            TeamComposition teamCompositionExisting = EntityRetrievalUtils.getEntityByTwoIdOrThrow(teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId),"TeamComposition", tournamentId,parentTeamId);
+            TeamComposition teamCompositionExisting = entityRetrievalUtils.getTeamCompositionByTournamentIdAndParentTeamIdOrThrow(tournamentId, parentTeamId);
             teamCompositionRepository.save(teamCompositionExisting);
         }
         else {
@@ -63,6 +75,24 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
     @Override
     public void deleteById(Long id) {
         teamCompositionRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean isManager(Long userId, Long teamCompositionId) {
+        if (userId==null)
+            return false;
+        TeamComposition teamComposition = entityRetrievalUtils.getTeamCompositionOrThrow(teamCompositionId);
+        Long leagueId = teamComposition.getParentTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public boolean isManager(Long userId, TeamCompositionDTO teamCompositionDTO) {
+        if (userId==null)
+            return false;
+        TeamComposition teamComposition = teamCompositionFactory.toEntity(teamCompositionDTO);
+        Long leagueId = teamComposition.getParentTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
     }
 
 }

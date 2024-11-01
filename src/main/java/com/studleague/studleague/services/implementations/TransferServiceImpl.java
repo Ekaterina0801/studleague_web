@@ -1,15 +1,14 @@
 package com.studleague.studleague.services.implementations;
-
-import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.dao.interfaces.TeamDao;
-import com.studleague.studleague.dao.interfaces.TransferDao;
+import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Transfer;
+import com.studleague.studleague.factory.TransferFactory;
 import com.studleague.studleague.repository.PlayerRepository;
 import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.repository.TransferRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,20 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
+@Service("transferService")
 public class TransferServiceImpl implements TransferService {
 
     @Autowired
-    //private TransferDao transferDao;
     private TransferRepository transferRepository;
 
     @Autowired
-    //private PlayerDao playerDao;
     private PlayerRepository playerRepository;
 
     @Autowired
-    //private TeamDao teamDao;
     private TeamRepository teamRepository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
+    private TransferFactory transferFactory;
 
     @Override
     @Transactional
@@ -43,8 +48,8 @@ public class TransferServiceImpl implements TransferService {
     public void saveTransfer(Transfer transfer) {
         Long oldTeamId = transfer.getOldTeam().getId();
         Long newTeamId = transfer.getNewTeam().getId();
-        Team oldTeam = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(oldTeamId), "Team", oldTeamId);
-        Team newTeam = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(newTeamId), "Team", newTeamId);
+        Team oldTeam = entityRetrievalUtils.getTeamOrThrow(oldTeamId);
+        Team newTeam = entityRetrievalUtils.getTeamOrThrow(newTeamId);
         Player player = transfer.getPlayer();
         if (oldTeam.getPlayers().contains(player) && !newTeam.getPlayers().contains(player)) {
             transferRepository.save(transfer);
@@ -58,7 +63,7 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public Transfer getTransfer(Long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(transferRepository.findById(id), "Transfer", id);
+        return entityRetrievalUtils.getTransferOrThrow(id);
     }
 
     @Override
@@ -84,5 +89,23 @@ public class TransferServiceImpl implements TransferService {
     public void deleteAllTransfers()
     {
         transferRepository.deleteAll();
+    }
+
+    @Override
+    public boolean isManager(Long userId, Long transferId) {
+        if (userId==null)
+            return false;
+        Transfer transfer = entityRetrievalUtils.getTransferOrThrow(transferId);
+        Long leagueId = transfer.getOldTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public boolean isManager(Long userId, TransferDTO transferDTO) {
+        if (userId==null)
+            return false;
+        Transfer transfer = transferFactory.toEntity(transferDTO);
+        Long leagueId = transfer.getOldTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
     }
 }

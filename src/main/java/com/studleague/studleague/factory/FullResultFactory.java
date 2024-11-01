@@ -1,6 +1,7 @@
 package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.FullResultDTO;
+import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
@@ -26,20 +27,23 @@ public class FullResultFactory {
     @Autowired
     ControversialFactory controversialFactory;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     FullResultFactory() {
     }
 
     public FullResult toEntity(FullResultDTO fullResultDTO) {
         long teamId = fullResultDTO.getTeam_id();
         long tournamentId = fullResultDTO.getTournament_id();
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamDao.findById(teamId), "Team", teamId);
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentDao.findById(tournamentId), "Tournament", tournamentId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
+        Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         return FullResult.builder()
                 .id(fullResultDTO.getId())
                 .team(team)
                 .tournament(tournament)
                 .mask_results(fullResultDTO.getMask_results())
-                .controversials(controversialFactory.convertDTOListToEntityList(fullResultDTO.getControversials()))
+                .controversials(fullResultDTO.getControversials().stream().map(x->entityRetrievalUtils.getControversialOrThrow(x)).toList())
                 .build();
     }
 
@@ -49,7 +53,7 @@ public class FullResultFactory {
                 .mask_results(fullResult.getMask_results())
                 .team_id(fullResult.getTeam().getId())
                 .tournament_id(fullResult.getTournament().getId())
-                .controversials(controversialFactory.convertEntityListToDTOList(fullResult.getControversials()))
+                .controversials(fullResult.getControversials().stream().map(Controversial::getId).toList())
                 .build();
     }
 

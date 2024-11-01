@@ -37,6 +37,11 @@ public class League {
     @NotNull
     private User createdBy;
 
+    @ManyToMany(mappedBy = "leagues", cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ToString.Exclude
+    @Builder.Default
+    private List<User> managers = new ArrayList<>();
+
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
@@ -62,6 +67,24 @@ public class League {
         if (tournaments != null) {
             tournaments.remove(tournament);
             tournament.getLeagues().remove(this);
+        }
+    }
+
+    public void addManager(User user)
+    {
+        if (!managers.contains(user))
+        {
+            managers.add(user);
+            user.getLeagues().add(this);
+        }
+    }
+
+    public void deleteManager(User user)
+    {
+        if (managers!=null)
+        {
+            managers.remove(user);
+            user.getLeagues().remove(this);
         }
     }
 

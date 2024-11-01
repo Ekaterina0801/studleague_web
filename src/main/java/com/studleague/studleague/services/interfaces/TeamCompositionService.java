@@ -1,6 +1,7 @@
 package com.studleague.studleague.services.interfaces;
 
 
+import com.studleague.studleague.dto.TeamCompositionDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.TeamComposition;
 import com.studleague.studleague.entities.Player;
@@ -21,5 +22,9 @@ public interface TeamCompositionService {
     void deleteAll();
 
     void deleteById(Long id);
+
+    boolean isManager(Long userId, Long teamCompositionId);
+
+    boolean isManager(Long userId, TeamCompositionDTO teamCompositionDTO);
 
 }

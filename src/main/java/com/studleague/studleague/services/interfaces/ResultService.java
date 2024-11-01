@@ -1,5 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.FullResult;
 
@@ -23,5 +24,11 @@ public interface ResultService {
 
     List<FullResult> getResultsForTeam(Long teamId);
 
-    public void deleteAllResults();
+    void deleteAllResults();
+
+    boolean isManager(Long userId, Long resultId);
+
+    boolean isManager(Long userId, FullResultDTO resultDTO);
+
+
 }

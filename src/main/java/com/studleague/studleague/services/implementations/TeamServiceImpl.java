@@ -1,8 +1,11 @@
 package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.factory.TeamFactory;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Service
+@Service("teamService")
 public class TeamServiceImpl implements TeamService {
 
     @Autowired
@@ -40,11 +43,20 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private TeamCompositionService teamCompositionService;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
+    private TeamFactory teamFactory;
+
 
     @Override
     @Transactional
     public Team getTeamById(Long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(id), "Team", id);
+        return entityRetrievalUtils.getTeamOrThrow(id);
     }
 
     @Override
@@ -61,7 +73,7 @@ public class TeamServiceImpl implements TeamService {
         if (idSite!=0) {
 
             if (teamRepository.existsByIdSite(idSite)) {
-                teamRepository.save(EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team", idSite));
+                teamRepository.save(entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite));
             } else {
                 teamRepository.save(team);
             }
@@ -88,8 +100,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team addPlayerToTeam(Long teamId, Long playerId) {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         team.addPlayerToTeam(player);
         teamRepository.save(team);
         return team;
@@ -98,8 +110,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team deletePlayerFromTeam(Long teamId, Long playerId) {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         team.deletePlayerFromTeam(player);
         teamRepository.save(team);
         return team;
@@ -108,8 +120,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team addFlagToTeam(Long teamId, Long flagId) {
-        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        Flag flag = entityRetrievalUtils.getFlagOrThrow(flagId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         team.addFlagToTeam(flag);
         teamRepository.save(team);
         return team;
@@ -118,8 +130,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team addLeagueToTeam(Long teamId, Long leagueId) {
-        League league = EntityRetrievalUtils.getEntityOrThrow(leagueRepository.findById(leagueId), "League", leagueId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         team.setLeague(league);
         teamRepository.save(team);
         return team;
@@ -128,8 +140,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team deleteFlagFromTeam(Long teamId, Long flagId) {
-        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findById(teamId), "Team", teamId);
+        Flag flag = entityRetrievalUtils.getFlagOrThrow(flagId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         team.deleteFlagFromTeam(flag);
         teamRepository.save(team);
         return team;
@@ -138,15 +150,31 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team getTeamByIdSite(Long idSite) {
-        return EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(idSite), "Team (by idSite)", idSite);
+        return entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
     }
 
     @Override
     @Transactional
     public List<Team> getTeamsByPlayerId(Long playerId) {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+        Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
 
         return player.getTeams();
+    }
+
+    @Override
+    public boolean isManager(Long userId, Long teamId) {
+        if (userId==null)
+            return false;
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
+        return leagueService.isManager(userId, team.getLeague().getId());
+    }
+
+    @Override
+    public boolean isManager(Long userId, TeamDTO teamDTO) {
+        if (userId==null)
+            return false;
+        Team team = teamFactory.toEntity(teamDTO);
+        return leagueService.isManager(userId, team.getLeague().getId());
     }
 
     @Override
@@ -219,7 +247,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<Team> getTeamsByFlagId(Long flagId) {
-        Flag flag = EntityRetrievalUtils.getEntityOrThrow(flagRepository.findById(flagId), "Flag", flagId);
+        Flag flag = entityRetrievalUtils.getFlagOrThrow(flagId);
         return flag.getTeams();
     }
 

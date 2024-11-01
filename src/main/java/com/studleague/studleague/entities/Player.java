@@ -2,6 +2,7 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -83,6 +84,7 @@ public class Player {
     @ToString.Exclude
     @Builder.Default
     private List<Transfer> transfers = new ArrayList<>();
+
 
 
     public void addTeamToPlayer(Team team) {

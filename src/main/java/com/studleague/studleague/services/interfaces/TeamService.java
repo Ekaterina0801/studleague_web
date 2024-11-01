@@ -1,6 +1,7 @@
 package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
@@ -42,5 +43,9 @@ public interface TeamService {
     List<Team> getTeamsByFlagId(Long flagId);
 
     List<Team> getTeamsByPlayerId(Long playerId);
+
+    boolean isManager(Long userId, Long teamId);
+
+    boolean isManager(Long userId, TeamDTO teamDTO);
 
 }

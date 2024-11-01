@@ -8,11 +8,14 @@ import com.studleague.studleague.entities.*;
 import com.studleague.studleague.factory.*;
 import com.studleague.studleague.repository.TeamCompositionRepository;
 import com.studleague.studleague.services.interfaces.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,6 +72,9 @@ public class WebClientController {
     private TeamCompositionService teamCompositionService;
 
     @Autowired
+    private HttpSession httpSession;
+
+    @Autowired
     public WebClientController(ResultService resultService, TournamentService tournamentService,
                                ControversialService controversialService, PlayerService playerService,
                                TeamService teamService) {
@@ -86,9 +92,19 @@ public class WebClientController {
         });
     }
 
+    private HttpEntity<?> createHttpEntityWithToken() {
+                String token = (String) httpSession.getAttribute("token");
+
+                HttpHeaders headers = new HttpHeaders();
+                if (token != null) {
+                        headers.set("Authorization", "Bearer " + token);
+                    }
+
+                return new HttpEntity<>(headers);
+            }
     private <T> T fetchFromApi(String url, ParameterizedTypeReference<T> responseType) {
         try {
-            ResponseEntity<T> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+            ResponseEntity<T> responseEntity = restTemplate.exchange(url, HttpMethod.GET, createHttpEntityWithToken(), responseType);
             return responseEntity.getBody();
         } catch (Exception e) {
             return null;
@@ -285,13 +301,24 @@ public class WebClientController {
     }
 
     @PostMapping("/sign-in")
-    public String processSignIn(@ModelAttribute SignInRequest signInRequest, RedirectAttributes redirectAttributes) {
+    public String processSignIn(@ModelAttribute SignInRequest signInRequest, RedirectAttributes redirectAttributes, HttpSession session) {
         try {
-            ResponseEntity<JwtAuthenticationResponse> response = restTemplate.postForEntity(
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<SignInRequest> entity = new HttpEntity<>(signInRequest, headers);
+
+            ResponseEntity<JwtAuthenticationResponse> response = restTemplate.exchange(
                     "http://localhost:8080/auth/sign-in",
-                    signInRequest,
+                    HttpMethod.POST,
+                    entity,
                     JwtAuthenticationResponse.class
             );
+
+            // Сохраняем токен в сессии
+            String token = response.getBody().getToken();
+            session.setAttribute("token", token);
+
             redirectAttributes.addFlashAttribute("message", "Успешная авторизация!");
             return "redirect:/leagues/1/tournaments";
         } catch (HttpClientErrorException e) {
@@ -300,10 +327,35 @@ public class WebClientController {
         }
     }
 
+
+
     @RequestMapping("/players")
     public String playersView() {
         return "players-view";
     }
+
+    @GetMapping("/auth-status")
+    public ResponseEntity<String> authStatus(HttpServletRequest request) {
+        // Извлекаем аутентификацию из SecurityContext
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Проверяем, что пользователь аутентифицирован
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            // Получаем токен из заголовка Authorization
+            String authHeader = request.getHeader("Authorization");
+            String token = null;
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7); // Извлекаем сам токен, убирая префикс "Bearer "
+            }
+
+            return ResponseEntity.ok("Authenticated user: " + auth.getName() + ", Token: " + token);
+        }
+
+        // Если пользователь не аутентифицирован, возвращаем ошибку
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+    }
+
 
 
 }

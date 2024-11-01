@@ -2,6 +2,7 @@ package com.studleague.studleague.controllers;
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.factory.*;
+import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Collection;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 
 import java.util.List;
 @RestController
@@ -64,6 +71,9 @@ public class WebRestController {
     @Autowired
     private LeagueFactory leagueFactory;
 
+    @Autowired
+    private UserService userService;
+
     /* -------------------------------------------
                       Controversials
     ------------------------------------------- */
@@ -92,8 +102,8 @@ public class WebRestController {
             summary = "Создать новый спорный",
             description = "Использовать для создания нового спорного"
     )
-    @PreAuthorize("hasRole('EDITOR') and @leagueService.isLeagueOwner(#leagueId, authentication)")
     @PostMapping("/controversials")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @controversialService.isManager(authentication.principal.id, #controversialDto)")
     public ResponseEntity<ControversialDTO> addNewControversial(@RequestBody ControversialDTO controversialDto) {
         Controversial controversial = controversialFactory.toEntity(controversialDto);
         controversialService.saveControversial(controversial);
@@ -127,6 +137,7 @@ public class WebRestController {
             summary = "Удалить спорный",
             description = "Использовать для удаления спорного по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @controversialService.isManager(authentication.principial.id, #id)")
     @DeleteMapping("/controversials/{id}")
     public ResponseEntity<String> deleteControversial(@PathVariable long id) {
         controversialService.deleteControversial(id);
@@ -142,6 +153,7 @@ public class WebRestController {
             summary = "Удалить все спорные",
             description = "Использовать для удаления всех спорных"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/controversials")
     public ResponseEntity<String> deleteAllControversials() {
         controversialService.deleteAllControversials();
@@ -191,11 +203,13 @@ public class WebRestController {
             summary = "Удалить флаг",
             description = "Использовать для удаления флага по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @flagService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/flags/{id}")
     public ResponseEntity<String> deleteFlag(@PathVariable long id) {
         flagService.deleteFlag(id);
         return ResponseEntity.ok("Flag with ID = " + id + " was deleted");
     }
+
 
     /**
      * Обрабатывает POST запрос для создания нового флага.
@@ -208,7 +222,16 @@ public class WebRestController {
             description = "Использовать для создания нового флага"
     )
     @PostMapping("/flags")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @flagService.isManager(authorization.principal.id, #flagDto)")
     public ResponseEntity<FlagDTO> addNewFlag(@RequestBody FlagDTO flagDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            authorities.forEach(authority -> {
+                System.out.println("Granted Authority: " + authority.getAuthority());
+            });
+        }
+
         flagService.saveFlag(flagFactory.toEntity(flagDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(flagDto);
     }
@@ -222,6 +245,7 @@ public class WebRestController {
             summary = "Удалить все флаги",
             description = "Использовать для удаления всех флагов"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/flags")
     public ResponseEntity<String> deleteAllFlags() {
         flagService.deleteAllFlags();
@@ -286,6 +310,7 @@ public class WebRestController {
             summary = "Создать новую лигу",
             description = "Использовать для создания новой лиги"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueDto)")
     @PostMapping("/leagues")
     public ResponseEntity<LeagueDTO> addNewLeague(@RequestBody LeagueDTO leagueDto) {
         leagueService.saveLeague(leagueFactory.toEntity(leagueDto));
@@ -302,6 +327,7 @@ public class WebRestController {
             summary = "Удалить лигу",
             description = "Использовать для удаления лиги по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/leagues/{id}")
     public ResponseEntity<String> deleteLeague(@PathVariable long id) {
         leagueService.deleteLeague(id);
@@ -319,6 +345,7 @@ public class WebRestController {
             summary = "Добавить турнир в лигу",
             description = "Использовать для добавления турнира в лигу"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
     @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.addTournamentToLeague(leagueId, tournamentId);
@@ -336,6 +363,7 @@ public class WebRestController {
             summary = "Удалить турнир из лиги",
             description = "Использовать для удаления турнира из лиги"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @flagService.isManager(authentication.principal.id, #leagueId)")
     @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.deleteTournamentToLeague(leagueId, tournamentId);
@@ -398,6 +426,7 @@ public class WebRestController {
             summary = "Удалить все лиги",
             description = "Использовать для удаления всех лиг"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/leagues")
     public ResponseEntity<String> deleteAllLeagues() {
         leagueService.deleteAllLeagues();
@@ -448,6 +477,7 @@ public class WebRestController {
             summary = "Создать нового игрока",
             description = "Использовать для создания нового игрока"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @playerService.isManager(authentication.principal.id, #playerDTO)")
     @PostMapping("/players")
     public ResponseEntity<PlayerDTO> addNewPlayer(@RequestBody PlayerDTO playerDTO) {
         Player player = playerFactory.toEntity(playerDTO);
@@ -465,6 +495,7 @@ public class WebRestController {
             summary = "Удалить игрока",
             description = "Использовать для удаления игрока по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @playerService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/players/{id}")
     public ResponseEntity<String> deletePlayer(@PathVariable long id) {
         playerService.deletePlayer(id);
@@ -526,6 +557,7 @@ public class WebRestController {
             summary = "Удалить всех игроков",
             description = "Использовать для удаления всех игроков"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/players")
     public ResponseEntity<String> deleteAllPlayers() {
         playerService.deleteAllPlayers();
@@ -575,8 +607,12 @@ public class WebRestController {
             summary = "Создать новый результат",
             description = "Использовать для создания нового результата"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @ResultService.isManager(authentication.principal.id, #fullResultDTO)")
     @PostMapping("/results")
     public ResponseEntity<FullResultDTO> addNewResult(@RequestBody FullResultDTO fullResultDTO) {
+        if (fullResultDTO == null) {
+                    return ResponseEntity.badRequest().build();
+                }
         FullResult fullResult = fullResultFactory.toEntity(fullResultDTO);
         resultService.saveFullResult(fullResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
@@ -592,6 +628,7 @@ public class WebRestController {
             summary = "Удалить результат",
             description = "Использовать для удаления результата по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @resultService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/results/{id}")
     public ResponseEntity<String> deleteFullResult(@PathVariable long id) {
         resultService.deleteFullResult(id);
@@ -625,6 +662,7 @@ public class WebRestController {
             summary = "Добавить спорный в результат",
             description = "Использовать для добавления спорного в результат"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @resultService.isManager(authentication.principal.id, #resultId)")
     @PutMapping("/results/{resultId}/controversials/{controversialId}")
     public ResponseEntity<FullResultDTO> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId) {
         FullResult fullResult = resultService.addControversialToResult(resultId, controversialId);
@@ -640,6 +678,7 @@ public class WebRestController {
             summary = "Удалить все результаты",
             description = "Использовать для удаления всех результатов"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/results")
     public ResponseEntity<String> deleteAllResults() {
         resultService.deleteAllResults();
@@ -689,6 +728,7 @@ public class WebRestController {
             summary = "Создать новую команду",
             description = "Использовать для создания новой команды"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamDTO)")
     @PostMapping(value = "/teams", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TeamDTO> addNewTeam(@RequestBody TeamDTO teamDTO) {
         Team team = teamFactory.toEntity(teamDTO);
@@ -706,6 +746,7 @@ public class WebRestController {
             summary = "Удалить команду",
             description = "Использовать для удаления команды по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/teams/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable long id) {
         teamService.deleteTeam(id);
@@ -723,6 +764,7 @@ public class WebRestController {
             summary = "Добавить игрока в команду",
             description = "Использовать для добавления игрока в команду"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
     @PutMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
@@ -740,6 +782,7 @@ public class WebRestController {
             summary = "Удалить игрока из команды",
             description = "Использовать для удаления игрока из команды"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
     @DeleteMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> deletePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.deletePlayerFromTeam(teamId, playerId);
@@ -757,6 +800,7 @@ public class WebRestController {
             summary = "Добавить флаг в команду",
             description = "Использовать для добавления флага в команду"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
     @PutMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> addFlagToTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.addFlagToTeam(teamId, flagId);
@@ -774,6 +818,7 @@ public class WebRestController {
             summary = "Добавить лигу в команду",
             description = "Использовать для добавления лиги в команду"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
     @PutMapping("/teams/{teamId}/leagues/{leagueId}")
     public ResponseEntity<TeamDTO> addLeagueToTeam(@PathVariable long teamId, @PathVariable long leagueId) {
         Team updatedTeam = teamService.addLeagueToTeam(teamId, leagueId);
@@ -791,6 +836,7 @@ public class WebRestController {
             summary = "Удалить флаг из команды",
             description = "Использовать для удаления флага из команды"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
     @DeleteMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> deleteFlagFromTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
@@ -918,6 +964,7 @@ public class WebRestController {
             summary = "Создать новый турнир",
             description = "Использовать для создания нового турнира"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentDTO)")
     @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TournamentDTO> addNewTournament(@RequestBody TournamentDTO tournamentDto) {
         Tournament tournament = tournamentFactory.toEntity(tournamentDto);
@@ -935,6 +982,7 @@ public class WebRestController {
             summary = "Удалить турнир",
             description = "Использовать для удаления турнира по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/tournaments/{id}")
     public ResponseEntity<String> deleteTournament(@PathVariable long id) {
         tournamentService.deleteTournament(id);
@@ -952,6 +1000,7 @@ public class WebRestController {
             summary = "Добавить результат в турнир",
             description = "Использовать для добавления результата в турнир"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
     @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId, resultId);
@@ -969,6 +1018,7 @@ public class WebRestController {
             summary = "Удалить результат из турнира",
             description = "Использовать для удаления результата из турнира"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
     @DeleteMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> deleteResultFromTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournamentId, resultId);
@@ -1003,6 +1053,7 @@ public class WebRestController {
             summary = "Добавить команды и игроков в турнир",
             description = "Использовать для добавления команд и игроков в турнир"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
     @PutMapping("/tournaments/{tournamentId}/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TournamentDTO> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId) {
         Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId, teamId, playerId);
@@ -1084,6 +1135,7 @@ public class WebRestController {
             summary = "Создать новый трансфер",
             description = "Использовать для создания нового трансфера"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @transferService.isManager(authentication.principal.id, #transferDTO)")
     @PostMapping("/transfers")
     public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO) {
         Transfer transfer = transferFactory.toEntity(transferDTO);
@@ -1101,6 +1153,7 @@ public class WebRestController {
             summary = "Удалить трансфер",
             description = "Использовать для удаления трансфера по id"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @transferService.isManager(authentication.principal.id, #id)")
     @DeleteMapping("/transfers/{id}")
     public ResponseEntity<String> deleteTransfer(@PathVariable long id) {
         transferService.deleteTransfer(id);

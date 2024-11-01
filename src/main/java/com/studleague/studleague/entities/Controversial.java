@@ -2,8 +2,10 @@ package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -53,6 +55,7 @@ public class Controversial {
     @ManyToOne()
     @JoinColumn(name="result_id")
     private FullResult fullResult;
+
 
     @Override
     public boolean equals(Object o) {

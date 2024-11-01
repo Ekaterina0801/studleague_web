@@ -1,5 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
@@ -37,4 +38,8 @@ public interface TournamentService {
     void deleteAllTournaments();
 
     HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(Long tournamentId);
+
+    boolean isManager(Long userId, Long tournamentId);
+
+    boolean isManager(Long userId, TournamentDTO tournamentDTO);
 }

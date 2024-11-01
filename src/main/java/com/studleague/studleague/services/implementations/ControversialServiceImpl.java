@@ -1,9 +1,13 @@
 package com.studleague.studleague.services.implementations;
 
+import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
+import com.studleague.studleague.factory.ControversialFactory;
 import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;
+import com.studleague.studleague.services.interfaces.LeagueService;
+import com.studleague.studleague.services.interfaces.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 
-@Service
+@Service("controversialService")
 public class ControversialServiceImpl implements ControversialService {
 
     @Autowired
     private ControversialRepository controversialRepository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueService leagueService;
+
+
+    @Autowired
+    private ControversialFactory controversialFactory;
 
 
     @Override
@@ -32,7 +46,7 @@ public class ControversialServiceImpl implements ControversialService {
         if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId,questionNumber))
         {
 
-            controversialRepository.save(EntityRetrievalUtils.getEntityByTwoIdOrThrow(controversialRepository.findByFullResultIdAndQuestionNumber(resultId, questionNumber), "Controversial", resultId, questionNumber));
+            controversialRepository.save(entityRetrievalUtils.getControversialByResultIdAndQuestionNumberOrThrow(resultId, questionNumber));
         }
         else
         {
@@ -43,7 +57,7 @@ public class ControversialServiceImpl implements ControversialService {
     @Override
     @Transactional
     public Controversial getControversialById(Long id) {
-        return EntityRetrievalUtils.getEntityOrThrow(controversialRepository.findById(id),"Controversial", id);
+        return entityRetrievalUtils.getControversialOrThrow(id);
     }
 
     @Override
@@ -91,6 +105,27 @@ public class ControversialServiceImpl implements ControversialService {
     public void deleteAllControversials()
     {
         controversialRepository.deleteAll();
+    }
+
+
+    @Override
+    public boolean isManager(Long userId, Long controversialId)
+    {
+        if (userId==null)
+            return false;
+        Controversial controversial = entityRetrievalUtils.getControversialOrThrow(controversialId);
+        Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public boolean isManager(Long userId, ControversialDTO controversialDTO)
+    {
+        if (userId==null)
+            return false;
+        Controversial controversial = controversialFactory.toEntity(controversialDTO);
+        Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
+        return leagueService.isManager(userId, leagueId);
     }
 
 }

@@ -1,11 +1,12 @@
 package com.studleague.studleague.services.implementations.security;
 
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.repository.security.RoleRepository;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository repository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
 
     /**
      * Сохранение пользователя
@@ -58,7 +62,7 @@ public class UserService {
      * @return метод получения пользователя по имени
      */
     public User findUserByUsername(String username) {
-        return EntityRetrievalUtils.getEntityByNameOrThrow(repository.findByUsername(username), "User", username);
+        return entityRetrievalUtils.getUserByUsernameOrThrow(username);
     }
 
     /**
@@ -73,6 +77,14 @@ public class UserService {
         }
         var username = authentication.getName();
         return getByUsername(username);
+    }
+
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return ((User) authentication.getPrincipal()).getId();
+        }
+        return null;
     }
 
 

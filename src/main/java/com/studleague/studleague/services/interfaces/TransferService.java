@@ -1,5 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
+import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.Transfer;
 
 import java.util.List;
@@ -18,4 +19,10 @@ public interface TransferService {
     List<Transfer> getTransfersForTeam(Long team_id);
 
     void deleteAllTransfers();
+
+    boolean isManager(Long userId, Long transferId);
+
+    boolean isManager(Long userId, TransferDTO transferDTO);
+
+
 }

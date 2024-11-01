@@ -4,7 +4,9 @@ package com.studleague.studleague.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class FullResult {
     @ToString.Exclude
     @Builder.Default
     private List<Controversial> controversials = new ArrayList<>();
+
 
     public void addControversialToFullResult(Controversial controversial){
         if(!controversials.contains(controversial))

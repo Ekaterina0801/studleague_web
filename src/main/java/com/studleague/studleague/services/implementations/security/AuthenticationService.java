@@ -5,8 +5,10 @@ import com.studleague.studleague.dto.security.SignInRequest;
 import com.studleague.studleague.dto.security.SignUpRequest;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.RoleRepository;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +25,6 @@ public class AuthenticationService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-
     private final RoleRepository roleRepository;
 
     /**
@@ -63,7 +64,9 @@ public class AuthenticationService {
         var user = userService
                 .findUserByUsername(request.getUsername());
 
+
         var jwt = jwtService.generateToken(user);
+
         return new JwtAuthenticationResponse(jwt);
     }
 }

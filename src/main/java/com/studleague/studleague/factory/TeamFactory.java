@@ -34,23 +34,26 @@ public class TeamFactory {
     @Autowired
     private TournamentRepository tournamentRepository;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     public TeamFactory() {
     }
 
     public Team toEntity(TeamDTO teamDTO) {
         long leagueId = teamDTO.getLeagueId();
-        League league  = EntityRetrievalUtils.getEntityOrThrow(leagueDao.findById(leagueId), "League", leagueId);
+        League league  = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         List<Player> players = new ArrayList<>();
         List<Tournament> tournaments = new ArrayList<>();
         for (Long playerId:teamDTO.getPlayersIds())
         {
-            Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findById(playerId), "Player", playerId);
+            Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
             players.add(player);
         }
 
         for (Long tournamentId:teamDTO.getTournamentsIds())
         {
-            Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findById(tournamentId), "Tournament", tournamentId);
+            Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
             tournaments.add(tournament);
 
         }

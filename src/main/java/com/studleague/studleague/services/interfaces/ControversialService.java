@@ -26,4 +26,8 @@ public interface ControversialService {
 
     void deleteAllControversials();
 
+    boolean isManager(Long userId, Long controversialId);
+
+    boolean isManager(Long userId, ControversialDTO controversialDTO);
+
 }

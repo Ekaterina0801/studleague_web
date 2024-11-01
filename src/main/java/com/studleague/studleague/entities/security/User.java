@@ -1,5 +1,6 @@
 package com.studleague.studleague.entities.security;
 
+import com.studleague.studleague.entities.League;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -48,11 +50,19 @@ public class User implements UserDetails {
     @JoinColumn(name="role_id")
     private Role role;
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(name="users_leagues",
+            joinColumns = @JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
+    @ToString.Exclude
+    @Builder.Default
+    private List<League> leagues = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_EDITOR"));
+        return role != null ? List.of(new SimpleGrantedAuthority(role.getName())) : List.of();
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

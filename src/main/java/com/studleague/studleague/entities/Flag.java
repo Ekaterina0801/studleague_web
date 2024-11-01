@@ -36,6 +36,10 @@ public class Flag {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "league_id")
+    private League league;
+
 
     public void addTeamToFlag(Team team)
     {

@@ -18,4 +18,5 @@ public class FlagDTO {
     private Long id;
     private String name;
     private List<Long> teamIds;
+    private Long leagueId;
 }
