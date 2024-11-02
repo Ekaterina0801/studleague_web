@@ -34,7 +34,6 @@ public class AuthenticationService {
      * @return токен
      */
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-
         var user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -45,9 +44,11 @@ public class AuthenticationService {
 
         userService.save(user);
 
-        var jwt = jwtService.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return new JwtAuthenticationResponse(accessToken, refreshToken);
     }
+
 
     /**
      * Аутентификация пользователя
@@ -61,12 +62,24 @@ public class AuthenticationService {
                 request.getPassword()
         ));
 
-        var user = userService
-                .findUserByUsername(request.getUsername());
+        var user = userService.findUserByUsername(request.getUsername());
 
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        var jwt = jwtService.generateToken(user);
-
-        return new JwtAuthenticationResponse(jwt);
+        return new JwtAuthenticationResponse(accessToken, refreshToken);
     }
+
+    public JwtAuthenticationResponse refreshAccessToken(String refreshToken) {
+        String username = jwtService.extractUserName(refreshToken);
+        User user = userService.findUserByUsername(username);
+
+        if (jwtService.isTokenValid(refreshToken, user)) {
+            String newAccessToken = jwtService.generateAccessToken(user);
+            return new JwtAuthenticationResponse(newAccessToken, refreshToken); // Возвращаем тот же refreshToken
+        } else {
+            throw new RuntimeException("Invalid refresh token");
+        }
+    }
+
 }
