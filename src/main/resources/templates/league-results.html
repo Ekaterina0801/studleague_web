@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div layout:fragment="content">
+    <h1>Результаты лиги: <span th:text="${league.name}"></span></h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Команда</th>
+            <th th:each="tourNum : ${countGames}" th:text="${tourNum}">Тур</th>
+            <th>Суммарные баллы</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${standings}">
+            <td th:text="${entry.team.teamName}"></td>
+            <th:block th:each="tourNum : ${countGames}">
+                <td th:text="${entry.resultsByTour.get(tourNum) ?: 0}"></td>
+            </th:block>
+            <td th:text="${entry.totalScore}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

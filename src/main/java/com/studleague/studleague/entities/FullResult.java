@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,11 @@ public class FullResult {
     @Column(name="mask_results")
     private String mask_results;
 
-    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL,orphanRemoval=true)
+    @Column(name="total_score")
+    private Integer totalScore;
+
+    @OneToMany(mappedBy = "fullResult", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
+            ,orphanRemoval=true)
     @ToString.Exclude
     @Builder.Default
     private List<Controversial> controversials = new ArrayList<>();
@@ -62,6 +67,17 @@ public class FullResult {
         }
     }
 
+    public void updateTotalScoreFromMaskResults() {
+        if (mask_results != null && !mask_results.isEmpty()) {
+            totalScore = (int) mask_results.chars()
+                    .filter(c -> c == '1')
+                    .count();
+        } else {
+            totalScore = 0;
+        }
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,5 +89,10 @@ public class FullResult {
     @Override
     public int hashCode() {
         return Objects.hash(id, team, tournament, mask_results);
+    }
+
+    public void setMask_results(String mask_results) {
+        updateTotalScoreFromMaskResults();
+        this.mask_results = mask_results;
     }
 }

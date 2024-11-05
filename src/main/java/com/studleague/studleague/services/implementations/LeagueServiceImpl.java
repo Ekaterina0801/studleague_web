@@ -1,11 +1,14 @@
 package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.LeagueDTO;
+import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.League;
+import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.factory.LeagueFactory;
 import com.studleague.studleague.repository.LeagueRepository;
+import com.studleague.studleague.repository.ResultRepository;
 import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -35,6 +38,9 @@ public class LeagueServiceImpl implements LeagueService{
 
     @Autowired
     private LeagueFactory leagueFactory;
+
+    @Autowired
+    private ResultRepository resultRepository;
 
 
     @Override
@@ -121,5 +127,18 @@ public class LeagueServiceImpl implements LeagueService{
         User user = entityRetrievalUtils.getUserOrThrow(userId);
         return league.getManagers().contains(user);
     }
+
+    @Override
+    public League getLeagueWithResults(Long leagueId) {
+                League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+                        //leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
+
+                for (Team team : league.getTeams()) {
+                        List<FullResult> results = resultRepository.findAllByTeamId(team.getId());
+                        team.setResults(results);
+                    }
+
+                return league;
+            }
 
 }

@@ -110,7 +110,6 @@ public class RatingSiteController {
      *
      * @param leagueId идентификатор лиги
      * @param tournamentId идентификатор турнира
-     * @param tournamentDto TournamentDTO, информация о турнире
      * @return ResponseEntity<List<TeamDetailsDTO>>, список команд турнира
      */
     @Operation(
@@ -118,7 +117,7 @@ public class RatingSiteController {
             description = "Использовать для добавления команд в конкретный турнир"
     )
     @PostMapping("leagues/{leagueId}/tournaments/{tournamentId}/teams")
-    public List<TeamDetailsDTO> addTeams(@PathVariable long leagueId, @PathVariable long tournamentId, @RequestBody TournamentDTO tournamentDto) {
+    public List<TeamDetailsDTO> addTeams(@PathVariable long leagueId, @PathVariable long tournamentId) {
         return siteService.addTeams(tournamentId, leagueId);
     }
 }

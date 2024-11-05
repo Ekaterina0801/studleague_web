@@ -7,6 +7,7 @@ import com.studleague.studleague.dto.security.SignUpRequest;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.factory.*;
 import com.studleague.studleague.repository.TeamCompositionRepository;
+import com.studleague.studleague.services.LeagueResult;
 import com.studleague.studleague.services.interfaces.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -24,6 +25,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.expression.Numbers;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,6 +77,9 @@ public class WebClientController {
     private HttpSession httpSession;
 
     @Autowired
+    private LeagueService leagueService;
+
+    @Autowired
     public WebClientController(ResultService resultService, TournamentService tournamentService,
                                ControversialService controversialService, PlayerService playerService,
                                TeamService teamService) {
@@ -113,10 +118,13 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/results")
     public String leagueResultsView(@PathVariable long league_id, Model model) {
-        List<LeagueDTO> leagueDTOs = fetchLeagues();
-        model.addAttribute("leagues", leagueDTOs != null ? leagueDTOs : null);
-        model.addAttribute("leagueId", league_id);
-        return "leagueResults";
+        League league = leagueService.getLeagueWithResults(league_id);
+        model.addAttribute("league", league);
+        List<LeagueResult> standings = resultService.calculateResultsBySystem(league_id, "normalized");
+        model.addAttribute("standings", standings);
+        var countGames = IntStream.rangeClosed(1, league.getTournaments().toArray().length).toArray();
+        model.addAttribute("countGames",countGames);
+        return "league-results";
     }
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/controversials")

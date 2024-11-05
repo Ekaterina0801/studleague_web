@@ -24,6 +24,8 @@ public class FullResultDTO {
     @JsonProperty("maskResults")
     private String mask_results;
 
+    private Integer totalScore;
+
     private List<Long> controversials = new ArrayList<>();
 
 }

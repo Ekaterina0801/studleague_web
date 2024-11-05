@@ -42,6 +42,7 @@ public class FullResultFactory {
                 .id(fullResultDTO.getId())
                 .team(team)
                 .tournament(tournament)
+                .totalScore(fullResultDTO.getTotalScore())
                 .mask_results(fullResultDTO.getMask_results())
                 .controversials(fullResultDTO.getControversials().stream().map(x->entityRetrievalUtils.getControversialOrThrow(x)).toList())
                 .build();
@@ -52,6 +53,7 @@ public class FullResultFactory {
                 .id(fullResult.getId())
                 .mask_results(fullResult.getMask_results())
                 .team_id(fullResult.getTeam().getId())
+                .totalScore(fullResult.getTotalScore())
                 .tournament_id(fullResult.getTournament().getId())
                 .controversials(fullResult.getControversials().stream().map(Controversial::getId).toList())
                 .build();

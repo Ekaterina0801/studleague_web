@@ -45,8 +45,15 @@ public class ControversialServiceImpl implements ControversialService {
         int questionNumber = controversial.getQuestionNumber();
         if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId,questionNumber))
         {
-
-            controversialRepository.save(entityRetrievalUtils.getControversialByResultIdAndQuestionNumberOrThrow(resultId, questionNumber));
+            Controversial existingControversial = entityRetrievalUtils.getControversialByResultIdAndQuestionNumberOrThrow(resultId, questionNumber);
+            existingControversial.setAnswer(controversial.getAnswer());
+            existingControversial.setComment(controversial.getComment());
+            existingControversial.setQuestionNumber(controversial.getQuestionNumber());
+            existingControversial.setAppealJuryComment(controversial.getAppealJuryComment());
+            existingControversial.setIssuedAt(controversial.getIssuedAt());
+            existingControversial.setResolvedAt(controversial.getResolvedAt());
+            existingControversial.setStatus(controversial.getStatus());
+            controversialRepository.save(existingControversial);
         }
         else
         {

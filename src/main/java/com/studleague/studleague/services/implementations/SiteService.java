@@ -124,6 +124,7 @@ public class SiteService {
         if (teamDetails.getMask() != null) {
             FullResult fullResult = FullResult.builder()
                     .team(teamEntity)
+                    .totalScore(teamDetails.getQuestionsTotal())
                     .tournament(tournament)
                     .mask_results(teamDetails.getMask())
                     .build();

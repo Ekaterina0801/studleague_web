@@ -25,4 +25,6 @@ public interface LeagueService {
     boolean isManager(Long userId, Long leagueId);
 
     boolean isManager(Long userId, LeagueDTO leagueDTO);
+
+    League getLeagueWithResults(Long leagueId);
 }
