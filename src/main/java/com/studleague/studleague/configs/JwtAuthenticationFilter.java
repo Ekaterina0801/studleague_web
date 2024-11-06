@@ -2,6 +2,7 @@ package com.studleague.studleague.configs;
 
 import com.studleague.studleague.services.implementations.security.JwtService;
 import com.studleague.studleague.services.implementations.security.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
+    private static final String REFRESH_HEADER_NAME = "Refresh-Token";
     private final JwtService jwtService;
     private final UserService userService;
 
@@ -33,37 +35,65 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
-        // Получаем токен из заголовка
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
-            filterChain.doFilter(request, response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
         }
 
-        // Обрезаем префикс и получаем имя пользователя из токена
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
+        String username = null;
+        boolean tokenExpired = false;
+
+        try {
+            username = jwtService.extractUserName(jwt);
+        } catch (ExpiredJwtException e) {
+            tokenExpired = true;
+            username = e.getClaims().getSubject();
+        }
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService
-                    .findUserByUsername(username);
+            UserDetails userDetails = userService.findUserByUsername(username);
 
-            // Если токен валиден, то аутентифицируем пользователя
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
+            if (!tokenExpired && jwtService.isTokenValid(jwt, userDetails)) {
+                // Если токен валиден и не истек, аутентифицируем пользователя
+                authenticateUser(userDetails, request);
+            } else if (tokenExpired) {
+                String refreshToken = request.getHeader(REFRESH_HEADER_NAME);
+                if (StringUtils.isEmpty(refreshToken)) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Missing refresh token");
+                    return;
+                }
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                System.out.println("User authenticated: " + userDetails.getUsername());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                context.setAuthentication(authToken);
-                SecurityContextHolder.setContext(context);
+                // Проверяем валидность refresh токена
+                if (jwtService.isTokenValid(refreshToken, userDetails)) {
+                    String newAccessToken = jwtService.generateAccessToken(userDetails);
+                    response.setHeader("Authorization", "Bearer " + newAccessToken);
+                    authenticateUser(userDetails, request);
+                } else {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Invalid refresh token");
+                    return;
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
+    private void authenticateUser(UserDetails userDetails, HttpServletRequest request) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        context.setAuthentication(authToken);
+        SecurityContextHolder.setContext(context);
+    }
+
+
+
+
+
 }
