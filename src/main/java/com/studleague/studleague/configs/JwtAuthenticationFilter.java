@@ -36,8 +36,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
+        if ((StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX))&&!request.getRequestURL().toString().contains("/sign-in")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Authorization token is missing");
+            return;
+        }
+
+        if (request.getRequestURL().toString().contains("/sign-in"))
+        {
+            filterChain.doFilter(request, response);
             return;
         }
 

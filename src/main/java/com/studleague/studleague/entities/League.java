@@ -53,7 +53,9 @@ public class League {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-
+    @ManyToOne
+    @JoinColumn(name="system_result_id")
+    private SystemResult systemResult;
 
     public void addTournamentToLeague(Tournament tournament){
         if(!tournaments.contains(tournament))

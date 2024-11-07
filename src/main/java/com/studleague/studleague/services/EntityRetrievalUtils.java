@@ -49,6 +49,9 @@ public class EntityRetrievalUtils {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SystemResultRepository systemResultRepository;
+
     private <T> T getEntityOrThrow(Optional<T> optionalEntity, String entityName, Long id) {
         return optionalEntity.orElseThrow(() -> {
             logger.warn("{} with id {} not found", entityName, id);
@@ -111,6 +114,12 @@ public class EntityRetrievalUtils {
         return getEntityOrThrow(userRepository.findById(userId), "User", userId);
     }
 
+    public SystemResult getSystemResultOrThrow(Long systemResultId)
+    {
+        return getEntityOrThrow(systemResultRepository.findById(systemResultId), "SystemResult", systemResultId);
+    }
+
+
     public Controversial getControversialByResultIdAndQuestionNumberOrThrow(Long resultId, int questionNumber)
     {
         return getEntityByTwoIdOrThrow(controversialRepository.findByFullResultIdAndQuestionNumber(resultId, questionNumber), "Controversial", resultId, questionNumber);
@@ -124,6 +133,11 @@ public class EntityRetrievalUtils {
     public League getLeagueByNameOrThrow(String name)
     {
         return getEntityByNameOrThrow(leagueRepository.findByNameIgnoreCase(name), "League", name);
+    }
+
+    public SystemResult getSystemResultByNameOrThrow(String name)
+    {
+        return getEntityByNameOrThrow(systemResultRepository.findByNameIgnoreCase(name), "SystemResult", name);
     }
 
     public Player getPlayerByIdSiteOrThrow(Long idSite)

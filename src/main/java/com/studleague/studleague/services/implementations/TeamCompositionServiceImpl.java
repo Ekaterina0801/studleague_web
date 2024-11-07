@@ -33,6 +33,7 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         return entityRetrievalUtils.getTeamCompositionOrThrow(id);
     }
 
+    @Transactional
     @Override
     public void save(TeamComposition teamComposition) {
         Long tournamentId = teamComposition.getTournament().getId();
