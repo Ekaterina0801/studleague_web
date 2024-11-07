@@ -23,7 +23,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-
 import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -40,11 +39,11 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepo) {
         return username -> {
@@ -66,17 +65,13 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/sign-in", "/sign-up").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/**").authenticated()
-                        //.requestMatchers(HttpMethod.PUT, "/**").authenticated()
-                        //.requestMatchers(HttpMethod.DELETE, "/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/**","/sign-in", "/sign-up", "/error").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-                //.csrf(AbstractHttpConfigurer::disable);
+
 
 
         return http.build();
