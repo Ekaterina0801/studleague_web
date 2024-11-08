@@ -27,4 +27,6 @@ public interface LeagueService {
     boolean isManager(Long userId, LeagueDTO leagueDTO);
 
     League getLeagueWithResults(Long leagueId);
+
+    League changeSystemResultOfLeague(Long leagueId, Long systemResultId);
 }

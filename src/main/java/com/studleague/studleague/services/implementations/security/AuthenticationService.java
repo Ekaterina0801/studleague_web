@@ -5,6 +5,7 @@ import com.studleague.studleague.dto.security.SignInRequest;
 import com.studleague.studleague.dto.security.SignUpRequest;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.RoleRepository;
+import io.netty.handler.codec.http.cookie.Cookie;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class AuthenticationService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
 
         return new JwtAuthenticationResponse(accessToken, refreshToken);
     }

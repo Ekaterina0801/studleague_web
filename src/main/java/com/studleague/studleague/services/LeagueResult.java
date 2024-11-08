@@ -19,7 +19,7 @@ public class LeagueResult {
 
     private Team team;
 
-    private HashMap<Integer, Integer> resultsByTour = new HashMap<>();
+    private HashMap<Integer, Double> resultsByTour = new HashMap<>();
 
     private Double totalScore;
 

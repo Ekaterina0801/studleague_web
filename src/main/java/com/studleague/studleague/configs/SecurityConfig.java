@@ -37,13 +37,13 @@ public class SecurityConfig {
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepo) {
         return username -> {
@@ -63,14 +63,13 @@ public class SecurityConfig {
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
-                }))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/sign-in", "/sign-up", "/error").permitAll()
-                        .anyRequest().authenticated()
+                })) .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**","/sign-in", "/sign-up", "/error", "/leagues/*/results").permitAll()
+                        .anyRequest().permitAll()
                 )
-                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                //.sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider());
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 
 

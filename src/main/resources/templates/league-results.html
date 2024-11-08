@@ -5,6 +5,45 @@
 <body>
 <div layout:fragment="content">
     <h1>Результаты лиги: <span th:text="${league.name}"></span></h1>
+    <form id="systemForm" onsubmit="submitForm(event)">
+        <label for="systemResultId">Выберите систему результатов:</label>
+        <select id="systemResultId" name="systemResultId">
+            <option th:each="system : ${availableSystems}"
+                    th:value="${system.id}"
+                    th:text="${system.name}">System Name</option>
+        </select>
+        <input type="hidden" id="leagueId" name="leagueId" th:value="${league.id}" >
+        <button type="submit">Изменить систему результатов</button>
+    </form>
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+            const form = document.getElementById('systemForm');
+            const systemResultId = form.systemResultId.value;
+            const leagueId = form.leagueId.value;
+
+            const url = `/api/leagues/${leagueId}/system-results?systemResultId=${systemResultId}`;
+
+            fetch(url, {
+                method: 'PUT',
+            })
+                .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('Network response was not ok');
+            })
+                .then(data => {
+                location.reload();
+            })
+                .catch(error => console.error('Error:', error));
+        }
+
+    </script>
+
+    </script>
+
     <table class="table">
         <thead>
         <tr>

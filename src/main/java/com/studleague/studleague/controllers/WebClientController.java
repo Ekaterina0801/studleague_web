@@ -80,6 +80,9 @@ public class WebClientController {
     private LeagueService leagueService;
 
     @Autowired
+    private SystemResultService systemResultService;
+
+    @Autowired
     public WebClientController(ResultService resultService, TournamentService tournamentService,
                                ControversialService controversialService, PlayerService playerService,
                                TeamService teamService) {
@@ -116,14 +119,21 @@ public class WebClientController {
         }
     }
 
-    @RequestMapping("/leagues/{league_id}/results")
+    @RequestMapping(value="/leagues/{league_id}/results")
     public String leagueResultsView(@PathVariable long league_id, Model model) {
         League league = leagueService.getLeagueWithResults(league_id);
+        List<LeagueDTO> leagueDTOs = fetchLeagues();
+        List<League> leagues = leagueDTOs != null
+                ? leagueDTOs.stream().map(leagueFactory::toEntity).toList()
+                : null;
+        List<SystemResult> availableSystems = systemResultService.findAll();
         model.addAttribute("league", league);
-        List<LeagueResult> standings = resultService.calculateResultsBySystem(league_id, "normalized");
+        List<LeagueResult> standings = resultService.calculateResultsBySystem(league_id, league.getSystemResult().getName(), league.getSystemResult().getCountNotIncludedGames());
         model.addAttribute("standings", standings);
+        model.addAttribute("leagues", leagues);
         var countGames = IntStream.rangeClosed(1, league.getTournaments().toArray().length).toArray();
         model.addAttribute("countGames",countGames);
+        model.addAttribute("availableSystems", availableSystems);
         return "league-results";
     }
 
@@ -139,8 +149,6 @@ public class WebClientController {
                 : null;
 
         List<Controversial> controversials = controversialService.getControversialsByTournamentId(tournament_id);
-
-
         model.addAttribute("leagueId", league_id);
         model.addAttribute("leagues", leagues);
         model.addAttribute("controversials", controversials);
@@ -192,7 +200,7 @@ public class WebClientController {
         return "teams";
     }
 
-    @RequestMapping("/leagues/{league_id}/tournaments")
+    @RequestMapping(value = "/leagues/{league_id}/tournaments")
     public String tournamentsView(@PathVariable long league_id, Model model) {
         List<TournamentDTO> tournamentDTOs = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/tournaments", new ParameterizedTypeReference<>() {
         });

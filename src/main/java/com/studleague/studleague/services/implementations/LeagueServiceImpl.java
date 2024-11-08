@@ -1,18 +1,17 @@
 package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.LeagueDTO;
-import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.entities.League;
-import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.entities.*;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.factory.LeagueFactory;
 import com.studleague.studleague.repository.LeagueRepository;
 import com.studleague.studleague.repository.ResultRepository;
+import com.studleague.studleague.repository.SystemResultRepository;
 import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
+import com.studleague.studleague.services.interfaces.SystemResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service("leagueService")
-public class LeagueServiceImpl implements LeagueService{
+public class LeagueServiceImpl implements LeagueService {
 
     @Autowired
     private LeagueRepository leagueRepository;
@@ -41,6 +40,9 @@ public class LeagueServiceImpl implements LeagueService{
 
     @Autowired
     private ResultRepository resultRepository;
+
+    @Autowired
+    private SystemResultRepository systemResultRepository;
 
 
     @Override
@@ -109,9 +111,8 @@ public class LeagueServiceImpl implements LeagueService{
     }
 
     @Override
-    public boolean isManager(Long userId, Long leagueId)
-    {
-        if (userId==null)
+    public boolean isManager(Long userId, Long leagueId) {
+        if (userId == null)
             return false;
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         User user = entityRetrievalUtils.getUserOrThrow(userId);
@@ -119,9 +120,8 @@ public class LeagueServiceImpl implements LeagueService{
     }
 
     @Override
-    public boolean isManager(Long userId, LeagueDTO leagueDTO)
-    {
-        if (userId==null)
+    public boolean isManager(Long userId, LeagueDTO leagueDTO) {
+        if (userId == null)
             return false;
         League league = leagueFactory.toEntity(leagueDTO);
         User user = entityRetrievalUtils.getUserOrThrow(userId);
@@ -130,15 +130,26 @@ public class LeagueServiceImpl implements LeagueService{
 
     @Override
     public League getLeagueWithResults(Long leagueId) {
-                League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
-                        //leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        for (Team team : league.getTeams()) {
+            List<FullResult> results = resultRepository.findAllByTeamId(team.getId());
+            team.setResults(results);
+        }
 
-                for (Team team : league.getTeams()) {
-                        List<FullResult> results = resultRepository.findAllByTeamId(team.getId());
-                        team.setResults(results);
-                    }
+        return league;
+    }
 
-                return league;
-            }
+    @Override
+    public League changeSystemResultOfLeague(Long leagueId, Long systemResultId)
+    {
+        League league = getLeagueById(leagueId);
+        if (systemResultRepository.existsById(systemResultId)) {
+
+            SystemResult systemResult = entityRetrievalUtils.getSystemResultOrThrow(systemResultId);
+            league.setSystemResult(systemResult);
+            saveLeague(league);
+        }
+        return league;
+    }
 
 }

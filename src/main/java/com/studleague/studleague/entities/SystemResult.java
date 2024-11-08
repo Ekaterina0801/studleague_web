@@ -32,6 +32,9 @@ public class SystemResult {
     @Min(value = 0, message = "Value must not be negative")
     private Integer countNotIncludedGames;
 
+    @NotBlank
+    private String description;
+
     @Builder.Default
     @OneToMany(mappedBy = "systemResult")
     @ToString.Exclude

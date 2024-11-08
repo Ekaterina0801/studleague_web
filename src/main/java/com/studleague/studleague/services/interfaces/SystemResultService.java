@@ -17,5 +17,9 @@ public interface SystemResultService {
 
     void deleteAll();
 
+    void save(SystemResult systemResult);
+
+    SystemResult addLeagueToSystemResult(Long systemResultId, Long leagueId);
+
 
 }

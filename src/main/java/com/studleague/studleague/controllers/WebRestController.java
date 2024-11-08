@@ -74,6 +74,12 @@ public class WebRestController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SystemResultService systemResultService;
+
+    @Autowired
+    private SystemResultFactory systemResultFactory;
+
     /* -------------------------------------------
                       Controversials
     ------------------------------------------- */
@@ -298,6 +304,24 @@ public class WebRestController {
     @GetMapping("/leagues/{id}")
     public ResponseEntity<LeagueDTO> getLeague(@PathVariable long id) {
         return ResponseEntity.ok(leagueFactory.toDTO(leagueService.getLeagueById(id)));
+    }
+
+    /**
+     * Обрабатывает PUT запрос на изменение системы результатов по ID лиги и ID системы результатов.
+     *
+     * @param leagueId идентификатор лиги
+     * @param systemResultId bдентификатор системы результатов
+     * @return ResponseEntity<LeagueDTO>, содержащий данные запрашиваемого LeagueDTO
+     */
+    @Operation(
+            summary = "Получить лигу по айди",
+            description = "Использовать для получения лиги по id"
+    )
+    //@PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
+    @PutMapping("/leagues/{leagueId}/system-results")
+    public ResponseEntity<LeagueDTO> changeSystemResult(@PathVariable long leagueId, @RequestParam long systemResultId) {
+        League league = leagueService.changeSystemResultOfLeague(leagueId, systemResultId);
+        return ResponseEntity.ok(leagueFactory.toDTO(league));
     }
 
     /**
@@ -1158,5 +1182,73 @@ public class WebRestController {
     public ResponseEntity<String> deleteTransfer(@PathVariable long id) {
         transferService.deleteTransfer(id);
         return ResponseEntity.ok("Transfer with ID = " + id + " was deleted");
+    }
+
+     /* -------------------------------------------
+                      SystemResult
+    ------------------------------------------- */
+
+    /**
+     * Обрабатывает GET запрос на получение всех систем подсчета результатов лиги.
+     *
+     * @return ResponseEntity<List<SystemResultDTO>>, содержащий все SystemResultDTO
+     */
+    @Operation(
+            summary = "Получить все системы результатов лиг",
+            description = "Использовать для получения всех систем подсчета результатов лиги"
+    )
+    @GetMapping("/system-results")
+    public ResponseEntity<List<SystemResultDTO>> getSystemResults() {
+        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.toDTO(x)).toList());
+    }
+
+    /**
+     * Обрабатывает GET запрос на получение системы результата по ID.
+     *
+     * @param id идентификатор системы подсчета результатов лиги
+     * @return ResponseEntity<SystemResultDTO>, содержащий данные запрашиваемого SystemResultDTO
+     */
+    @Operation(
+            summary = "Получить систему подсчета результатов по айди",
+            description = "Использовать для получения системы подсчета результатов по id"
+    )
+    @GetMapping("/system-results/{id}")
+    public ResponseEntity<SystemResultDTO> getSystemResult(@PathVariable long id) {
+        return ResponseEntity.ok(systemResultFactory.toDTO(systemResultService.findById(id)));
+    }
+
+    /**
+     * Обрабатывает POST запрос для создания новой системы результатов.
+     *
+     * @param systemResultDTO SystemResultDTO, который нужно создать
+     * @return ResponseEntity<SystemResultDTO>, созданный SystemResultDTO
+     */
+    @Operation(
+            summary = "Создать новую систему результатов",
+            description = "Использовать для создания новой системы результатов"
+    )
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/system-results")
+    public ResponseEntity<SystemResultDTO> addNewSystemResult(@RequestBody SystemResultDTO systemResultDTO) {
+        SystemResult systemResult = systemResultFactory.toEntity(systemResultDTO);
+        systemResultService.save(systemResult);
+        return ResponseEntity.status(HttpStatus.CREATED).body(systemResultDTO);
+    }
+
+    /**
+     * Обрабатывает DELETE запрос для удаления системы подсчета результатов по ID.
+     *
+     * @param id идентификатор системы подсчета результатов, который нужно удалить
+     * @return ResponseEntity<String>, сообщение об успешном удалении
+     */
+    @Operation(
+            summary = "Удалить систему подсчета результатов",
+            description = "Использовать для удаления системы подсчета результатов по id"
+    )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/system-results/{id}")
+    public ResponseEntity<String> deleteSystemResult(@PathVariable long id) {
+        systemResultService.deleteById(id);
+        return ResponseEntity.ok("SystemResult with ID = " + id + " was deleted");
     }
 }

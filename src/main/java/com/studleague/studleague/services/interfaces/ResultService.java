@@ -33,7 +33,7 @@ public interface ResultService {
 
     boolean isManager(Long userId, FullResultDTO resultDTO);
 
-    List<LeagueResult> calculateResultsBySystem(Long leagueId, String system);
+    List<LeagueResult> calculateResultsBySystem(Long leagueId, String system,int numWorstGamesToExclude);
 
 
 }

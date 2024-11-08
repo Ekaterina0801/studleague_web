@@ -49,6 +49,7 @@ public class ResultServiceImpl implements ResultService {
     private FullResultFactory fullResultFactory;
 
 
+
     @Override
     @Transactional
     public FullResult getFullResultById(Long id) {
@@ -191,193 +192,109 @@ public class ResultServiceImpl implements ResultService {
         }
     }
 
-    /*public Map<Team, List<Integer>> calculateResultsBySystem(Long leagueId, String system) {
-        // Хранит количество баллов за каждый тур для каждой команды
-        Map<Team, List<Integer>> standings = new HashMap<>();
-
-        List<Team> teams = teamRepository.findAllByLeagueId(leagueId);
-
-        for (Team team : teams) {
-            List<Integer> tourPoints = new ArrayList<>();
-            for (FullResult result : team.getResults()) {
-                Integer totalScore = result.getTotalScore();
-                if (totalScore != null) {
-                    tourPoints.add(totalScore);
-                }
-            }
-
-            standings.put(team, tourPoints);
-        }
-
-        return standings;
-    }*/
-
-
-
-    public List<FullResult> getSortedResultsByTournamentStartDate(List<FullResult> results) {
-        return results.stream()
-                .sorted(Comparator.comparing(result -> {
-                    Tournament tournament = result.getTournament();
-                    return tournament != null ? tournament.getDateOfStart() : null;
-                }))
-                .collect(Collectors.toList());
-    }
-
-/*    public List<LeagueResult> calculateResultsBySystem(Long leagueId, String system) {
-        // Хранит количество баллов за каждый тур для каждой команды
+    @Override
+    public List<LeagueResult> calculateResultsBySystem(Long leagueId, String system, int numWorstGamesToExclude) {
         List<LeagueResult> standings = new ArrayList<>();
-
-        List<Team> teams = teamRepository.findAllByLeagueId(leagueId);
-
-        for (Team team : teams) {
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        List<Tournament> tournaments = league.getTournaments()
+                .stream()
+                .sorted(Comparator.comparing(Tournament::getDateOfStart))
+                .toList();
+        Map<Long, LeagueResult> teamResultsMap = new HashMap<>();
+        List<Team> leagueTeams = league.getTeams();
+        for (Team team : leagueTeams) {
             LeagueResult leagueResult = new LeagueResult();
             leagueResult.setTeam(team);
-            List<Integer> tourPoints = new ArrayList<>();
-            List<FullResult> teamResults = getSortedResultsByTournamentStartDate(team.getResults());
-            //TODO: сортировка по дате
-            int number = 1;
-            int sumPoints = 0;
-            for (FullResult result : teamResults) {
-                Integer totalScore = result.getTotalScore();
-                if (totalScore!=null)
-                {
-                    leagueResult.getResultsByTour().put(number, totalScore);
-                    sumPoints+=totalScore;
-                }
-                else
-                {
-                    leagueResult.getResultsByTour().put(number, 0);
-                }
-
-                number+=1;
-
-            }
-            leagueResult.setTotalScore(sumPoints);
+            leagueResult.setTotalScore(0.0);
             standings.add(leagueResult);
-
-            //standings.put(team, tourPoints);
+            teamResultsMap.put(team.getId(), leagueResult);
         }
 
-        return standings;
-    }*/
+        for (int i = 0; i < tournaments.size(); i++) {
+            Tournament tournament = tournaments.get(i);
+            int tournamentNumber = i + 1;
 
-
-
-    /*public List<LeagueResult> calculateResultsBySystem(Long leagueId, String system) {
-        List<LeagueResult> standings = new ArrayList<>();
-        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
-        List<Tournament> tournaments = league.getTournaments();
-        Set<Long> processedTeamIds = new HashSet<>();
-
-        for (Tournament tournament : tournaments) {
-            List<Team> teams = tournament.getTeams();
-
-            for (Team team : teams) {
-                if (processedTeamIds.contains(team.getId())) {
-                    continue;
-                }
-                processedTeamIds.add(team.getId());
-
-                LeagueResult leagueResult = new LeagueResult();
-                leagueResult.setTeam(team);
-                List<FullResult> teamResults = getSortedResultsByTournamentStartDate(team.getResults());
-                //TODO: сортировка по дате
-                int number = 1;
-                int sumPoints = 0;
-
-                for (FullResult result : teamResults) {
-                    Integer totalScore = result.getTotalScore();
-                    if (totalScore != null) {
-                        leagueResult.getResultsByTour().put(number, totalScore);
-                        sumPoints += totalScore;
-                    } else {
-                        leagueResult.getResultsByTour().put(number, 0);
-                    }
-
-                    number += 1;
-                }
-
-                leagueResult.setTotalScore(sumPoints);
-                standings.add(leagueResult);
+            for (Team team : leagueTeams) {
+                LeagueResult leagueResult = teamResultsMap.get(team.getId());
+                double pointsForRound = getPointsForRound(team, tournament);
+                leagueResult.getResultsByTour().put(tournamentNumber, pointsForRound);
             }
         }
 
-        standings.sort(Comparator.comparingInt(LeagueResult::getTotalScore).reversed());
+        double maxTournamentScore = getMaxTournamentScore(tournaments);
 
-        return standings;
-    }
-*/
-    public List<LeagueResult> calculateResultsBySystem(Long leagueId, String system) {
-        List<LeagueResult> standings = new ArrayList<>();
-        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
-        List<Tournament> tournaments = league.getTournaments();
-        Map<Long, LeagueResult> teamResultsMap = new HashMap<>();
-
-        int tournamentNumber = 1;
-
-        for (Tournament tournament : tournaments) {
-            List<Team> teams = tournament.getTeams();
-
-            int maxTournamentScore = teams.stream()
-                    .flatMap(team -> team.getResults().stream())
-                    .map(FullResult::getTotalScore)
-                    .filter(Objects::nonNull)
-                    .max(Integer::compareTo)
-                    .orElse(0);
-
-            for (Team team : teams) {
-                LeagueResult leagueResult = teamResultsMap.computeIfAbsent(team.getId(), id -> {
-                    LeagueResult lr = new LeagueResult();
-                    lr.setTeam(team);
-                    lr.setTotalScore(0.0);
-                    standings.add(lr);
-                    return lr;
-                });
-
-                FullResult result = team.getResults().stream()
-                        .filter(r -> r.getTournament().equals(tournament))
-                        .findFirst()
-                        .orElse(null);
-
-                if (result != null) {
-                    Integer totalScore = result.getTotalScore();
-                    int pointsForRound = (totalScore != null) ? totalScore : 0;
-                    double pointsToAdd;
-                    switch (system.toLowerCase()) {
-                        case "standard":
-                            pointsToAdd = pointsForRound;
-                            leagueResult.getResultsByTour().put(tournamentNumber, pointsForRound);
-                            break;
-
-                        case "micromatch":
-                            int micromatchScore = calculateMicromatchPoints(result);
-                            pointsToAdd = micromatchScore;
-                            leagueResult.getResultsByTour().put(tournamentNumber, micromatchScore);
-                            break;
-
-                        case "normalized":
-                            double normalizedScore = maxTournamentScore > 0 ?
-                                    (double) pointsForRound / maxTournamentScore : 0;
-                            pointsToAdd = normalizedScore;
-                            leagueResult.getResultsByTour().put(tournamentNumber, pointsForRound);
-                            break;
-
-                        default:
-                            throw new IllegalArgumentException("Unknown scoring system: " + system);
-                    }
-                    leagueResult.setTotalScore(leagueResult.getTotalScore() + pointsToAdd);
-                } else {
-                    leagueResult.getResultsByTour().put(tournamentNumber, 0);
-                }
-            }
-
-            tournamentNumber++;
+        for (LeagueResult leagueResult : standings) {
+            List<Double> scores = new ArrayList<>(leagueResult.getResultsByTour().values());
+            double totalScore = calculateTotalScore(scores, system, maxTournamentScore, numWorstGamesToExclude);
+            leagueResult.setTotalScore(totalScore);
         }
 
         standings.sort(Comparator.comparingDouble(LeagueResult::getTotalScore).reversed());
-
         return standings;
     }
+
+    private double getPointsForRound(Team team, Tournament tournament) {
+        if (!tournament.getTeams().contains(team)) return 0.0;
+        return team.getResults().stream()
+                .filter(result -> result.getTournament().equals(tournament))
+                .map(FullResult::getTotalScore)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(0);
+    }
+
+    private double getMaxTournamentScore(List<Tournament> tournaments) {
+        return tournaments.stream()
+                .flatMap(tournament -> tournament.getTeams().stream())
+                .flatMap(team -> team.getResults().stream())
+                .map(FullResult::getTotalScore)
+                .filter(Objects::nonNull)
+                .max(Integer::compareTo)
+                .orElse(0);
+    }
+
+    private double calculateTotalScore(List<Double> scores, String system, double maxTournamentScore, int numWorstGamesToExclude) {
+        switch (system.toLowerCase()) {
+            case "standard":
+                return calculateStandardPoints(scores, numWorstGamesToExclude);
+
+            case "micromatch":
+                return scores.stream().mapToDouble(Double::doubleValue).sum();
+
+            case "normalized":
+                return calculateNormalizedPoints(scores, maxTournamentScore, numWorstGamesToExclude);
+
+            default:
+                throw new IllegalArgumentException("Unknown scoring system: " + system);
+        }
+    }
+
+
+
+
+    private double calculateStandardPoints(List<Double> scores, int numWorstGamesToExclude) {
+        scores = scores.stream().sorted().collect(Collectors.toList());
+        int scoresLength = scores.size();
+        if (scoresLength>numWorstGamesToExclude)
+        {
+            scores = scores.subList(numWorstGamesToExclude, scores.size());
+        }
+
+        return scores.stream().mapToDouble(Double::doubleValue).sum();
+    }
+
+    private double calculateNormalizedPoints(List<Double> scores, double maxTournamentScore, int numWorstGamesToExclude) {
+        scores = scores.stream().sorted().collect(Collectors.toList());
+
+        if (numWorstGamesToExclude > 0 && scores.size() > numWorstGamesToExclude) {
+            scores = scores.subList(numWorstGamesToExclude, scores.size());
+        }
+
+        double totalPoints = scores.stream().mapToDouble(Double::doubleValue).sum();
+        return (maxTournamentScore > 0) ? totalPoints / maxTournamentScore : 0;
+    }
+
+
 
     private int calculateMicromatchPoints(FullResult result) {
         return 0;
