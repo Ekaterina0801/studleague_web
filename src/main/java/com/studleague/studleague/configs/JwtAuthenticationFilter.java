@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String REFRESH_HEADER_NAME = "Refresh-Token";
     private final JwtService jwtService;
     private final UserService userService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+
+        String[] excludedPaths = {
+                "/results",
+                "/teams",
+                "/tournaments",
+                "/auth/**",
+                "/leagues/**"
+        };
+
+
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
+        if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".gif")) {
+            return true;
+        }
+
+        for (String excludedPath : excludedPaths) {
+            if (path.startsWith(excludedPath.replace("**", ""))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
 
     @Override
     protected void doFilterInternal(
@@ -97,9 +131,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         context.setAuthentication(authToken);
         SecurityContextHolder.setContext(context);
     }
-
-
-
-
-
 }
