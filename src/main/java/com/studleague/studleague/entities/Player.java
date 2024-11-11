@@ -84,7 +84,6 @@ public class Player {
     private List<Transfer> transfers = new ArrayList<>();
 
 
-
     public void addTeamToPlayer(Team team) {
 
         if (!teams.contains(team)) {
