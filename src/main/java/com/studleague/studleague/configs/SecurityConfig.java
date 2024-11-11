@@ -3,11 +3,13 @@ package com.studleague.studleague.configs;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.implementations.security.JwtService;
 import com.studleague.studleague.services.implementations.security.UserService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -37,8 +39,12 @@ public class SecurityConfig {
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 
-    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtService jwtService;
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter(jwtService,userService);
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -67,9 +73,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**","/sign-in", "/sign-up", "/error", "/leagues/*/results").permitAll()
                         .anyRequest().permitAll()
                 )
-                //.sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider());
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
 
