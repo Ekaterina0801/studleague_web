@@ -26,13 +26,11 @@ public class SystemResultServiceImpl implements SystemResultService {
     }
 
     @Override
-    public List<SystemResult> findAll()
-    {
+    public List<SystemResult> findAll() {
         return systemResultRepository.findAll();
     }
 
-    public void deleteAll()
-    {
+    public void deleteAll() {
         systemResultRepository.deleteAll();
     }
 
@@ -44,34 +42,40 @@ public class SystemResultServiceImpl implements SystemResultService {
     @Override
     @Transactional
     public void save(SystemResult systemResult) {
-        if (systemResultRepository.findByNameIgnoreCase(systemResult.getName()).isPresent())
-        {
+        Long id = systemResult.getId();
+        if (id != null) {
+            if (systemResultRepository.existsById(id)) {
+                SystemResult existingSystemResult = entityRetrievalUtils.getSystemResultOrThrow(id);
+                update(existingSystemResult, systemResult);
+            }
+        } else if (systemResultRepository.findByNameIgnoreCase(systemResult.getName()).isPresent()) {
             SystemResult systemResultExisting = entityRetrievalUtils.getSystemResultByNameOrThrow(systemResult.getName());
-            systemResultExisting.setLeagues(systemResult.getLeagues());
-            systemResultExisting.setName(systemResult.getName());
-            systemResultExisting.setDescription(systemResult.getDescription());
-            systemResultExisting.setCountNotIncludedGames(systemResult.getCountNotIncludedGames());
-            systemResultRepository.save(systemResultExisting);
-        }
-        else {
+            update(systemResultExisting, systemResult);
+        } else {
             systemResultRepository.save(systemResult);
         }
     }
 
+    @Transactional
+    private void update(SystemResult systemResultExisting, SystemResult systemResult) {
+        systemResultExisting.setLeagues(systemResult.getLeagues());
+        systemResultExisting.setName(systemResult.getName());
+        systemResultExisting.setDescription(systemResult.getDescription());
+        systemResultExisting.setCountNotIncludedGames(systemResult.getCountNotIncludedGames());
+        systemResultRepository.save(systemResultExisting);
+    }
+
     @Override
     @Transactional
-    public void deleteById(Long id)
-    {
+    public void deleteById(Long id) {
         systemResultRepository.deleteById(id);
     }
 
     @Override
-    public SystemResult addLeagueToSystemResult(Long systemResultId, Long leagueId)
-    {
+    public SystemResult addLeagueToSystemResult(Long systemResultId, Long leagueId) {
         SystemResult systemResult = entityRetrievalUtils.getSystemResultOrThrow(systemResultId);
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
-        if (!systemResult.getLeagues().contains(league))
-        {
+        if (!systemResult.getLeagues().contains(league)) {
             systemResult.getLeagues().add(league);
         }
         return systemResult;

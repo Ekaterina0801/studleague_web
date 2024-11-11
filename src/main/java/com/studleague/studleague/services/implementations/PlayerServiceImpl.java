@@ -54,19 +54,36 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional
     public void savePlayer(Player player) {
         Long idSite = player.getIdSite();
-        if (idSite!=0)
-        {
-            if (playerRepository.existsByIdSite(idSite))
-            {
-                playerRepository.save(entityRetrievalUtils.getPlayerByIdSiteOrThrow(idSite));
+        Long id = player.getId();
+        if (id != null) {
+            if (playerRepository.existsById(id)) {
+                Player existingPlayer = entityRetrievalUtils.getPlayerOrThrow(id);
+                updatePlayer(existingPlayer, player);
             }
-            else {
+        } else if (idSite != 0) {
+            if (playerRepository.existsByIdSite(idSite)) {
+                Player existingPlayer = entityRetrievalUtils.getPlayerByIdSiteOrThrow(idSite);
+                updatePlayer(existingPlayer, player);
+            } else {
                 playerRepository.save(player);
             }
-        }
-        else {
+        } else {
             playerRepository.save(player);
         }
+    }
+
+    @Transactional
+    private void updatePlayer(Player existingPlayer, Player newPlayer) {
+        existingPlayer.setName(newPlayer.getName());
+        existingPlayer.setSurname(newPlayer.getSurname());
+        existingPlayer.setPatronymic(newPlayer.getPatronymic());
+        existingPlayer.setTransfers(newPlayer.getTransfers());
+        existingPlayer.setDateOfBirth(newPlayer.getDateOfBirth());
+        existingPlayer.setTeamsCompositions(newPlayer.getTeamsCompositions());
+        existingPlayer.setTournaments(newPlayer.getTournaments());
+        existingPlayer.setUniversity(newPlayer.getUniversity());
+        existingPlayer.setIdSite(newPlayer.getIdSite());
+        playerRepository.save(existingPlayer);
     }
 
     @Override
@@ -91,18 +108,16 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public void deleteAllPlayers()
-    {
+    public void deleteAllPlayers() {
         playerRepository.deleteAll();
     }
 
     @Override
     public boolean isManager(Long userId, Long playerId) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
-        for (Team team:player.getTeams())
-        {
+        for (Team team : player.getTeams()) {
             if (leagueService.isManager(userId, team.getLeague().getId()))
                 return true;
         }
@@ -111,11 +126,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public boolean isManager(Long userId, PlayerDTO playerDTO) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Player player = playerFactory.toEntity(playerDTO);
-        for (Team team:player.getTeams())
-        {
+        for (Team team : player.getTeams()) {
             if (leagueService.isManager(userId, team.getLeague().getId()))
                 return true;
         }

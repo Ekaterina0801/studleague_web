@@ -39,14 +39,28 @@ public class FlagServiceImpl implements FlagService {
     @Transactional
     public void saveFlag(Flag flag) {
         String name = flag.getName();
-        if (flagRepository.existsByNameIgnoreCase(name))
-        {
-            flagRepository.save(entityRetrievalUtils.getFlagByNameOrThrow(name));
-        }
-        else {
+        Long id = flag.getId();
+        if (id != null) {
+            if (flagRepository.existsById(id)) {
+                Flag existingFlag = entityRetrievalUtils.getFlagOrThrow(id);
+                updateFlag(existingFlag, flag);
+            }
+        } else if (flagRepository.existsByNameIgnoreCase(name)) {
+            Flag existingFlag = entityRetrievalUtils.getFlagByNameOrThrow(name);
+            updateFlag(existingFlag, flag);
+        } else {
             flagRepository.save(flag);
         }
     }
+
+    @Transactional
+    private void updateFlag(Flag existingFlag, Flag newFlag) {
+        existingFlag.setName(newFlag.getName());
+        existingFlag.setLeague(newFlag.getLeague());
+        existingFlag.setTeams(newFlag.getTeams());
+        flagRepository.save(existingFlag);
+    }
+
 
     @Override
     @Transactional
@@ -62,14 +76,13 @@ public class FlagServiceImpl implements FlagService {
 
     @Override
     @Transactional
-    public void deleteAllFlags()
-    {
+    public void deleteAllFlags() {
         flagRepository.deleteAll();
     }
 
     @Override
     public boolean isManager(Long userId, Long flagId) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Flag flag = entityRetrievalUtils.getFlagOrThrow(flagId);
         Long leagueId = flag.getLeague().getId();
@@ -78,7 +91,7 @@ public class FlagServiceImpl implements FlagService {
 
     @Override
     public boolean isManager(Long userId, FlagDTO flagDTO) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Flag flag = flagFactory.toEntity(flagDTO);
         Long leagueId = flag.getLeague().getId();

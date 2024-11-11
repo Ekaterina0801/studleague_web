@@ -7,7 +7,6 @@ import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.LeagueService;
-import com.studleague.studleague.services.interfaces.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,23 +42,36 @@ public class ControversialServiceImpl implements ControversialService {
     public void saveControversial(Controversial controversial) {
         Long resultId = controversial.getFullResult().getId();
         int questionNumber = controversial.getQuestionNumber();
-        if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId,questionNumber))
-        {
+        if (controversial.getId() != null) {
+            if (controversialRepository.existsById(controversial.getId())) {
+                Controversial existingControversial = entityRetrievalUtils.getControversialOrThrow(controversial.getId());
+                updateControversial(existingControversial, controversial);
+            }
+        } else if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId, questionNumber)) {
             Controversial existingControversial = entityRetrievalUtils.getControversialByResultIdAndQuestionNumberOrThrow(resultId, questionNumber);
-            existingControversial.setAnswer(controversial.getAnswer());
-            existingControversial.setComment(controversial.getComment());
-            existingControversial.setQuestionNumber(controversial.getQuestionNumber());
-            existingControversial.setAppealJuryComment(controversial.getAppealJuryComment());
-            existingControversial.setIssuedAt(controversial.getIssuedAt());
-            existingControversial.setResolvedAt(controversial.getResolvedAt());
-            existingControversial.setStatus(controversial.getStatus());
-            controversialRepository.save(existingControversial);
-        }
-        else
-        {
+            updateControversial(existingControversial, controversial);
+        } else {
             controversialRepository.save(controversial);
         }
     }
+
+    @Transactional
+    private void updateControversial(Controversial existingControversial, Controversial controversial) {
+        existingControversial.setAnswer(controversial.getAnswer());
+        existingControversial.setComment(controversial.getComment());
+        existingControversial.setAppealJuryComment(controversial.getAppealJuryComment());
+        existingControversial.setIssuedAt(controversial.getIssuedAt());
+        existingControversial.setResolvedAt(controversial.getResolvedAt());
+        existingControversial.setStatus(controversial.getStatus());
+        existingControversial.setFullResult(controversial.getFullResult());
+
+        if (existingControversial.getQuestionNumber() != controversial.getQuestionNumber()) {
+            existingControversial.setQuestionNumber(controversial.getQuestionNumber());
+        }
+
+        controversialRepository.save(existingControversial);
+    }
+
 
     @Override
     @Transactional
@@ -109,16 +121,14 @@ public class ControversialServiceImpl implements ControversialService {
     }
 
     @Transactional
-    public void deleteAllControversials()
-    {
+    public void deleteAllControversials() {
         controversialRepository.deleteAll();
     }
 
 
     @Override
-    public boolean isManager(Long userId, Long controversialId)
-    {
-        if (userId==null)
+    public boolean isManager(Long userId, Long controversialId) {
+        if (userId == null)
             return false;
         Controversial controversial = entityRetrievalUtils.getControversialOrThrow(controversialId);
         Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
@@ -126,9 +136,8 @@ public class ControversialServiceImpl implements ControversialService {
     }
 
     @Override
-    public boolean isManager(Long userId, ControversialDTO controversialDTO)
-    {
-        if (userId==null)
+    public boolean isManager(Long userId, ControversialDTO controversialDTO) {
+        if (userId == null)
             return false;
         Controversial controversial = controversialFactory.toEntity(controversialDTO);
         Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();

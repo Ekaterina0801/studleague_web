@@ -1,9 +1,9 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dao.interfaces.*;
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
@@ -18,22 +18,22 @@ import java.util.List;
 public class TournamentServiceImpl implements TournamentService {
 
     @Autowired
-    private TournamentDao tournamentRepository;
+    private TournamentRepository tournamentRepository;
 
     @Autowired
-    private ResultDao resultRepository;
+    private ResultRepository resultRepository;
 
     @Autowired
-    private PlayerDao playerRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    private TeamDao teamRepository;
+    private TeamRepository teamRepository;
 
     @Autowired
     private TournamentFactory tournamentFactory;
 
     @Autowired
-    private LeagueDao leagueRepository;
+    private LeagueRepository leagueRepository;
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
@@ -59,26 +59,42 @@ public class TournamentServiceImpl implements TournamentService {
     public void saveTournament(Tournament tournament) {
 
         Long idSite = tournament.getIdSite();
-        if (idSite!=0)
-        {
-        if (tournamentRepository.existsByIdSite(idSite))
-        {
-            tournamentRepository.save(entityRetrievalUtils.getTournamentByIdSiteOrThrow(idSite));
-        }
-        else {
+        Long id = tournament.getId();
+        if (id != null) {
+            if (tournamentRepository.existsById(id)) {
+                Tournament existingTournament = entityRetrievalUtils.getTournamentOrThrow(id);
+                updateTournament(existingTournament, tournament);
+            }
+        } else if (idSite != 0) {
+            if (tournamentRepository.existsByIdSite(idSite)) {
+                Tournament existingTournament = entityRetrievalUtils.getTournamentByIdSiteOrThrow(idSite);
+                updateTournament(existingTournament, tournament);
+
+            } else {
+                tournamentRepository.save(tournament);
+            }
+        } else {
             tournamentRepository.save(tournament);
         }
-        }
-        else
-        {
-            tournamentRepository.save(tournament);
-        }
+    }
+
+    @Transactional
+    private void updateTournament(Tournament existingTournament, Tournament tournament) {
+        existingTournament.setIdSite(tournament.getIdSite());
+        existingTournament.setPlayers(tournament.getPlayers());
+        existingTournament.setTeams(tournament.getTeams());
+        existingTournament.setResults(tournament.getResults());
+        existingTournament.setName(tournament.getName());
+        existingTournament.setLeagues(tournament.getLeagues());
+        existingTournament.setDateOfEnd(tournament.getDateOfEnd());
+        existingTournament.setDateOfStart(tournament.getDateOfStart());
+        tournamentRepository.save(existingTournament);
     }
 
     @Override
     @Transactional
     public void deleteTournament(Long id) {
-        tournamentRepository.deleteByTournamentId(id);
+        tournamentRepository.deleteById(id);
     }
 
     @Override
@@ -184,15 +200,13 @@ public class TournamentServiceImpl implements TournamentService {
 
 
     @Override
-    public boolean existsByIdSite(Long idSite)
-    {
+    public boolean existsByIdSite(Long idSite) {
         return tournamentRepository.existsByIdSite(idSite);
     }
 
     @Override
     @Transactional
-    public void deleteAllTournaments()
-    {
+    public void deleteAllTournaments() {
         tournamentRepository.deleteAll();
     }
 
@@ -212,22 +226,22 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     public boolean isManager(Long userId, Long tournamentId) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
-        for (League league: tournament.getLeagues())
-            if (leagueService.isManager(userId,league.getId()))
+        for (League league : tournament.getLeagues())
+            if (leagueService.isManager(userId, league.getId()))
                 return true;
         return false;
     }
 
     @Override
     public boolean isManager(Long userId, TournamentDTO tournamentDTO) {
-        if (userId==null)
+        if (userId == null)
             return false;
         Tournament tournament = tournamentFactory.toEntity(tournamentDTO);
-        for (League league: tournament.getLeagues())
-            if (leagueService.isManager(userId,league.getId()))
+        for (League league : tournament.getLeagues())
+            if (leagueService.isManager(userId, league.getId()))
                 return true;
         return false;
     }

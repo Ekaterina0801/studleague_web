@@ -35,7 +35,7 @@ import java.util.stream.IntStream;
 @RequestMapping("/")
 public class WebClientController {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     private static final String BASE_URL = "http://localhost:8080/api";
 

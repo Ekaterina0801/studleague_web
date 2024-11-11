@@ -11,7 +11,6 @@ import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
-import com.studleague.studleague.services.interfaces.SystemResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,11 +61,29 @@ public class LeagueServiceImpl implements LeagueService {
     public void saveLeague(League league) {
 
         String name = league.getName();
-        if (leagueRepository.existsByNameIgnoreCase(name)) {
-            leagueRepository.save(entityRetrievalUtils.getLeagueByNameOrThrow(name));
+        Long id = league.getId();
+        if (id != null) {
+            if (leagueRepository.existsById(id)) {
+                League existingLeague = entityRetrievalUtils.getLeagueOrThrow(id);
+                updateLeague(existingLeague, league);
+            }
+        } else if (leagueRepository.existsByNameIgnoreCase(name)) {
+            League existingLeague = entityRetrievalUtils.getLeagueByNameOrThrow(name);
+            updateLeague(existingLeague, league);
         } else {
             leagueRepository.save(league);
         }
+    }
+
+    @Transactional
+    private void updateLeague(League existingLeague, League newLeague) {
+        existingLeague.setName(newLeague.getName());
+        existingLeague.setSystemResult(newLeague.getSystemResult());
+        existingLeague.setTeams(newLeague.getTeams());
+        existingLeague.setTournaments(newLeague.getTournaments());
+        existingLeague.setCreatedBy(newLeague.getCreatedBy());
+        existingLeague.setManagers(newLeague.getManagers());
+        leagueRepository.save(existingLeague);
     }
 
     @Override
@@ -140,8 +157,7 @@ public class LeagueServiceImpl implements LeagueService {
     }
 
     @Override
-    public League changeSystemResultOfLeague(Long leagueId, Long systemResultId)
-    {
+    public League changeSystemResultOfLeague(Long leagueId, Long systemResultId) {
         League league = getLeagueById(leagueId);
         if (systemResultRepository.existsById(systemResultId)) {
 

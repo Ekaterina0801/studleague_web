@@ -20,7 +20,7 @@ public interface TeamDao {
 
     Optional<Team> findByPlayerIdAndLeagueId(Long playerId, Long leagueId);
 
-    public boolean existsByIdSite(Long idSite);
+    boolean existsByIdSite(Long idSite);
 
     void deleteAll();
 

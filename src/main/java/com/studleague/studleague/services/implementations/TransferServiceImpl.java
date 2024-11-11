@@ -1,7 +1,6 @@
 package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Transfer;
 import com.studleague.studleague.factory.TransferFactory;
 import com.studleague.studleague.repository.PlayerRepository;
@@ -46,17 +45,30 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public void saveTransfer(Transfer transfer) {
-        Long oldTeamId = transfer.getOldTeam().getId();
-        Long newTeamId = transfer.getNewTeam().getId();
-        Team oldTeam = entityRetrievalUtils.getTeamOrThrow(oldTeamId);
-        Team newTeam = entityRetrievalUtils.getTeamOrThrow(newTeamId);
+        Long id = transfer.getId();
+        if (id!=null)
+        {
+            if (transferRepository.existsById(id))
+            {
+                Transfer existingTransfer = entityRetrievalUtils.getTransferOrThrow(id);
+                updateTransfer(existingTransfer, transfer);
+            }
+        }
         Player player = transfer.getPlayer();
-        if (oldTeam.getPlayers().contains(player) && !newTeam.getPlayers().contains(player)) {
+        if (transfer.getOldTeam().getPlayers().contains(player) && !transfer.getNewTeam().getPlayers().contains(player)) {
             transferRepository.save(transfer);
-            oldTeam.deletePlayerFromTeam(player);
-            newTeam.addPlayerToTeam(player);
+            transfer.getOldTeam().deletePlayerFromTeam(player);
+            transfer.getNewTeam().addPlayerToTeam(player);
         }
 
+
+    }
+
+    @Transactional
+    public void updateTransfer(Transfer existingTransfer, Transfer transfer)
+    {
+        existingTransfer.setTransferDate(transfer.getTransferDate());
+        existingTransfer.setComments(transfer.getComments());
 
     }
 

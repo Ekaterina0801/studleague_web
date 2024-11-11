@@ -29,7 +29,7 @@ public class PlayerDTO {
     private String university;
     @JsonProperty("dateOfBirth")
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate dateOfBirth;;
+    private LocalDate dateOfBirth;
     @JsonProperty("idSite")
     private Long idSite;
     @JsonProperty("teams")

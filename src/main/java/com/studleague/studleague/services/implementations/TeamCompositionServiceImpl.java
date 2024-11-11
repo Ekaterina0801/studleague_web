@@ -38,6 +38,16 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
     public void save(TeamComposition teamComposition) {
         Long tournamentId = teamComposition.getTournament().getId();
         Long parentTeamId = teamComposition.getParentTeam().getId();
+        Long id = teamComposition.getId();
+        if (id!=null)
+        {
+            if (teamCompositionRepository.existsById(id))
+            {
+                TeamComposition existingTeamComposition = entityRetrievalUtils.getTeamCompositionOrThrow(id);
+                update(existingTeamComposition, teamComposition);
+            }
+        }
+        else
         if (teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId).isPresent())
         {
             TeamComposition teamCompositionExisting = entityRetrievalUtils.getTeamCompositionByTournamentIdAndParentTeamIdOrThrow(tournamentId, parentTeamId);
@@ -46,6 +56,14 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         else {
             teamCompositionRepository.save(teamComposition);
         }
+    }
+
+    @Transactional
+    private void update(TeamComposition existingTeamComposition, TeamComposition teamComposition)
+    {
+        existingTeamComposition.setParentTeam(teamComposition.getParentTeam());
+        existingTeamComposition.setTournament(teamComposition.getTournament());
+        existingTeamComposition.setPlayers(teamComposition.getPlayers());
     }
 
     @Transactional

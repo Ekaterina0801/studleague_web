@@ -13,6 +13,7 @@ import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,6 @@ public class ResultServiceImpl implements ResultService {
     private FullResultFactory fullResultFactory;
 
 
-
     @Override
     @Transactional
     public FullResult getFullResultById(Long id) {
@@ -65,21 +65,33 @@ public class ResultServiceImpl implements ResultService {
     @Override
     @Transactional
     public void saveFullResult(FullResult fullResult) {
-        List<Controversial> controversials = fullResult.getControversials();
-        for (Controversial controversial : controversials) {
+        for (Controversial controversial : fullResult.getControversials()) {
             controversial.setFullResult(fullResult);
         }
         Long teamId = fullResult.getTeam().getId();
         Long tournamentId = fullResult.getTournament().getId();
-        if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId))
-        {
+        Long resultId = fullResult.getId();
+        if (resultId != null) {
+            if (resultRepository.existsById(resultId)) {
+                FullResult existingResult = entityRetrievalUtils.getResultOrThrow(resultId);
+                updateFullResult(existingResult, fullResult);
+            }
+        } else if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId)) {
             FullResult existingFullResult = entityRetrievalUtils.getResultByTeamIdAndTournamentIdOrThrow(teamId, tournamentId);
-            existingFullResult.setTotalScore(fullResult.getTotalScore());
-            resultRepository.save(existingFullResult);
-        }
-        else {
+            updateFullResult(existingFullResult, fullResult);
+        } else {
             resultRepository.save(fullResult);
         }
+    }
+
+    @Transactional
+    private void updateFullResult(FullResult existingFullResult, FullResult newFullResult) {
+        existingFullResult.setMask_results(newFullResult.getMask_results());
+        existingFullResult.setControversials(newFullResult.getControversials());
+        existingFullResult.setTournament(newFullResult.getTournament());
+        existingFullResult.setTeam(newFullResult.getTeam());
+        existingFullResult.setTotalScore(newFullResult.getTotalScore());
+        resultRepository.save(existingFullResult);
     }
 
     @Override
@@ -115,14 +127,13 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public void deleteAllResults()
-    {
+    public void deleteAllResults() {
         resultRepository.deleteAll();
     }
 
     @Override
     public boolean isManager(Long userId, Long resultId) {
-        if (userId==null)
+        if (userId == null)
             return false;
         FullResult result = entityRetrievalUtils.getResultOrThrow(resultId);
         Long leagueId = result.getTeam().getLeague().getId();
@@ -131,7 +142,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public boolean isManager(Long userId, FullResultDTO resultDTO) {
-        if (userId==null)
+        if (userId == null)
             return false;
         FullResult result = fullResultFactory.toEntity(resultDTO);
         Long leagueId = result.getTeam().getLeague().getId();
@@ -150,7 +161,8 @@ public class ResultServiceImpl implements ResultService {
 
         return fullResultsTable;
     }
-//PageRequest
+
+    //PageRequest
     //async
     private InfoTeamResults createInfoTeamResults(FullResult fullResult, int counter) {
         InfoTeamResults resultRow = new InfoTeamResults();
@@ -163,14 +175,13 @@ public class ResultServiceImpl implements ResultService {
         int totalScore = 0;
         int countQuestions = 0;
         List<Player> players = playerRepository.findAllByTeamIdAndTournamentId(fullResult.getTeam().getId(), fullResult.getTournament().getId());
-        if (maskResults!=null)
-        {
-        for (int i = 0; i < maskResults.length(); i++) {
-            String answer = String.valueOf(maskResults.charAt(i));
-            questionNumbers.add(i + 1);
-            totalScore += parseAnswer(answer, answers);
-        }
-        countQuestions = maskResults.length();
+        if (maskResults != null) {
+            for (int i = 0; i < maskResults.length(); i++) {
+                String answer = String.valueOf(maskResults.charAt(i));
+                questionNumbers.add(i + 1);
+                totalScore += parseAnswer(answer, answers);
+            }
+            countQuestions = maskResults.length();
         }
         resultRow.setPlayers(players);
         resultRow.setAnswers(answers);
@@ -270,13 +281,10 @@ public class ResultServiceImpl implements ResultService {
     }
 
 
-
-
     private double calculateStandardPoints(List<Double> scores, int numWorstGamesToExclude) {
         scores = scores.stream().sorted().collect(Collectors.toList());
         int scoresLength = scores.size();
-        if (scoresLength>numWorstGamesToExclude)
-        {
+        if (scoresLength > numWorstGamesToExclude) {
             scores = scores.subList(numWorstGamesToExclude, scores.size());
         }
 
@@ -293,7 +301,6 @@ public class ResultServiceImpl implements ResultService {
         double totalPoints = scores.stream().mapToDouble(Double::doubleValue).sum();
         return (maxTournamentScore > 0) ? totalPoints / maxTournamentScore : 0;
     }
-
 
 
     private int calculateMicromatchPoints(FullResult result) {
