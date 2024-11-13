@@ -128,7 +128,7 @@ public class Team {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Team team = (Team) o;
-        return id == team.id && idSite == team.idSite && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league);
+        return Objects.equals(id, team.id) && Objects.equals(idSite, team.idSite) && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league);
     }
 
     @Override

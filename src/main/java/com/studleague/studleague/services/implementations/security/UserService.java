@@ -56,6 +56,11 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
+    public User getByEmail(String email) throws NotFoundException {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
     /**
      * Получение пользователя для Spring Security
      *

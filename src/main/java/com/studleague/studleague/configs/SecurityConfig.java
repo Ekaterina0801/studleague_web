@@ -41,6 +41,9 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
         return new JwtAuthenticationFilter(jwtService,userService);
@@ -75,6 +78,7 @@ public class SecurityConfig {
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
+                .exceptionHandling((exception)->exception.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 

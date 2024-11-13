@@ -47,6 +47,9 @@ public class ControversialServiceImpl implements ControversialService {
                 Controversial existingControversial = entityRetrievalUtils.getControversialOrThrow(controversial.getId());
                 updateControversial(existingControversial, controversial);
             }
+            else{
+                controversialRepository.save(controversial);
+            }
         } else if (controversialRepository.existsByFullResultIdAndQuestionNumber(resultId, questionNumber)) {
             Controversial existingControversial = entityRetrievalUtils.getControversialByResultIdAndQuestionNumberOrThrow(resultId, questionNumber);
             updateControversial(existingControversial, controversial);

@@ -62,7 +62,7 @@ public class ResultServiceImpl implements ResultService {
         return resultRepository.findAll();
     }
 
-    @Override
+   /* @Override
     @Transactional
     public void saveFullResult(FullResult fullResult) {
         for (Controversial controversial : fullResult.getControversials()) {
@@ -82,7 +82,32 @@ public class ResultServiceImpl implements ResultService {
         } else {
             resultRepository.save(fullResult);
         }
-    }
+    }*/
+   @Override
+   @Transactional
+   public void saveFullResult(FullResult fullResult) {
+       if (fullResult.getId() != null && resultRepository.existsById(fullResult.getId())) {
+           FullResult existingFullResult = resultRepository.findById(fullResult.getId()).orElse(null);
+
+           if (existingFullResult != null) {
+               //existingFullResult.getControversials().removeIf(existingControversial ->
+                       //!fullResult.getControversials().contains(existingControversial)
+               //);
+
+               for (Controversial controversial : fullResult.getControversials()) {
+                   if (!existingFullResult.getControversials().contains(controversial)) {
+                       existingFullResult.addControversialToFullResult(controversial);
+                   }
+               }
+
+               existingFullResult.setMask_results(fullResult.getMask_results());
+               existingFullResult.setTotalScore(fullResult.getTotalScore());
+               resultRepository.save(existingFullResult);
+           }
+       }
+       resultRepository.save(fullResult);
+   }
+
 
     @Transactional
     private void updateFullResult(FullResult existingFullResult, FullResult newFullResult) {

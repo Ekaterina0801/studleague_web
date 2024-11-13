@@ -13,4 +13,6 @@ public interface SystemResultRepository extends JpaRepository<SystemResult, Long
 
     Optional<SystemResult> findByNameIgnoreCase(String name);
 
+    boolean existsByNameIgnoreCase(String name);
+
 }

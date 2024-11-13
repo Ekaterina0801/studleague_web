@@ -14,6 +14,7 @@ import java.util.List;
 public class TeamDTO {
     private Long id;
 
+    @JsonProperty("name")
     private String teamName;
 
     private String university;
