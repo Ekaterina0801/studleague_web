@@ -77,7 +77,7 @@ public class TeamServiceImpl implements TeamService {
                 Team existingTeam = entityRetrievalUtils.getTeamOrThrow(id);
                 updateTeam(existingTeam, team);
             }
-        } else if (idSite != 0) {
+        } else if (idSite != null) {
             if (teamRepository.existsByIdSite(idSite)) {
                 Team existingTeam = entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
                 updateTeam(existingTeam, team);

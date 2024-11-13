@@ -316,6 +316,13 @@ public class WebClientController {
         return "login";
     }
 
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
+        model.addAttribute("token", token);
+        return "reset-password";
+    }
+
+
     @PostMapping("/sign-in")
     public String processSignIn(@ModelAttribute SignInRequest signInRequest, RedirectAttributes redirectAttributes, HttpSession session) {
         try {

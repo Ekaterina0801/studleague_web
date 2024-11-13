@@ -48,7 +48,7 @@ public class SystemResultServiceImpl implements SystemResultService {
                 SystemResult existingSystemResult = entityRetrievalUtils.getSystemResultOrThrow(id);
                 update(existingSystemResult, systemResult);
             }
-        } else if (systemResultRepository.findByNameIgnoreCase(systemResult.getName()).isPresent()) {
+        } else if (systemResultRepository.existsByNameIgnoreCase(systemResult.getName())) {
             SystemResult systemResultExisting = entityRetrievalUtils.getSystemResultByNameOrThrow(systemResult.getName());
             update(systemResultExisting, systemResult);
         } else {

@@ -47,7 +47,10 @@ public class FullResult {
     @Column(name="total_score")
     private Integer totalScore;
 
-    @OneToMany(mappedBy = "fullResult", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
+    @OneToMany(mappedBy = "fullResult", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,CascadeType.PERSIST}
+            //
+            //cascade = CascadeType.ALL
+            //
             ,orphanRemoval=true)
     @ToString.Exclude
     @Builder.Default
@@ -56,7 +59,11 @@ public class FullResult {
 
     public void addControversialToFullResult(Controversial controversial){
         if(!controversials.contains(controversial))
+        {
             controversials.add(controversial);
+            controversial.setFullResult(this);
+        }
+
     }
 
     public void deleteControversialFromFullResult(Controversial controversial)

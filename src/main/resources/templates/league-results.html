@@ -21,6 +21,7 @@
             event.preventDefault();
             const form = document.getElementById('systemForm');
             const systemResultId = form.systemResultId.value;
+            console.log(systemResultId);
             const leagueId = form.leagueId.value;
 
             const url = `/api/leagues/${leagueId}/system-results?systemResultId=${systemResultId}`;

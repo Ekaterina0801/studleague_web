@@ -88,6 +88,7 @@ public class SiteService {
         if (!tournamentService.existsByIdSite(tournamentId)) {
             TournamentDTO tournamentDto = fetchTournamentFromApi(tournamentId, entity);
             tournamentDto.setIdSite(tournamentDto.getId());
+            tournamentDto.setId(null);
             tournamentDto.setLeagueIds(Collections.singletonList(leagueId));
 
             tournament = tournamentFactory.toEntity(tournamentDto);
@@ -118,18 +119,25 @@ public class SiteService {
         teamDetails.getTeam().setLeagueId(leagueId);
         teamDetails.getTeam().setIdSite(teamDetails.getTeam().getId());
 
+
         Team teamEntity = mapAndSaveTeam(teamDetails);
         List<Player> playersEntity = mapAndSavePlayers(teamDetails.getTeamMembers(), teamEntity, tournament);
 
         if (teamDetails.getMask() != null) {
             FullResult fullResult = FullResult.builder()
+                    .id(null)
                     .team(teamEntity)
                     .totalScore(teamDetails.getQuestionsTotal())
                     .tournament(tournament)
                     .mask_results(teamDetails.getMask())
                     .build();
             fullResult.setTeam(teamEntity);
-            fullResult.setControversials(teamDetails.getControversials());
+            for (Controversial controversial : teamDetails.getControversials()) {
+                //fullResult
+                    controversial.setId(null);
+                    fullResult.addControversialToFullResult(controversial);
+                }
+            //fullResult.setControversials(teamDetails.getControversials());
             resultService.saveFullResult(fullResult);
         }
         tournament.addTeam(teamEntity);
@@ -141,7 +149,8 @@ public class SiteService {
         Team teamEntity;
         Long idSite = teamDto.getId();
         if (!teamService.existsByIdSite(idSite)) {
-            teamDto.setId(0L);
+            teamDto.setId(null);
+            teamDto.setIdSite(idSite);
             teamEntity = teamFactory.toEntity(teamDto);
             teamService.saveTeam(teamEntity);
         } else {
@@ -176,7 +185,7 @@ public class SiteService {
     private Player findOrCreatePlayer(PlayerDTO playerDto) {
         if (!playerService.existsByIdSite(playerDto.getId())) {
             PlayerDTO newPlayer = new PlayerDTO(
-                    0L,
+                    null,
                     playerDto.getName(),
                     playerDto.getPatronymic(),
                     playerDto.getSurname(),
