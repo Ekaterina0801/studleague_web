@@ -31,7 +31,7 @@ public class FullResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade ={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name="team_id")
     private Team team;
 
@@ -47,10 +47,7 @@ public class FullResult {
     @Column(name="total_score")
     private Integer totalScore;
 
-    @OneToMany(mappedBy = "fullResult", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,CascadeType.PERSIST}
-            //
-            //cascade = CascadeType.ALL
-            //
+    @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL
             ,orphanRemoval=true)
     @ToString.Exclude
     @Builder.Default
@@ -90,12 +87,12 @@ public class FullResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FullResult that = (FullResult) o;
-        return Objects.equals(id, that.id) && Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results);
+        return Objects.equals(team, that.team) && Objects.equals(tournament, that.tournament) && Objects.equals(mask_results, that.mask_results);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, team, tournament, mask_results);
+        return Objects.hash(team, tournament, mask_results);
     }
 
     public void setMask_results(String mask_results) {

@@ -69,25 +69,29 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public void saveTeam(Team team) {
-
         Long idSite = team.getIdSite();
         Long id = team.getId();
-        if (id != null) {
-            if (teamRepository.existsById(id)) {
-                Team existingTeam = entityRetrievalUtils.getTeamOrThrow(id);
-                updateTeam(existingTeam, team);
-            }
-        } else if (idSite != null) {
-            if (teamRepository.existsByIdSite(idSite)) {
+        Long leagueId = team.getLeague().getId();
+
+        if (idSite != null) {
+            if (teamRepository.existsByIdSite(idSite) && leagueContainsTeam(leagueId, idSite)) {
                 Team existingTeam = entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
                 updateTeam(existingTeam, team);
-            } else {
-                teamRepository.save(team);
+                return;
             }
-        } else {
-            teamRepository.save(team);
         }
+
+        if (id != null && teamRepository.existsById(id)) {
+            Team existingTeam = entityRetrievalUtils.getTeamOrThrow(id);
+            updateTeam(existingTeam, team);
+            return;
+        }
+        teamRepository.save(team);
     }
+    private boolean leagueContainsTeam(Long leagueId, Long idSite) {
+        return teamRepository.existsByIdSiteAndLeagueId(idSite, leagueId);
+    }
+
 
     @Transactional
     private void updateTeam(Team existingTeam, Team team) {
@@ -106,7 +110,14 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public void deleteTeam(Long id) {
-        teamRepository.deleteById(id);
+        Team team = entityRetrievalUtils.getTeamOrThrow(id);
+        if (!team.getTournaments().isEmpty()) {
+            for (Tournament tournament : team.getTournaments()) {
+                tournament.deleteTeam(team);
+            }
+        }
+        teamRepository.delete(team);
+        //teamRepository.deleteById(id);
     }
 
     @Override
@@ -191,7 +202,7 @@ public class TeamServiceImpl implements TeamService {
     public boolean isManager(Long userId, TeamDTO teamDTO) {
         if (userId == null)
             return false;
-        Team team = teamFactory.toEntity(teamDTO);
+        Team team = teamFactory.mapToEntity(teamDTO);
         return leagueService.isManager(userId, team.getLeague().getId());
     }
 

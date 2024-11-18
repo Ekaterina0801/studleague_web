@@ -33,8 +33,8 @@ public class PlayerDTO {
     @JsonProperty("idSite")
     private Long idSite;
     @JsonProperty("teams")
-    private List<Long> teamIds = new ArrayList<>();
-    private List<Long> teamsCompositionsIds = new ArrayList<>();
+    private List<TeamDTO> teams = new ArrayList<>();
+    private List<TeamCompositionDTO> teamsCompositions = new ArrayList<>();
 
 }
 

@@ -9,36 +9,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TransferFactory {
+public class TransferFactory implements DTOFactory<TransferDTO, Transfer>{
 
-    @Autowired
-    PlayerRepository playerDao;
-
-    @Autowired
-    TeamRepository teamDao;
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
-    public Transfer toEntity(TransferDTO transferDTO) {
+    @Autowired
+    private PlayerFactory playerFactory;
+
+    @Autowired
+    private TeamFactory teamFactory;
+
+    public Transfer mapToEntity(TransferDTO transferDTO) {
         if (transferDTO == null) {
             return null;
         }
-        Team oldTeam = entityRetrievalUtils.getTeamOrThrow(transferDTO.getOldTeamId());
-        Team newTeam = entityRetrievalUtils.getTeamOrThrow(transferDTO.getNewTeamId());
-        Player player = entityRetrievalUtils.getPlayerOrThrow(transferDTO.getPlayerId());
-
         return Transfer.builder()
                 .id(transferDTO.getId())
                 .transferDate(transferDTO.getTransferDate())
                 .comments(transferDTO.getComments())
-                .player(player)
-                .oldTeam(oldTeam)
-                .newTeam(newTeam)
+                .player(playerFactory.mapToEntity(transferDTO.getPlayer()))
+                .oldTeam(teamFactory.mapToEntity(transferDTO.getOldTeam()))
+                .newTeam(teamFactory.mapToEntity(transferDTO.getNewTeam()))
                 .build();
     }
 
-    public TransferDTO toDTO(Transfer transfer) {
+    public TransferDTO mapToDto(Transfer transfer) {
         if (transfer == null) {
             return null;
         }
@@ -49,13 +46,13 @@ public class TransferFactory {
                 .comments(transfer.getComments());
 
         if (transfer.getPlayer() != null) {
-            transferDTOBuilder.playerId(transfer.getPlayer().getId());
+            transferDTOBuilder.player(playerFactory.mapToDto(transfer.getPlayer()));
         }
         if (transfer.getOldTeam() != null) {
-            transferDTOBuilder.oldTeamId(transfer.getOldTeam().getId());
+            transferDTOBuilder.oldTeam(teamFactory.mapToDto(transfer.getOldTeam()));
         }
         if (transfer.getNewTeam() != null) {
-            transferDTOBuilder.newTeamId(transfer.getNewTeam().getId());
+            transferDTOBuilder.newTeam(teamFactory.mapToDto(transfer.getNewTeam()));
         }
 
         return transferDTOBuilder.build();

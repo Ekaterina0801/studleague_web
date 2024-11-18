@@ -20,7 +20,7 @@ public class TeamDetailsDTO {
     private String mask;
     private Integer questionsTotal;
     private String position;
-    private List<Controversial> controversials = new ArrayList<>();
+    private List<ControversialDTO> controversials = new ArrayList<>();
     private List<TeamMemberDTO> teamMembers = new ArrayList<>();
 
 }

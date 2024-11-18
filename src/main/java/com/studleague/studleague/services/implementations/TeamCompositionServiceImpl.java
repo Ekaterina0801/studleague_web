@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service("teamCompositionService")
 public class TeamCompositionServiceImpl implements TeamCompositionService {
@@ -39,26 +40,23 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         Long tournamentId = teamComposition.getTournament().getId();
         Long parentTeamId = teamComposition.getParentTeam().getId();
         Long id = teamComposition.getId();
-        if (id!=null)
-        {
-            if (teamCompositionRepository.existsById(id))
-            {
-                TeamComposition existingTeamComposition = entityRetrievalUtils.getTeamCompositionOrThrow(id);
-                update(existingTeamComposition, teamComposition);
-            }
-        }
-        else
-        if (teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId,parentTeamId).isPresent())
-        {
-            TeamComposition teamCompositionExisting = entityRetrievalUtils.getTeamCompositionByTournamentIdAndParentTeamIdOrThrow(tournamentId, parentTeamId);
-            teamCompositionRepository.save(teamCompositionExisting);
-        }
-        else {
+        Optional<TeamComposition> existingOpt =
+                id != null ? teamCompositionRepository.findById(id)
+                        : teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId, parentTeamId);
+
+        if (existingOpt.isPresent()) {
+            TeamComposition existingTeamComposition = existingOpt.get();
+            update(existingTeamComposition, teamComposition);
+            teamCompositionRepository.saveAndFlush(existingTeamComposition);
+        } else {
             teamCompositionRepository.save(teamComposition);
         }
     }
 
-    @Transactional
+
+
+
+
     private void update(TeamComposition existingTeamComposition, TeamComposition teamComposition)
     {
         existingTeamComposition.setParentTeam(teamComposition.getParentTeam());
@@ -109,7 +107,7 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
     public boolean isManager(Long userId, TeamCompositionDTO teamCompositionDTO) {
         if (userId==null)
             return false;
-        TeamComposition teamComposition = teamCompositionFactory.toEntity(teamCompositionDTO);
+        TeamComposition teamComposition = teamCompositionFactory.mapToEntity(teamCompositionDTO);
         Long leagueId = teamComposition.getParentTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

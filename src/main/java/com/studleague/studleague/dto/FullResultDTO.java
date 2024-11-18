@@ -15,17 +15,17 @@ public class FullResultDTO {
 
     private Long id;
 
-    @JsonProperty("teamId")
-    private Long team_id;
+    @JsonProperty("team")
+    private Long teamId;
 
-    @JsonProperty("tournamentId")
-    private Long tournament_id;
+    @JsonProperty("tournament")
+    private Long tournamentId;
 
     @JsonProperty("maskResults")
-    private String mask_results;
+    private String maskResults;
 
     private Integer totalScore;
 
-    private List<Long> controversials = new ArrayList<>();
+    private List<ControversialDTO> controversials = new ArrayList<>();
 
 }

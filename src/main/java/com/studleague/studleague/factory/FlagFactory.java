@@ -4,10 +4,8 @@ import com.studleague.studleague.dto.FlagDTO;
 import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.repository.FlagRepository;
-import com.studleague.studleague.repository.LeagueRepository;
-import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,36 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class FlagFactory {
-
-    @Autowired
-    private TeamRepository teamRepository;
-
-    @Autowired
-    private FlagRepository flagRepository;
-
-    @Autowired
-    private LeagueRepository leagueRepository;
+@NoArgsConstructor
+public class FlagFactory implements DTOFactory<FlagDTO, Flag>{
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
-    public FlagFactory() {
-    }
-
-    public Flag toEntity(FlagDTO flagDTO) {
+    public Flag mapToEntity(FlagDTO flagDTO) {
 
         List<Team> teams = new ArrayList<>();
 
-        // Проверяем на null и пустоту списка teamIds
-        if (flagDTO.getTeamIds() != null && !flagDTO.getTeamIds().isEmpty()) {
-            for (long teamId : flagDTO.getTeamIds()) {
+        if (flagDTO.getTeamsIds() != null && !flagDTO.getTeamsIds().isEmpty()) {
+            for (long teamId : flagDTO.getTeamsIds()) {
                 Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
                 teams.add(team);
             }
         }
 
-        // Получаем лигу с проверкой на null
         League league = entityRetrievalUtils.getLeagueOrThrow(flagDTO.getLeagueId());
 
         return Flag.builder()
@@ -55,16 +40,16 @@ public class FlagFactory {
                 .build();
     }
 
-    public FlagDTO toDTO(Flag flag) {
+    public FlagDTO mapToDto(Flag flag) {
         List<Long> teamIds = flag.getTeams() != null ?
                 flag.getTeams().stream().map(Team::getId).toList() :
-                new ArrayList<>(); // Обрабатываем случай, если teams равен null
+                new ArrayList<>();
 
         return FlagDTO.builder()
                 .id(flag.getId())
                 .name(flag.getName())
-                .teamIds(teamIds)
-                .leagueId(flag.getLeague() != null ? flag.getLeague().getId() : null) // Проверяем на null
+                .teamsIds(teamIds)
+                .leagueId(flag.getLeague() != null ? flag.getLeague().getId() : null)
                 .build();
     }
 }

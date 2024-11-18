@@ -116,7 +116,7 @@ public class TransferServiceImpl implements TransferService {
     public boolean isManager(Long userId, TransferDTO transferDTO) {
         if (userId==null)
             return false;
-        Transfer transfer = transferFactory.toEntity(transferDTO);
+        Transfer transfer = transferFactory.mapToEntity(transferDTO);
         Long leagueId = transfer.getOldTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

@@ -3,10 +3,10 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.entities.TeamComposition;
+import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.factory.PlayerFactory;
-import com.studleague.studleague.repository.LeagueRepository;
-import com.studleague.studleague.repository.PlayerRepository;
-import com.studleague.studleague.repository.TeamRepository;
+import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.PlayerService;
@@ -37,6 +37,12 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private PlayerFactory playerFactory;
 
+    @Autowired
+    private TeamCompositionRepository teamCompositionRepository;
+
+    @Autowired
+    private TournamentRepository tournamentRepository;
+
 
     @Override
     @Transactional
@@ -60,7 +66,7 @@ public class PlayerServiceImpl implements PlayerService {
                 Player existingPlayer = entityRetrievalUtils.getPlayerOrThrow(id);
                 updatePlayer(existingPlayer, player);
             }
-        } else if (idSite != 0) {
+        } else if (idSite != null) {
             if (playerRepository.existsByIdSite(idSite)) {
                 Player existingPlayer = entityRetrievalUtils.getPlayerByIdSiteOrThrow(idSite);
                 updatePlayer(existingPlayer, player);
@@ -89,6 +95,19 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     @Transactional
     public void deletePlayer(Long id) {
+        Player player = entityRetrievalUtils.getPlayerOrThrow(id);
+        for (TeamComposition teamComposition:List.copyOf(player.getTeamsCompositions()))
+        {
+            teamComposition.deletePlayer(player);
+        }
+        for (Tournament tournament: player.getTournaments())
+        {
+            tournament.deletePlayer(player);
+        }
+        for (Team team: player.getTeams())
+        {
+            team.deletePlayerFromTeam(player);
+        }
         playerRepository.deleteById(id);
     }
 
@@ -128,7 +147,7 @@ public class PlayerServiceImpl implements PlayerService {
     public boolean isManager(Long userId, PlayerDTO playerDTO) {
         if (userId == null)
             return false;
-        Player player = playerFactory.toEntity(playerDTO);
+        Player player = playerFactory.mapToEntity(playerDTO);
         for (Team team : player.getTeams()) {
             if (leagueService.isManager(userId, team.getLeague().getId()))
                 return true;

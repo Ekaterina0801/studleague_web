@@ -94,8 +94,13 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     @Transactional
     public void deleteTournament(Long id) {
+        Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(id);
+        for (Team team : List.copyOf(tournament.getTeams())) {
+            team.deleteTournamentFromTeam(tournament);
+        }
         tournamentRepository.deleteById(id);
     }
+
 
     @Override
     @Transactional
@@ -239,7 +244,7 @@ public class TournamentServiceImpl implements TournamentService {
     public boolean isManager(Long userId, TournamentDTO tournamentDTO) {
         if (userId == null)
             return false;
-        Tournament tournament = tournamentFactory.toEntity(tournamentDTO);
+        Tournament tournament = tournamentFactory.mapToEntity(tournamentDTO);
         for (League league : tournament.getLeagues())
             if (leagueService.isManager(userId, league.getId()))
                 return true;

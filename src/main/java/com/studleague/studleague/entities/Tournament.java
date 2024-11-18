@@ -40,15 +40,11 @@ public class Tournament {
 
     @Column(name = "dateOfStart")
     @JsonProperty("dateOfStart")
-    //@Temporal(TemporalType.DATE)
-    //@JsonFormat(pattern = "yyyy-MM-dd")
     @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfStart;
 
     @Column(name = "dateOfFinal")
     @JsonProperty("dateOfEnd")
-    //@Temporal(TemporalType.DATE)
-    //@JsonFormat(pattern = "yyyy-MM-dd")
     @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfEnd;
 
@@ -60,8 +56,7 @@ public class Tournament {
     @Builder.Default
     private List<League> leagues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament")
-    //, cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();
@@ -86,7 +81,7 @@ public class Tournament {
     @Builder.Default
     private List<Player> players = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament",cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
     private List<TeamComposition> teamCompositions = new ArrayList<>();
@@ -129,6 +124,7 @@ public class Tournament {
     public void deleteTeam(Team team) {
         if (teams != null) {
             teams.remove(team);
+            team.getTournaments().remove(this);
         }
     }
 

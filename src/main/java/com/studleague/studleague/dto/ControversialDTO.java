@@ -20,7 +20,8 @@ import java.util.Objects;
 @ToString
 @Builder
 public class ControversialDTO {
-    private Long id;
+    @JsonProperty("id")
+    private Long siteId;
     @JsonProperty("questionNumber")
     private int questionNumber;
     private String answer;
@@ -41,7 +42,7 @@ public class ControversialDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ControversialDTO entity = (ControversialDTO) o;
-        return Objects.equals(this.id, entity.id) &&
+        return Objects.equals(this.siteId, entity.siteId) &&
                 Objects.equals(this.questionNumber, entity.questionNumber) &&
                 Objects.equals(this.answer, entity.answer) &&
                 Objects.equals(this.issuedAt, entity.issuedAt) &&
@@ -54,7 +55,7 @@ public class ControversialDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment, fullResultId);
+        return Objects.hash(siteId, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment, fullResultId);
     }
 
 }

@@ -66,7 +66,7 @@ public class Player {
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
-                    CascadeType.DETACH
+                    CascadeType.DETACH,
             },
             mappedBy = "players")
     @ToString.Exclude
@@ -78,7 +78,7 @@ public class Player {
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "player", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
     private List<Transfer> transfers = new ArrayList<>();

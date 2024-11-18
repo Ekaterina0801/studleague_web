@@ -42,8 +42,7 @@ public class SwaggerConfig {
 
     @Bean
     public OpenApiCustomizer openApiCustomizer() {
-        return openApi -> {
-            List<String> excludedKeywords = List.of("entity", "search", "property", "profile");
+        return openApi -> {List<String> excludedKeywords = List.of();
 
             openApi.getPaths().entrySet().removeIf(entry -> {
                 PathItem pathItem = entry.getValue();

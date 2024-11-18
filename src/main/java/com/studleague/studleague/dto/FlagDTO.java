@@ -17,6 +17,6 @@ import java.util.List;
 public class FlagDTO {
     private Long id;
     private String name;
-    private List<Long> teamIds;
+    private List<Long> teamsIds;
     private Long leagueId;
 }

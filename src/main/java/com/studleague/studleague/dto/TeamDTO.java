@@ -19,15 +19,15 @@ public class TeamDTO {
 
     private String university;
 
-    private Long leagueId;
+    private LeagueDTO league;
 
     private Long idSite;
 
     @Builder.Default
-    private List<Long> playersIds = new ArrayList<>();
+    private List<PlayerDTO> players = new ArrayList<>();
 
     @Builder.Default
-    private List<Long> tournamentsIds = new ArrayList<>();
+    private List<TournamentDTO> tournaments = new ArrayList<>();
 
 
 }

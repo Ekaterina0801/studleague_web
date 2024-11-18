@@ -14,9 +14,9 @@ public class TeamCompositionDTO {
 
     private Long id;
 
-    private Long parentId;
+    private TeamDTO parentTeam;
 
-    private Long tournamentId;
+    private TournamentDTO tournament;
 
-    private List<Long> playerIds;
+    private List<PlayerDTO> players;
 }

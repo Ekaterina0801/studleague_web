@@ -5,6 +5,7 @@ import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.SystemResult;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,25 +13,26 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class SystemResultFactory {
+public class SystemResultFactory implements DTOFactory<SystemResultDTO, SystemResult>{
 
+    @Autowired
     private final EntityRetrievalUtils entityRetrievalUtils;
 
-    public SystemResultDTO toDTO(SystemResult systemResult)
+    public SystemResultDTO mapToDto(SystemResult systemResult)
     {
         return SystemResultDTO.builder().
                 id(systemResult.getId()).
                 name(systemResult.getName()).
                 description(systemResult.getDescription()).
                 countNotIncludedGames(systemResult.getCountNotIncludedGames()).
-                leagueIds(systemResult.getLeagues().stream().map(League::getId).toList()).
+                leaguesIds(systemResult.getLeagues().stream().map(League::getId).toList()).
                 build();
     }
 
-    public SystemResult toEntity(SystemResultDTO systemResultDTO)
+    public SystemResult mapToEntity(SystemResultDTO systemResultDTO)
     {
         List<League> leagues = new ArrayList<>();
-        for (Long leagueId: systemResultDTO.getLeagueIds())
+        for (Long leagueId: systemResultDTO.getLeaguesIds())
         {
             League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
             leagues.add(league);

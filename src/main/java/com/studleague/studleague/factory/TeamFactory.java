@@ -1,83 +1,81 @@
 package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.entities.League;
-import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.repository.LeagueRepository;
 import com.studleague.studleague.repository.PlayerRepository;
 import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Component
-public class TeamFactory {
+public class TeamFactory implements DTOFactory<TeamDTO, Team>{
+
 
     @Autowired
-    private LeagueRepository leagueDao;
-
-    @Autowired
+    @Lazy
     private PlayerFactory playerFactory;
 
     @Autowired
     private TournamentFactory tournamentFactory;
 
     @Autowired
-    private PlayerRepository playerRepository;
-
-    @Autowired
-    private TournamentRepository tournamentRepository;
-
-    @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
+
+    @Autowired
+    private LeagueFactory leagueFactory;
 
     public TeamFactory() {
     }
 
-    public Team toEntity(TeamDTO teamDTO) {
-        long leagueId = teamDTO.getLeagueId();
-        League league  = entityRetrievalUtils.getLeagueOrThrow(leagueId);
-        List<Player> players = new ArrayList<>();
-        List<Tournament> tournaments = new ArrayList<>();
-        for (Long playerId:teamDTO.getPlayersIds())
-        {
-            Player player = entityRetrievalUtils.getPlayerOrThrow(playerId);
-            players.add(player);
-        }
+    public Team mapToEntity(TeamDTO teamDTO) {
 
-        for (Long tournamentId:teamDTO.getTournamentsIds())
-        {
-            Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
-            tournaments.add(tournament);
-
-        }
         return Team.builder()
                 .id(teamDTO.getId())
                 .teamName(teamDTO.getTeamName())
                 .university(teamDTO.getUniversity())
                 .idSite(teamDTO.getIdSite())
-                .players(players)
-                .tournaments(tournaments)
-                .league(league)
+                .players(teamDTO.getPlayers().stream().map(x->playerFactory.mapToEntityWithoutTeams(x)).toList())
+                .tournaments(teamDTO.getTournaments().stream().map(x->tournamentFactory.mapToEntity(x)).toList())
+                .league(leagueFactory.mapToEntity(teamDTO.getLeague()))
                 .build();
     }
 
-    public TeamDTO toDTO(Team team) {
-        List<Long> players = team.getPlayers().stream().map(Player::getId).toList();
-        List<Long> tournaments = team.getTournaments().stream().map(Tournament::getId).toList();
+    public TeamDTO mapToDto(Team team) {
         return TeamDTO.builder()
                 .id(team.getId())
                 .teamName(team.getTeamName())
                 .university(team.getUniversity())
-                .playersIds(players)
-                .tournamentsIds(tournaments)
-                .leagueId(team.getLeague() != null ? team.getLeague().getId() : null)
+                .players(team.getPlayers().stream().map(x->playerFactory.mapToDtoWithoutTeams(x)).toList())
+                .tournaments(team.getTournaments().stream().map(x->tournamentFactory.mapToDto(x)).toList())
+                .league(leagueFactory.mapToDto(team.getLeague()))
+                .idSite(team.getIdSite())
+                .build();
+    }
+
+    public Team mapToEntityWithoutTournaments(TeamDTO teamDTO) {
+
+        return Team.builder()
+                .id(teamDTO.getId())
+                .teamName(teamDTO.getTeamName())
+                .university(teamDTO.getUniversity())
+                .idSite(teamDTO.getIdSite())
+                .players(teamDTO.getPlayers().stream().map(x->playerFactory.mapToEntityWithoutTeams(x)).toList())
+                .league(leagueFactory.mapToEntity(teamDTO.getLeague()))
+                .build();
+    }
+
+    public TeamDTO mapToDtoWithoutTournaments(Team team) {
+        return TeamDTO.builder()
+                .id(team.getId())
+                .teamName(team.getTeamName())
+                .university(team.getUniversity())
+                .players(team.getPlayers().stream().map(x->playerFactory.mapToDtoWithoutTeams(x)).toList())
+                .league(leagueFactory.mapToDto(team.getLeague()))
                 .idSite(team.getIdSite())
                 .build();
     }

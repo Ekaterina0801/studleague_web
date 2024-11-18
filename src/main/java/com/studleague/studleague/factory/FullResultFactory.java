@@ -1,41 +1,29 @@
 package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.FullResultDTO;
-import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.repository.ResultRepository;
-import com.studleague.studleague.repository.TeamRepository;
-import com.studleague.studleague.repository.TournamentRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FullResultFactory {
+public class FullResultFactory implements DTOFactory<FullResultDTO, FullResult>{
 
-    @Autowired
-    ResultRepository resultDao;
-
-    @Autowired
-    TeamRepository teamDao;
-
-    @Autowired
-    TournamentRepository tournamentDao;
 
     @Autowired
     ControversialFactory controversialFactory;
-
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
+
 
     FullResultFactory() {
     }
 
-    public FullResult toEntity(FullResultDTO fullResultDTO) {
-        long teamId = fullResultDTO.getTeam_id();
-        long tournamentId = fullResultDTO.getTournament_id();
+    public FullResult mapToEntity(FullResultDTO fullResultDTO) {
+        long teamId = fullResultDTO.getTeamId();
+        long tournamentId = fullResultDTO.getTournamentId();
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         return FullResult.builder()
@@ -43,19 +31,19 @@ public class FullResultFactory {
                 .team(team)
                 .tournament(tournament)
                 .totalScore(fullResultDTO.getTotalScore())
-                .mask_results(fullResultDTO.getMask_results())
-                .controversials(fullResultDTO.getControversials().stream().map(x->entityRetrievalUtils.getControversialOrThrow(x)).toList())
+                .mask_results(fullResultDTO.getMaskResults())
+                .controversials(fullResultDTO.getControversials().stream().map(x->controversialFactory.mapToEntity(x)).toList())
                 .build();
     }
 
-    public FullResultDTO toDTO(FullResult fullResult) {
+    public FullResultDTO mapToDto(FullResult fullResult) {
         return FullResultDTO.builder()
                 .id(fullResult.getId())
-                .mask_results(fullResult.getMask_results())
-                .team_id(fullResult.getTeam().getId())
+                .maskResults(fullResult.getMask_results())
+                .teamId(fullResult.getTeam().getId())
                 .totalScore(fullResult.getTotalScore())
-                .tournament_id(fullResult.getTournament().getId())
-                .controversials(fullResult.getControversials().stream().map(Controversial::getId).toList())
+                .tournamentId(fullResult.getTournament().getId())
+                .controversials(fullResult.getControversials().stream().map(x->controversialFactory.mapToDto(x)).toList())
                 .build();
     }
 
