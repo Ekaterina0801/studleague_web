@@ -67,7 +67,8 @@ public class EntityRetrievalUtils {
     }
 
     public <T> T getEntityByTwoIdOrThrow(Optional<T> optionalEntity, String entityName, long id1, long id2) {
-        return optionalEntity.orElseThrow(() -> {
+        return optionalEntity.
+                orElseThrow(() -> {
             logger.warn("{} with id1 {} and id2 {} not found", entityName, id1, id2);
             return new RuntimeException(entityName + " not found with ids: " + id1 + " " + id2);
         });

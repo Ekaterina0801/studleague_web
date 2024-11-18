@@ -142,7 +142,7 @@ public class ControversialServiceImpl implements ControversialService {
     public boolean isManager(Long userId, ControversialDTO controversialDTO) {
         if (userId == null)
             return false;
-        Controversial controversial = controversialFactory.toEntity(controversialDTO);
+        Controversial controversial = controversialFactory.mapToEntity(controversialDTO);
         Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

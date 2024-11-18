@@ -28,5 +28,5 @@ public class SystemResultDTO {
     Integer countNotIncludedGames;
 
     @Builder.Default
-    List<Long> leagueIds = new ArrayList<>();
+    List<Long> leaguesIds = new ArrayList<>();
 }

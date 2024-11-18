@@ -8,11 +8,12 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
-@Table(name="team_compositions")
+@Table(name="team_compositions",uniqueConstraints = @UniqueConstraint(columnNames = {"tournament_id", "parent_team_id"}))
 @Builder
 @NoArgsConstructor
 @ToString
@@ -25,11 +26,11 @@ public class TeamComposition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @NotNull
     private Team parentTeam;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @NotNull
     private Tournament tournament;
 
@@ -51,5 +52,18 @@ public class TeamComposition {
     public void deletePlayer(Player player)
     {
         players.remove(player);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamComposition that = (TeamComposition) o;
+        return Objects.equals(parentTeam, that.parentTeam) && Objects.equals(tournament, that.tournament);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parentTeam, tournament);
     }
 }

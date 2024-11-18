@@ -93,7 +93,7 @@ public class FlagServiceImpl implements FlagService {
     public boolean isManager(Long userId, FlagDTO flagDTO) {
         if (userId == null)
             return false;
-        Flag flag = flagFactory.toEntity(flagDTO);
+        Flag flag = flagFactory.mapToEntity(flagDTO);
         Long leagueId = flag.getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

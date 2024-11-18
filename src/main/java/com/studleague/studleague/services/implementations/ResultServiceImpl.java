@@ -86,27 +86,37 @@ public class ResultServiceImpl implements ResultService {
    @Override
    @Transactional
    public void saveFullResult(FullResult fullResult) {
-       if (fullResult.getId() != null && resultRepository.existsById(fullResult.getId())) {
-           FullResult existingFullResult = resultRepository.findById(fullResult.getId()).orElse(null);
+       FullResult existingFullResult = findExistingFullResult(fullResult);
 
-           if (existingFullResult != null) {
-               //existingFullResult.getControversials().removeIf(existingControversial ->
-                       //!fullResult.getControversials().contains(existingControversial)
-               //);
-
-               for (Controversial controversial : fullResult.getControversials()) {
-                   if (!existingFullResult.getControversials().contains(controversial)) {
-                       existingFullResult.addControversialToFullResult(controversial);
-                   }
-               }
-
-               existingFullResult.setMask_results(fullResult.getMask_results());
-               existingFullResult.setTotalScore(fullResult.getTotalScore());
-               resultRepository.save(existingFullResult);
-           }
+       if (existingFullResult != null) {
+           updateExistingFullResult(existingFullResult, fullResult);
+           resultRepository.save(existingFullResult);
+       } else {
+           resultRepository.save(fullResult);
        }
-       resultRepository.save(fullResult);
    }
+
+    private FullResult findExistingFullResult(FullResult fullResult) {
+        if (fullResult.getId() != null && resultRepository.existsById(fullResult.getId())) {
+            return resultRepository.findById(fullResult.getId()).orElse(null);
+        }
+        if (resultRepository.existsByTeamIdAndTournamentId(fullResult.getTeam().getId(), fullResult.getTournament().getId())) {
+            return entityRetrievalUtils.getResultByTeamIdAndTournamentIdOrThrow(
+                    fullResult.getTeam().getId(), fullResult.getTournament().getId());
+        }
+        return null;
+    }
+
+    private void updateExistingFullResult(FullResult existingFullResult, FullResult fullResult) {
+        for (Controversial controversial : fullResult.getControversials()) {
+            if (!existingFullResult.getControversials().contains(controversial)) {
+                existingFullResult.addControversialToFullResult(controversial);
+            }
+        }
+        existingFullResult.setMask_results(fullResult.getMask_results());
+        existingFullResult.setTotalScore(fullResult.getTotalScore());
+    }
+
 
 
     @Transactional
@@ -169,7 +179,7 @@ public class ResultServiceImpl implements ResultService {
     public boolean isManager(Long userId, FullResultDTO resultDTO) {
         if (userId == null)
             return false;
-        FullResult result = fullResultFactory.toEntity(resultDTO);
+        FullResult result = fullResultFactory.mapToEntity(resultDTO);
         Long leagueId = result.getTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

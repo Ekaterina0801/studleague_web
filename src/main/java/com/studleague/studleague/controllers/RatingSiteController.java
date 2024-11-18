@@ -65,9 +65,9 @@ public class RatingSiteController {
         ResponseEntity<TournamentDTO> responseEntityTournament = restTemplate.exchange(URL + "tournaments/"+tournamentDto.getIdSite(), HttpMethod.GET, entity, new ParameterizedTypeReference<TournamentDTO>() {});
 
         TournamentDTO tournamentDto1 = responseEntityTournament.getBody();
-        tournamentDto1.setLeagueIds(tournamentDto.getLeagueIds());
+        tournamentDto1.setLeaguesIds(tournamentDto.getLeaguesIds());
         tournamentDto1.setIdSite(tournamentDto1.getId());
-        Tournament tournament = tournamentFactory.toEntity(tournamentDto1);
+        Tournament tournament = tournamentFactory.mapToEntity(tournamentDto1);
         tournamentService.saveTournament(tournament);
         return tournamentDto1;
     }
@@ -94,9 +94,9 @@ public class RatingSiteController {
         ResponseEntity<TeamDTO> responseEntityTeam = restTemplate.exchange(URL + "teams/"+teamDto.getIdSite(), HttpMethod.GET, entity, new ParameterizedTypeReference<TeamDTO>() {});
 
         TeamDTO teamDto1 = responseEntityTeam.getBody();
-        teamDto1.setLeagueId(teamDto.getLeagueId());
+        teamDto1.setLeague(teamDto.getLeague());
         teamDto1.setIdSite(teamDto1.getId());
-        Team team = teamFactory.toEntity(teamDto1);
+        Team team = teamFactory.mapToEntity(teamDto1);
         teamService.saveTeam(team);
         return teamDto1;
     }

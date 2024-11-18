@@ -1,6 +1,7 @@
 package com.studleague.studleague.controllers;
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.factory.*;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.*;
@@ -13,11 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
+import java.util.Collections;
 import java.util.List;
 @RestController
 @RequestMapping("/api")
@@ -80,6 +83,9 @@ public class WebRestController {
     @Autowired
     private SystemResultFactory systemResultFactory;
 
+    @Autowired
+    private TeamCompositionService teamCompositionService;
+
     /* -------------------------------------------
                       Controversials
     ------------------------------------------- */
@@ -95,7 +101,7 @@ public class WebRestController {
     )
     @GetMapping("/controversials")
     public ResponseEntity<List<ControversialDTO>> getControversials() {
-        return ResponseEntity.ok(controversialService.getAllControversials().stream().map(x -> controversialFactory.toDto(x)).toList());
+        return ResponseEntity.ok(controversialService.getAllControversials().stream().map(x -> controversialFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -111,7 +117,7 @@ public class WebRestController {
     @PostMapping("/controversials")
     @PreAuthorize("hasRole('ROLE_ADMIN') or @controversialService.isManager(authentication.principal.id, #controversialDto)")
     public ResponseEntity<ControversialDTO> addNewControversial(@RequestBody ControversialDTO controversialDto) {
-        Controversial controversial = controversialFactory.toEntity(controversialDto);
+        Controversial controversial = controversialFactory.mapToEntity(controversialDto);
         controversialService.saveControversial(controversial);
         return ResponseEntity.status(HttpStatus.CREATED).body(controversialDto);
     }
@@ -129,7 +135,7 @@ public class WebRestController {
     @GetMapping("/controversials/{id}")
     public ResponseEntity<ControversialDTO> controversialById(@PathVariable long id) {
         Controversial controversial = controversialService.getControversialById(id);
-        ControversialDTO controversialDTO = controversialFactory.toDto(controversial);
+        ControversialDTO controversialDTO = controversialFactory.mapToDto(controversial);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(controversialDTO);
     }
 
@@ -181,7 +187,7 @@ public class WebRestController {
     )
     @GetMapping("/flags")
     public ResponseEntity<List<FlagDTO>> getFlags() {
-        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -196,7 +202,7 @@ public class WebRestController {
     )
     @GetMapping("/flags/{id}")
     public ResponseEntity<FlagDTO> getFlag(@PathVariable long id) {
-        return ResponseEntity.ok(flagFactory.toDTO(flagService.getFlagById(id)));
+        return ResponseEntity.ok(flagFactory.mapToDto(flagService.getFlagById(id)));
     }
 
     /**
@@ -238,7 +244,7 @@ public class WebRestController {
             });
         }
 
-        flagService.saveFlag(flagFactory.toEntity(flagDto));
+        flagService.saveFlag(flagFactory.mapToEntity(flagDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(flagDto);
     }
 
@@ -270,7 +276,7 @@ public class WebRestController {
     )
     @GetMapping("/flags/{id}/teams")
     public ResponseEntity<List<TeamDTO>> getTeamsByFlagId(@PathVariable long id) {
-        return ResponseEntity.ok(teamService.getTeamsByFlagId(id).stream().map(x-> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByFlagId(id).stream().map(x-> teamFactory.mapToDto(x)).toList());
     }
 
     /* -------------------------------------------
@@ -288,7 +294,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues")
     public ResponseEntity<List<LeagueDTO>> getLeagues() {
-        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -303,7 +309,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{id}")
     public ResponseEntity<LeagueDTO> getLeague(@PathVariable long id) {
-        return ResponseEntity.ok(leagueFactory.toDTO(leagueService.getLeagueById(id)));
+        return ResponseEntity.ok(leagueFactory.mapToDto(leagueService.getLeagueById(id)));
     }
 
     /**
@@ -321,7 +327,7 @@ public class WebRestController {
     @PutMapping("/leagues/{leagueId}/system-results")
     public ResponseEntity<LeagueDTO> changeSystemResult(@PathVariable long leagueId, @RequestParam long systemResultId) {
         League league = leagueService.changeSystemResultOfLeague(leagueId, systemResultId);
-        return ResponseEntity.ok(leagueFactory.toDTO(league));
+        return ResponseEntity.ok(leagueFactory.mapToDto(league));
     }
 
     /**
@@ -336,8 +342,11 @@ public class WebRestController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueDto)")
     @PostMapping("/leagues")
-    public ResponseEntity<LeagueDTO> addNewLeague(@RequestBody LeagueDTO leagueDto) {
-        leagueService.saveLeague(leagueFactory.toEntity(leagueDto));
+    public ResponseEntity<LeagueDTO> addNewLeague(@RequestBody LeagueDTO leagueDto, Authentication authentication) {
+        User user  = (User)authentication.getPrincipal();
+        leagueDto.setCreatedById(user.getId());
+        leagueDto.setManagersIds(new ArrayList<>(Collections.singletonList(user.getId())));
+        leagueService.saveLeague(leagueFactory.mapToEntity(leagueDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(leagueDto);
     }
 
@@ -373,7 +382,7 @@ public class WebRestController {
     @PutMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.addTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueFactory.toDTO(updatedLeague));
+        return ResponseEntity.ok(leagueFactory.mapToDto(updatedLeague));
     }
 
     /**
@@ -391,7 +400,7 @@ public class WebRestController {
     @DeleteMapping("/leagues/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.deleteTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueFactory.toDTO(updatedLeague));
+        return ResponseEntity.ok(leagueFactory.mapToDto(updatedLeague));
     }
 
     /**
@@ -407,7 +416,7 @@ public class WebRestController {
     @GetMapping("/leagues/{leagueId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromLeague(@PathVariable long leagueId) {
         League league = leagueService.getLeagueById(leagueId);
-        return ResponseEntity.ok(league.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(league.getTournaments().stream().map(x -> tournamentFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -423,7 +432,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{leagueId}/players/{playerId}/team")
     public ResponseEntity<List<TeamDTO>> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId) {
-        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x-> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x-> teamFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -438,7 +447,7 @@ public class WebRestController {
     )
     @GetMapping("/leagues/{leagueId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromLeague(@PathVariable long leagueId) {
-        return ResponseEntity.ok(teamService.teamsByLeague(leagueId).stream().map(x -> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.teamsByLeague(leagueId).stream().map(x -> teamFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -473,7 +482,7 @@ public class WebRestController {
     )
     @GetMapping("/players")
     public ResponseEntity<List<PlayerDTO>> getPlayers() {
-        return ResponseEntity.ok(playerService.getAllPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(playerService.getAllPlayers().stream().map(x -> playerFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -488,7 +497,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{id}")
     public ResponseEntity<PlayerDTO> getPlayer(@PathVariable long id) {
-        return ResponseEntity.ok(playerFactory.toDTO(playerService.getPlayerById(id)));
+        return ResponseEntity.ok(playerFactory.mapToDto(playerService.getPlayerById(id)));
     }
 
     /**
@@ -504,7 +513,7 @@ public class WebRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @playerService.isManager(authentication.principal.id, #playerDTO)")
     @PostMapping("/players")
     public ResponseEntity<PlayerDTO> addNewPlayer(@RequestBody PlayerDTO playerDTO) {
-        Player player = playerFactory.toEntity(playerDTO);
+        Player player = playerFactory.mapToEntity(playerDTO);
         playerService.savePlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).body(playerDTO);
     }
@@ -538,7 +547,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{playerId}/transfers")
     public ResponseEntity<List<TransferDTO>> allTransfersFromPlayer(@PathVariable long playerId) {
-        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId).stream().map(x -> transferFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getTransfersForPlayer(playerId).stream().map(x -> transferFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -553,7 +562,7 @@ public class WebRestController {
     )
     @GetMapping("/players/{playerId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromPlayer(@PathVariable long playerId) {
-        return ResponseEntity.ok(teamService.getTeamsByPlayerId(playerId).stream().map(x -> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getTeamsByPlayerId(playerId).stream().map(x -> teamFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -569,7 +578,7 @@ public class WebRestController {
     @GetMapping("/players/{playerId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromPlayer(@PathVariable long playerId) {
         Player player = playerService.getPlayerById(playerId);
-        return ResponseEntity.ok(player.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(player.getTournaments().stream().map(x -> tournamentFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -603,7 +612,7 @@ public class WebRestController {
     )
     @GetMapping("/results")
     public ResponseEntity<List<FullResultDTO>> getResults() {
-        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -618,7 +627,7 @@ public class WebRestController {
     )
     @GetMapping("/results/{id}")
     public ResponseEntity<FullResultDTO> getResult(@PathVariable long id) {
-        return ResponseEntity.ok(fullResultFactory.toDTO(resultService.getFullResultById(id)));
+        return ResponseEntity.ok(fullResultFactory.mapToDto(resultService.getFullResultById(id)));
     }
 
     /**
@@ -637,7 +646,7 @@ public class WebRestController {
         if (fullResultDTO == null) {
                     return ResponseEntity.badRequest().build();
                 }
-        FullResult fullResult = fullResultFactory.toEntity(fullResultDTO);
+        FullResult fullResult = fullResultFactory.mapToEntity(fullResultDTO);
         resultService.saveFullResult(fullResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
     }
@@ -672,7 +681,7 @@ public class WebRestController {
     @GetMapping("/results/{resultId}/controversials")
     public ResponseEntity<List<ControversialDTO>> allControversialsFromResult(@PathVariable long resultId) {
         FullResult fullResult = resultService.getFullResultById(resultId);
-        return ResponseEntity.ok(fullResult.getControversials().stream().map(x -> controversialFactory.toDto(x)).toList());
+        return ResponseEntity.ok(fullResult.getControversials().stream().map(x -> controversialFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -690,7 +699,7 @@ public class WebRestController {
     @PutMapping("/results/{resultId}/controversials/{controversialId}")
     public ResponseEntity<FullResultDTO> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId) {
         FullResult fullResult = resultService.addControversialToResult(resultId, controversialId);
-        return ResponseEntity.ok(fullResultFactory.toDTO(fullResult));
+        return ResponseEntity.ok(fullResultFactory.mapToDto(fullResult));
     }
 
     /**
@@ -724,7 +733,7 @@ public class WebRestController {
     )
     @GetMapping("/teams")
     public ResponseEntity<List<TeamDTO>> getTeams() {
-        return ResponseEntity.ok(teamService.getAllTeams().stream().map(x -> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(teamService.getAllTeams().stream().map(x -> teamFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -739,7 +748,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{id}")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable long id) {
-        return ResponseEntity.ok(teamFactory.toDTO(teamService.getTeamById(id)));
+        return ResponseEntity.ok(teamFactory.mapToDto(teamService.getTeamById(id)));
     }
 
     /**
@@ -755,7 +764,7 @@ public class WebRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamDTO)")
     @PostMapping(value = "/teams", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TeamDTO> addNewTeam(@RequestBody TeamDTO teamDTO) {
-        Team team = teamFactory.toEntity(teamDTO);
+        Team team = teamFactory.mapToEntity(teamDTO);
         teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }
@@ -792,7 +801,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
-        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
 
     /**
@@ -810,7 +819,7 @@ public class WebRestController {
     @DeleteMapping("/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> deletePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.deletePlayerFromTeam(teamId, playerId);
-        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
 
     /**
@@ -828,7 +837,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> addFlagToTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.addFlagToTeam(teamId, flagId);
-        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
 
     /**
@@ -846,7 +855,7 @@ public class WebRestController {
     @PutMapping("/teams/{teamId}/leagues/{leagueId}")
     public ResponseEntity<TeamDTO> addLeagueToTeam(@PathVariable long teamId, @PathVariable long leagueId) {
         Team updatedTeam = teamService.addLeagueToTeam(teamId, leagueId);
-        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
 
     /**
@@ -864,7 +873,7 @@ public class WebRestController {
     @DeleteMapping("/teams/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> deleteFlagFromTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
-        return ResponseEntity.ok(teamFactory.toDTO(updatedTeam));
+        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
 
     /**
@@ -880,7 +889,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/players")
     public ResponseEntity<List<PlayerDTO>> allPlayersFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getPlayers().stream().map(x -> playerFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -896,7 +905,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/tournaments")
     public ResponseEntity<List<TournamentDTO>> allTournamentsFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getTournaments().stream().map(x -> tournamentFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -912,7 +921,7 @@ public class WebRestController {
     @GetMapping("/teams/{teamId}/flags")
     public ResponseEntity<List<FlagDTO>> allFlagsFromTeam(@PathVariable long teamId) {
         Team team = teamService.getTeamById(teamId);
-        return ResponseEntity.ok(team.getFlags().stream().map(x -> flagFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(team.getFlags().stream().map(x -> flagFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -927,7 +936,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{teamId}/transfers")
     public ResponseEntity<List<TransferDTO>> allTransfersFromTeam(@PathVariable long teamId) {
-        return ResponseEntity.ok(transferService.getTransfersForTeam(teamId).stream().map(x -> transferFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getTransfersForTeam(teamId).stream().map(x -> transferFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -942,7 +951,7 @@ public class WebRestController {
     )
     @GetMapping("/teams/{teamId}/results")
     public ResponseEntity<List<FullResultDTO>> allResultsForTeam(@PathVariable long teamId) {
-        return ResponseEntity.ok(resultService.getResultsForTeam(teamId).stream().map(x -> fullResultFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(resultService.getResultsForTeam(teamId).stream().map(x -> fullResultFactory.mapToDto(x)).toList());
     }
 
     /* -------------------------------------------
@@ -960,7 +969,7 @@ public class WebRestController {
     )
     @GetMapping("/tournaments")
     public ResponseEntity<List<TournamentDTO>> getTournaments() {
-        return ResponseEntity.ok(tournamentService.getAllTournaments().stream().map(x -> tournamentFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(tournamentService.getAllTournaments().stream().map(x -> tournamentFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -975,7 +984,7 @@ public class WebRestController {
     )
     @GetMapping("/tournaments/{id}")
     public ResponseEntity<TournamentDTO> getTournament(@PathVariable long id) {
-        return ResponseEntity.ok(tournamentFactory.toDTO(tournamentService.getTournamentById(id)));
+        return ResponseEntity.ok(tournamentFactory.mapToDto(tournamentService.getTournamentById(id)));
     }
 
     /**
@@ -991,7 +1000,7 @@ public class WebRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentDTO)")
     @PostMapping(value = "/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TournamentDTO> addNewTournament(@RequestBody TournamentDTO tournamentDto) {
-        Tournament tournament = tournamentFactory.toEntity(tournamentDto);
+        Tournament tournament = tournamentFactory.mapToEntity(tournamentDto);
         tournamentService.saveTournament(tournament);
         return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
     }
@@ -1028,7 +1037,7 @@ public class WebRestController {
     @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
     }
 
     /**
@@ -1046,7 +1055,7 @@ public class WebRestController {
     @DeleteMapping("/tournaments/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> deleteResultFromTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
     }
 
     /**
@@ -1062,7 +1071,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/results")
     public ResponseEntity<List<FullResultDTO>> allResultsFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getResults().stream().map(x -> fullResultFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getResults().stream().map(x -> fullResultFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -1081,7 +1090,7 @@ public class WebRestController {
     @PutMapping("/tournaments/{tournamentId}/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TournamentDTO> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId) {
         Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId, teamId, playerId);
-        return ResponseEntity.ok(tournamentFactory.toDTO(updatedTournament));
+        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
     }
 
     /**
@@ -1097,7 +1106,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/teams")
     public ResponseEntity<List<TeamDTO>> allTeamsFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getTeams().stream().map(x -> teamFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getTeams().stream().map(x -> teamFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -1113,7 +1122,7 @@ public class WebRestController {
     @GetMapping("/tournaments/{tournamentId}/players")
     public ResponseEntity<List<PlayerDTO>> allPlayersFromTournament(@PathVariable long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        return ResponseEntity.ok(tournament.getPlayers().stream().map(x -> playerFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(tournament.getPlayers().stream().map(x -> playerFactory.mapToDto(x)).toList());
     }
 
     /* -------------------------------------------
@@ -1131,7 +1140,7 @@ public class WebRestController {
     )
     @GetMapping("/transfers")
     public ResponseEntity<List<TransferDTO>> getTransfers() {
-        return ResponseEntity.ok(transferService.getAllTransfers().stream().map(x -> transferFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(transferService.getAllTransfers().stream().map(x -> transferFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -1146,7 +1155,7 @@ public class WebRestController {
     )
     @GetMapping("/transfers/{id}")
     public ResponseEntity<TransferDTO> getTransfer(@PathVariable long id) {
-        return ResponseEntity.ok(transferFactory.toDTO(transferService.getTransfer(id)));
+        return ResponseEntity.ok(transferFactory.mapToDto(transferService.getTransfer(id)));
     }
 
     /**
@@ -1162,7 +1171,7 @@ public class WebRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @transferService.isManager(authentication.principal.id, #transferDTO)")
     @PostMapping("/transfers")
     public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO) {
-        Transfer transfer = transferFactory.toEntity(transferDTO);
+        Transfer transfer = transferFactory.mapToEntity(transferDTO);
         transferService.saveTransfer(transfer);
         return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
     }
@@ -1199,7 +1208,7 @@ public class WebRestController {
     )
     @GetMapping("/system-results")
     public ResponseEntity<List<SystemResultDTO>> getSystemResults() {
-        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.toDTO(x)).toList());
+        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -1214,7 +1223,7 @@ public class WebRestController {
     )
     @GetMapping("/system-results/{id}")
     public ResponseEntity<SystemResultDTO> getSystemResult(@PathVariable long id) {
-        return ResponseEntity.ok(systemResultFactory.toDTO(systemResultService.findById(id)));
+        return ResponseEntity.ok(systemResultFactory.mapToDto(systemResultService.findById(id)));
     }
 
     /**
@@ -1230,7 +1239,7 @@ public class WebRestController {
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/system-results")
     public ResponseEntity<SystemResultDTO> addNewSystemResult(@RequestBody SystemResultDTO systemResultDTO) {
-        SystemResult systemResult = systemResultFactory.toEntity(systemResultDTO);
+        SystemResult systemResult = systemResultFactory.mapToEntity(systemResultDTO);
         systemResultService.save(systemResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(systemResultDTO);
     }
@@ -1251,4 +1260,23 @@ public class WebRestController {
         systemResultService.deleteById(id);
         return ResponseEntity.ok("SystemResult with ID = " + id + " was deleted");
     }
+
+    /**
+     * Обрабатывает DELETE запрос для удаления системы подсчета результатов по ID.
+     *
+     * @param id идентификатор системы подсчета результатов, который нужно удалить
+     * @return ResponseEntity<String>, сообщение об успешном удалении
+     */
+    @Operation(
+            summary = "Удалить систему подсчета результатов",
+            description = "Использовать для удаления системы подсчета результатов по id"
+    )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/team-compositions/{id}")
+    public ResponseEntity<String> deleteTeamComposition(@PathVariable long id) {
+        teamCompositionService.deleteById(id);
+        return ResponseEntity.ok("SystemResult with ID = " + id + " was deleted");
+    }
+
+
 }

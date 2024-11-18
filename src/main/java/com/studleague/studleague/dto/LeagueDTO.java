@@ -1,7 +1,9 @@
 package com.studleague.studleague.dto;
 
+import com.studleague.studleague.entities.security.User;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +18,11 @@ import java.util.List;
 public class LeagueDTO {
     private Long id;
     private String name;
-    private List<Long> tournamentIds;
-    private List<Long> teamIds;
+    private List<Long> tournamentsIds = new ArrayList<>();
+    private List<Long> teamsIds = new ArrayList<>();
+    private Long systemResultId;
+    private Long createdById;
+    private List<Long> managersIds = new ArrayList<>();
+
+
 }

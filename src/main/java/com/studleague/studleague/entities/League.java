@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class League {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_leagues_user"))
+    @JoinColumn(name = "user_id")
     @NotNull
     private User createdBy;
 
@@ -48,12 +49,12 @@ public class League {
     private List<Tournament> tournaments = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="system_result_id")
     private SystemResult systemResult;
 

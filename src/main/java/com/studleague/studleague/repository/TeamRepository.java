@@ -23,5 +23,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     boolean existsByIdSite(Long idSite);
 
+    boolean existsByIdSiteAndLeagueId(Long idSite, Long leagueId);
+
 
 }

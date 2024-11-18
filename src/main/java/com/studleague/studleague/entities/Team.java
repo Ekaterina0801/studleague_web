@@ -61,12 +61,12 @@ public class Team {
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();
 
-    @OneToMany(mappedBy="parentTeam")
+    @OneToMany(mappedBy="parentTeam",cascade = CascadeType.ALL)
     @ToString.Exclude
     @Builder.Default
     private List<TeamComposition> teamCompositions = new ArrayList<>();

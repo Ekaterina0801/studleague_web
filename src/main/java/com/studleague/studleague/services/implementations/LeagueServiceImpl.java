@@ -4,10 +4,7 @@ import com.studleague.studleague.dto.LeagueDTO;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.factory.LeagueFactory;
-import com.studleague.studleague.repository.LeagueRepository;
-import com.studleague.studleague.repository.ResultRepository;
-import com.studleague.studleague.repository.SystemResultRepository;
-import com.studleague.studleague.repository.TournamentRepository;
+import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -42,6 +39,9 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Autowired
     private SystemResultRepository systemResultRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
 
     @Override
@@ -89,6 +89,7 @@ public class LeagueServiceImpl implements LeagueService {
     @Override
     @Transactional
     public void deleteLeague(Long id) {
+        League league  = entityRetrievalUtils.getLeagueOrThrow(id);
         leagueRepository.deleteById(id);
     }
 
@@ -140,7 +141,7 @@ public class LeagueServiceImpl implements LeagueService {
     public boolean isManager(Long userId, LeagueDTO leagueDTO) {
         if (userId == null)
             return false;
-        League league = leagueFactory.toEntity(leagueDTO);
+        League league = leagueFactory.mapToEntity(leagueDTO);
         User user = entityRetrievalUtils.getUserOrThrow(userId);
         return league.getManagers().contains(user);
     }
