@@ -1,6 +1,7 @@
 package com.studleague.studleague.dto;
 
-import com.studleague.studleague.entities.Controversial;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
+@JsonIdentityInfo(scope = TeamDetailsDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TeamDetailsDTO {
     private Long id;
     private TeamDTO team;

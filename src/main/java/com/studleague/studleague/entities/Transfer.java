@@ -2,12 +2,8 @@ package com.studleague.studleague.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,7 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 @Table(name="transfers")
-@JsonIdentityInfo(scope= Transfer.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope= Transfer.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Transfer {
 
     @Id

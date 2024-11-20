@@ -7,10 +7,14 @@ import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
+import com.studleague.studleague.specifications.TournamentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -249,6 +253,12 @@ public class TournamentServiceImpl implements TournamentService {
             if (leagueService.isManager(userId, league.getId()))
                 return true;
         return false;
+    }
+
+    @Override
+    public List<Tournament> searchTournaments(String name, Long leagueId, LocalDateTime startDate, LocalDateTime endDate, Sort sort) {
+        Specification<Tournament> spec = TournamentSpecification.searchTournaments(name, leagueId, startDate, endDate, sort);
+        return tournamentRepository.findAll(spec);
     }
 
 

@@ -9,10 +9,14 @@ import com.studleague.studleague.repository.TransferRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TransferService;
+import com.studleague.studleague.specifications.TransferSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service("transferService")
@@ -119,5 +123,11 @@ public class TransferServiceImpl implements TransferService {
         Transfer transfer = transferFactory.mapToEntity(transferDTO);
         Long leagueId = transfer.getOldTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public List<Transfer> searchTransfers(Long playerId, Long oldTeamId, Long newTeamId, Long leagueId, LocalDate startDate, LocalDate endDate, Sort sort) {
+        Specification<Transfer> spec = TransferSpecification.searchTransfers(playerId, oldTeamId, newTeamId, leagueId, startDate, endDate, sort);
+        return transferRepository.findAll(spec);
     }
 }

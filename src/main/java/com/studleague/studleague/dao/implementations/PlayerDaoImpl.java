@@ -1,7 +1,6 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.PlayerDao;
-import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.Player;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -11,7 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.List;
 import java.util.Objects;

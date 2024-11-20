@@ -10,10 +10,14 @@ import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.PlayerService;
+import com.studleague.studleague.specifications.PlayerSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service("playerService")
@@ -153,6 +157,13 @@ public class PlayerServiceImpl implements PlayerService {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, List<String> sortBy, List<String> sortOrder) {
+        Specification<Player> spec = PlayerSpecification.searchPlayers(name, surname, teamId, bornBefore, bornAfter);
+        Sort sort = PlayerSpecification.sortBy(sortBy, sortOrder);
+        return playerRepository.findAll(spec, sort);
     }
 
 

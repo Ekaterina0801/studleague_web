@@ -9,7 +9,10 @@ import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import com.studleague.studleague.services.interfaces.TeamService;
+import com.studleague.studleague.specifications.TeamSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -279,58 +282,11 @@ public class TeamServiceImpl implements TeamService {
         return flag.getTeams();
     }
 
-    /*@Override
-    @Transactional
-    public List<InfoTeamResults> getInfoTeamResultsByTeam(int team_id)
-    {
-        List<InfoTeamResults> infoTeamResults = new ArrayList<>();
-        InfoTeamResults row = new InfoTeamResults();
-        Team team = getTeamById(team_id);
-        List<FullResult> results = fullResultDao.getResultsForTeam(team_id);
-        HashMap<Tournament, FullResult> tournamentsResults = new HashMap<>();
-        for (FullResult result: results)
-        {
-            tournamentsResults.put(result.getTournament(), result);
-        }
-        int counter = 1;
-        HashMap<Tournament, List<Player>> tournamentsPlayers = getTournamentsPlayersByTeam(team_id);
-        for (Tournament tournament:tournamentsPlayers.keySet())
-        {
-            row.setNumber(counter);
-            counter+=1;
-            row.setPlayers(tournamentsPlayers.get(tournament));
-            row.setTeam(team);
-            row.setTournament(tournament);
-            if (tournamentsResults.containsKey(tournament))
-            {
-                FullResult result = tournamentsResults.get(tournament);
-                String maskResults = result.getMask_results();
-                List<Integer> answers = new ArrayList<>();
-                List<Integer> questionNumbers = new ArrayList<>();
-                int totalScore = 0;
-                for (int i = 0; i < maskResults.length(); i++){
-                    String answer = String.valueOf(maskResults.charAt(i));
-                    questionNumbers.add(i+1);
-                    try {
-                        int number = Integer.parseInt(answer);
-                        answers.add(number);
-                        totalScore+=number;
-                    } catch (NumberFormatException e) {
-                        answers.add(0);
-                    }
-                }
-                row.setAnswers(answers);
-                row.setTotalScore(totalScore);
-                row.setCountQuestions(maskResults.length());
-                row.setQuestionNumbers(questionNumbers);
-
-            }
-            infoTeamResults.add(row);
-        }
-        return infoTeamResults;
+    @Override
+    public List<Team> searchTeams(String name, Long leagueId, List<Long> flagIds, Sort sort) {
+        Specification<Team> spec = TeamSpecification.searchTeams(name, leagueId, flagIds, sort);
+        return teamRepository.findAll(spec); // Сортировка будет применена автоматически
     }
-*/
-
 
     @Override
     @Transactional

@@ -2,11 +2,9 @@ package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.Tournament;
+import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface TeamService {
@@ -47,5 +45,7 @@ public interface TeamService {
     boolean isManager(Long userId, Long teamId);
 
     boolean isManager(Long userId, TeamDTO teamDTO);
+
+    List<Team> searchTeams(String name, Long leagueId, List<Long> flagIds, Sort sort);
 
 }

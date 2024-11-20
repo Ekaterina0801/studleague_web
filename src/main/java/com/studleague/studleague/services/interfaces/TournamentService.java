@@ -4,7 +4,9 @@ import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
+import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,4 +44,6 @@ public interface TournamentService {
     boolean isManager(Long userId, Long tournamentId);
 
     boolean isManager(Long userId, TournamentDTO tournamentDTO);
+
+    List<Tournament> searchTournaments(String name, Long leagueId, LocalDateTime startDate, LocalDateTime endDate, Sort sort);
 }

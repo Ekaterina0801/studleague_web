@@ -1,14 +1,12 @@
 package com.studleague.studleague.dao.implementations;
 
 import com.studleague.studleague.dao.interfaces.LeagueDao;
-import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.League;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
-
 
 import java.util.List;
 import java.util.Objects;

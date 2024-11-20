@@ -6,7 +6,10 @@ import com.studleague.studleague.repository.TeamCompositionRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
+import com.studleague.studleague.specifications.TeamCompositionSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,6 +113,11 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         TeamComposition teamComposition = teamCompositionFactory.mapToEntity(teamCompositionDTO);
         Long leagueId = teamComposition.getParentTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
+    }
+
+    public List<TeamComposition> searchTeamCompositions(Long teamId, Long tournamentId, Sort sort) {
+        Specification<TeamComposition> spec = TeamCompositionSpecification.searchTeamCompositions(teamId, tournamentId, sort);
+        return teamCompositionRepository.findAll(spec);
     }
 
 }

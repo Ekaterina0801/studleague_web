@@ -1,13 +1,10 @@
 package com.studleague.studleague.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +17,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonIdentityInfo(scope = League.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name="leagues")
+//@JsonIdentityInfo(scope=League.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class League {
 
     @Id
@@ -38,7 +35,7 @@ public class League {
     @NotNull
     private User createdBy;
 
-    @ManyToMany(mappedBy = "leagues", cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "leagues", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<User> managers = new ArrayList<>();
@@ -54,8 +51,9 @@ public class League {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToOne(cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="system_result_id")
+    @ToString.Exclude
     private SystemResult systemResult;
 
     public void addTournamentToLeague(Tournament tournament){

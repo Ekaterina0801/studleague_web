@@ -2,11 +2,10 @@ package com.studleague.studleague.services.interfaces;
 
 
 import com.studleague.studleague.dto.TeamCompositionDTO;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.TeamComposition;
-import com.studleague.studleague.entities.Player;
+import org.springframework.data.domain.Sort;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface TeamCompositionService {
     TeamComposition findById(Long id);
@@ -26,5 +25,7 @@ public interface TeamCompositionService {
     boolean isManager(Long userId, Long teamCompositionId);
 
     boolean isManager(Long userId, TeamCompositionDTO teamCompositionDTO);
+
+    List<TeamComposition> searchTeamCompositions(Long teamId, Long tournamentId, Sort sort);
 
 }

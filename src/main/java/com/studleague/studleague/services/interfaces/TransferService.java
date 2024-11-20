@@ -2,7 +2,9 @@ package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.Transfer;
+import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TransferService {
@@ -23,6 +25,8 @@ public interface TransferService {
     boolean isManager(Long userId, Long transferId);
 
     boolean isManager(Long userId, TransferDTO transferDTO);
+
+    List<Transfer> searchTransfers(Long playerId, Long oldTeamId, Long newTeamId, Long leagueId, LocalDate startDate, LocalDate endDate, Sort sort);
 
 
 }
