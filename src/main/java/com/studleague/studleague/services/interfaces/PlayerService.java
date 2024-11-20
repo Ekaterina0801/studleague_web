@@ -3,6 +3,7 @@ package com.studleague.studleague.services.interfaces;
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PlayerService {
@@ -23,4 +24,6 @@ public interface PlayerService {
     boolean isManager(Long userId, Long playerId);
 
     boolean isManager(Long userId, PlayerDTO playerDTO);
+
+    List<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, List<String> sortBy, List<String> sortOrder);
 }

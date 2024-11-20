@@ -26,7 +26,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -151,7 +152,7 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/tournaments/{tournament_id}/results")
     public String tournamentResultsView(@PathVariable long league_id, @PathVariable long tournament_id, Model model) {
-        List<FullResultDTO> resultsDTO = fetchFromApi(BASE_URL + "/tournaments/" + tournament_id + "/results", new ParameterizedTypeReference<List<FullResultDTO>>() {
+        List<FullResultDTO> resultsDTO = fetchFromApi(BASE_URL + "/results?tournamentId=" + tournament_id, new ParameterizedTypeReference<List<FullResultDTO>>() {
         });
         List<FullResult> results = resultsDTO != null
                 ? resultsDTO.stream().map(fullResultFactory::mapToEntity).toList()
@@ -184,7 +185,7 @@ public class WebClientController {
 
     @RequestMapping("/leagues/{league_id}/teams")
     public String teamsView(@PathVariable long league_id, Model model) {
-        List<TeamDTO> teamDTOs = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/teams", new ParameterizedTypeReference<List<TeamDTO>>() {
+        List<TeamDTO> teamDTOs = fetchFromApi(BASE_URL + "/teams?leagueId=" + league_id, new ParameterizedTypeReference<List<TeamDTO>>() {
         });
         model.addAttribute("teams", teamDTOs != null ? teamDTOs.stream().map(teamFactory::mapToEntity).toList() : null);
         model.addAttribute("leagues", fetchLeagues());
@@ -194,7 +195,7 @@ public class WebClientController {
 
     @RequestMapping(value = "/leagues/{league_id}/tournaments")
     public String tournamentsView(@PathVariable long league_id, Model model) {
-        List<TournamentDTO> tournamentDTOs = fetchFromApi(BASE_URL + "/leagues/" + league_id + "/tournaments", new ParameterizedTypeReference<>() {
+        List<TournamentDTO> tournamentDTOs = fetchFromApi(BASE_URL + "/tournaments?leagueId=" + league_id, new ParameterizedTypeReference<>() {
         });
         model.addAttribute("tournaments", tournamentDTOs != null ? tournamentDTOs.stream().map(tournamentFactory::mapToEntity).toList() : null);
         model.addAttribute("leagues", fetchLeagues());
@@ -212,7 +213,7 @@ public class WebClientController {
 
         List<Flag> allFlags = fetchFromApi(BASE_URL + "/flags", new ParameterizedTypeReference<List<FlagDTO>>() {
         }).stream().map(x -> flagFactory.mapToEntity(x)).toList();
-        List<Transfer> transfers = fetchFromApi(BASE_URL + "/teams/" + team_id + "/transfers", new ParameterizedTypeReference<List<TransferDTO>>() {
+        List<Transfer> transfers = fetchFromApi(BASE_URL + "/transfers?teamId=" + team_id, new ParameterizedTypeReference<List<TransferDTO>>() {
         }).stream().map(x -> transferFactory.mapToEntity(x)).toList();
         List<InfoTeamResults> resultsTable = teamService.getInfoTeamResultsByTeam(team_id);
         List<Integer> numbers = generateNumbers(team != null ? team.getTournaments().size() : 0);
@@ -329,10 +330,6 @@ public class WebClientController {
                     entity,
                     JwtAuthenticationResponse.class
             );
-
-            // Сохраняем токен в сессии
-            //String token = response.getBody().getToken();
-            //session.setAttribute("token", token);
 
             redirectAttributes.addFlashAttribute("message", "Успешная авторизация!");
             return "redirect:/leagues/1/tournaments";

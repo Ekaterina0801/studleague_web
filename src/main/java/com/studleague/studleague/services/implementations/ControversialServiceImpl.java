@@ -7,10 +7,14 @@ import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.LeagueService;
+import com.studleague.studleague.specifications.ControversialSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -145,6 +149,13 @@ public class ControversialServiceImpl implements ControversialService {
         Controversial controversial = controversialFactory.mapToEntity(controversialDTO);
         Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
+    }
+
+    @Override
+    public List<Controversial> searchControversials(Integer questionNumber, List<String> statuses, LocalDateTime startDate, LocalDateTime endDate, Long fullResultId, List<String> sortBy, List<String> sortOrder) {
+        Specification<Controversial> spec = ControversialSpecification.searchControversials(questionNumber, statuses, startDate, endDate, fullResultId);
+        Sort sort = ControversialSpecification.sortBy(sortBy, sortOrder);
+        return controversialRepository.findAll(spec, sort);
     }
 
 }

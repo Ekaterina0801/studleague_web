@@ -1,11 +1,8 @@
 package com.studleague.studleague.entities;
 
 
-import com.fasterxml.jackson.annotation.*;
-import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @Table(name="teams")
-@JsonIdentityInfo(scope=Team.class,generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
+//@JsonIdentityInfo(scope=Team.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 public class Team {
 

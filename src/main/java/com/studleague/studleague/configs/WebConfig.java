@@ -39,14 +39,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**");
     }
 
-    /*@Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.studleague.studleague"))
-                .paths(PathSelectors.ant("/controllers/*"))
-                .build();
-    }*/
-
 
 }

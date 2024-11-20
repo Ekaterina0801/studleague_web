@@ -19,6 +19,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 @Table(name="controversials")
+//@JsonIdentityInfo(scope= Controversial.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Controversial {
 
     @Id

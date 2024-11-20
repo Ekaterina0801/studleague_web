@@ -3,6 +3,7 @@ package com.studleague.studleague.services.interfaces;
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,5 +30,7 @@ public interface ControversialService {
     boolean isManager(Long userId, Long controversialId);
 
     boolean isManager(Long userId, ControversialDTO controversialDTO);
+
+    List<Controversial> searchControversials(Integer questionNumber, List<String> statuses, LocalDateTime startDate, LocalDateTime endDate, Long fullResultId, List<String> sortBy, List<String> sortOrder);
 
 }

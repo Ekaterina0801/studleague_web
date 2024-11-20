@@ -1,11 +1,13 @@
 package com.studleague.studleague.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -19,21 +21,31 @@ import java.util.Objects;
 @Setter
 @ToString
 @Builder
+@JsonIdentityInfo(scope = ControversialDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ControversialDTO {
     @JsonProperty("id")
     private Long siteId;
+
     @JsonProperty("questionNumber")
     private int questionNumber;
+
     private String answer;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonProperty("issuedAt")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime issuedAt;
+
     private String status;
+
     private String comment;
+
     @JsonProperty("resolvedAt")
     private String resolvedAt;
+
     @JsonProperty("appealJuryComment")
     private String appealJuryComment;
+
     private Long fullResultId;
 
 
@@ -57,5 +69,6 @@ public class ControversialDTO {
     public int hashCode() {
         return Objects.hash(siteId, questionNumber, answer, issuedAt, status, comment, resolvedAt, appealJuryComment, fullResultId);
     }
+
 
 }

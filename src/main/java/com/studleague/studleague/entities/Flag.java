@@ -1,8 +1,6 @@
 package com.studleague.studleague.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -18,8 +16,8 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @ToString
-@JsonIdentityInfo(scope = Flag.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
+//@JsonIdentityInfo(scope=Flag.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Flag {
 
     @Id

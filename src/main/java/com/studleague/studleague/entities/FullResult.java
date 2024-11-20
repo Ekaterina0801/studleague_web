@@ -1,16 +1,10 @@
 package com.studleague.studleague.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @Table(name="full_results")
-@JsonIdentityInfo(scope = FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope=FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class FullResult {
 
     @Id
@@ -38,7 +32,6 @@ public class FullResult {
     @ManyToOne()
     //cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
     @JoinColumn(name="tournament_id")
-    @JsonBackReference
     private Tournament tournament;
 
     @Column(name="mask_results")

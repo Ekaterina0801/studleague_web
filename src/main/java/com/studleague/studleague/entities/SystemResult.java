@@ -1,7 +1,5 @@
 package com.studleague.studleague.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +16,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(scope = SystemResult.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope=SystemResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SystemResult {
 
     @Id
