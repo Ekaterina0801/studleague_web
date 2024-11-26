@@ -1,5 +1,6 @@
 package com.studleague.studleague.controllers;
 
+import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.factory.TeamFactory;
@@ -86,6 +87,22 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable long id) {
         return ResponseEntity.ok(teamFactory.mapToDto(teamService.getTeamById(id)));
+    }
+
+    /**
+     * Обрабатывает GET запрос на получение команды по ID.
+     *
+     * @param id идентификатор команды
+     * @return ResponseEntity<TeamDTO>, содержащий данные запрашиваемого TeamDTO
+     */
+    @Operation(
+            summary = "Получить команду по айди",
+            description = "Использовать для получения команды по id"
+    )
+    @GetMapping("/{id}/results")
+    public ResponseEntity<List<InfoTeamResults>> getTeamResults(@PathVariable long id) {
+        List<InfoTeamResults> results = teamService.getInfoTeamResultsByTeam(id);
+        return ResponseEntity.ok(teamService.getInfoTeamResultsByTeam(id));
     }
 
     /**
@@ -212,5 +229,6 @@ public class TeamController {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
         return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
+
 
 }

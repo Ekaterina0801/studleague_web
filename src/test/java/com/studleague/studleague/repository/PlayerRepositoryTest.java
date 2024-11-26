@@ -5,17 +5,11 @@ import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -26,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -45,6 +42,9 @@ public class PlayerRepositoryTest {
 
     @Autowired
     private TournamentRepository tournamentRepository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
 
     @BeforeEach
     @Transactional
@@ -85,8 +85,8 @@ public class PlayerRepositoryTest {
 
     @Test
     public void testFindAllByTeamIdAndTournamentId() {
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(123L), "Team", 123L);
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(123456L), "Tournament", 123456L);
+        Team team = entityRetrievalUtils.getTeamOrThrow(123L);
+        Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(123456L);
         List<Player> players = playerRepository.findAllByTeamIdAndTournamentId(team.getId(), tournament.getId());
         assertNotNull(players);
         assertThat(players).isNotEmpty();

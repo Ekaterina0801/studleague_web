@@ -33,6 +33,9 @@ public class TeamDTO {
     private List<PlayerDTO> players = new ArrayList<>();
 
     @Builder.Default
+    private List<FlagDTO> flags = new ArrayList<>();
+
+    @Builder.Default
     private List<TournamentDTO> tournaments = new ArrayList<>();
 
     @Override

@@ -59,7 +59,7 @@ public class Player {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,

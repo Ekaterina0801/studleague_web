@@ -77,6 +77,7 @@ public class PlayerController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<PlayerDTO> getPlayer(@PathVariable long id) {
+        PlayerDTO player = playerFactory.mapToDto(playerService.getPlayerById(id));
         return ResponseEntity.ok(playerFactory.mapToDto(playerService.getPlayerById(id)));
     }
 

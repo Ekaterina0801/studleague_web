@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @JsonIdentityInfo(scope = InfoTeamResults.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class InfoTeamResults {
-    private int number;
+    private int id;
 
     private Team team;
 

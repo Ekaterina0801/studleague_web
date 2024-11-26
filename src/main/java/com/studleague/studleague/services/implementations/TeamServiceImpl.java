@@ -226,7 +226,7 @@ public class TeamServiceImpl implements TeamService {
         int counter = 1;
         for (TeamComposition teamComposition : teamCompositions) {
             InfoTeamResults row = new InfoTeamResults();
-            row.setNumber(counter++);
+            row.setId(counter++);
             row.setPlayers(teamComposition.getPlayers());
             row.setTeam(team);
             row.setTournament(teamComposition.getTournament());
@@ -285,7 +285,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Team> searchTeams(String name, Long leagueId, List<Long> flagIds, Sort sort) {
         Specification<Team> spec = TeamSpecification.searchTeams(name, leagueId, flagIds, sort);
-        return teamRepository.findAll(spec); // Сортировка будет применена автоматически
+        return teamRepository.findAll(spec);
     }
 
     @Override

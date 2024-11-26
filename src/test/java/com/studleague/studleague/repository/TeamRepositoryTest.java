@@ -5,15 +5,12 @@ import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -47,6 +44,9 @@ public class TeamRepositoryTest {
     @Autowired
     private TournamentRepository tournamentRepository;
 
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
+
     @BeforeEach
     @Transactional
     public void setUp() {
@@ -77,7 +77,7 @@ public class TeamRepositoryTest {
 
     @Test
     public void testFindAllByLeagueId() {
-        League league = EntityRetrievalUtils.getEntityByNameOrThrow(leagueRepository.findByNameIgnoreCase("Test League"), "League", "Test League");
+        League league = entityRetrievalUtils.getLeagueByNameOrThrow("Test League");
         List<Team> teams = teamRepository.findAllByLeagueId(league.getId());
         assertThat(teams).isNotEmpty();
         assertThat(teams.get(0).getTeamName()).isEqualTo("Test Team");
@@ -92,8 +92,8 @@ public class TeamRepositoryTest {
 
     @Test
     public void testFindAllByPlayerIdAndLeagueId() {
-        Player player = EntityRetrievalUtils.getEntityOrThrow(playerRepository.findByIdSite(12L), "Player", 12L);
-        League league = EntityRetrievalUtils.getEntityByNameOrThrow(leagueRepository.findByNameIgnoreCase("Test League"), "League", "Test League");
+        Player player = entityRetrievalUtils.getPlayerOrThrow(12L);
+        League league = entityRetrievalUtils.getLeagueByNameOrThrow("Test League");
         List<Team> teams = teamRepository.findAllByPlayerIdAndLeagueId(player.getId(), league.getId());
         assertThat(teams).isEmpty();
     }
