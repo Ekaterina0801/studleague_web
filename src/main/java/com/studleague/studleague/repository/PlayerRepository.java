@@ -1,6 +1,9 @@
 package com.studleague.studleague.repository;
 
 import com.studleague.studleague.entities.Player;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -32,5 +35,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long>, JpaSpecif
             "  WHERE p2.id = p.id AND te2.id <> :teamId AND p MEMBER OF te2.players AND t.id = :tournamentId" +
             ")")
     List<Player> findAllByTeamIdAndTournamentId(@Param("teamId") Long teamId, @Param("tournamentId") Long tournamentId );
+
+    Page<Player> findAll(Specification<Player> specification, Pageable pageable);
 
 }

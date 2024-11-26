@@ -7,6 +7,9 @@ import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tournaments")
@@ -61,13 +63,14 @@ public class TournamentController {
                     """
     )
     @GetMapping
-    public List<TournamentDTO> getTournaments(
+    public Page<TournamentDTO> getTournaments(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long leagueId,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            Pageable pageable
     ) {
         Sort sort = null;
         if (sortField != null && !sortField.isEmpty()) {
@@ -76,9 +79,11 @@ public class TournamentController {
                             ? Sort.Order.asc(sortField)
                             : Sort.Order.desc(sortField)
             );
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
-        List<TournamentDTO> dtos = tournamentService.searchTournaments(name, leagueId, startDate, endDate, sort).stream().map(x -> tournamentFactory.mapToDto(x)).toList();
-        return dtos;
+
+        Page<Tournament> tournamentPage = tournamentService.searchTournaments(name, leagueId, startDate, endDate, sort, pageable);
+        return tournamentPage.map(tournamentFactory::mapToDto);
     }
 
     /**

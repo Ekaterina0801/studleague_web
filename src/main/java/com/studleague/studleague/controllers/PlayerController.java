@@ -7,13 +7,16 @@ import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/players")
@@ -53,16 +56,27 @@ public class PlayerController {
                     """
     )
     @GetMapping
-    public List<PlayerDTO> getPlayers(
+    public Page<PlayerDTO> getPlayers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
             @RequestParam(required = false) Long teamId,
             @RequestParam(required = false) LocalDate bornBefore,
             @RequestParam(required = false) LocalDate bornAfter,
-            @RequestParam(required = false) List<String> sortBy,
-            @RequestParam(required = false) List<String> sortOrder
+            @RequestParam(required = false) String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            Pageable pageable
     ) {
-        return playerService.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sortBy, sortOrder).stream().map(x -> playerFactory.mapToDto(x)).toList();
+        Sort sort = null;
+        if (sortField != null && !sortField.isEmpty()) {
+            sort = Sort.by(
+                    "asc".equalsIgnoreCase(sortDirection)
+                            ? Sort.Order.asc(sortField)
+                            : Sort.Order.desc(sortField)
+            );
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        }
+        Page<Player> playerPage = playerService.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort, pageable);
+        return playerPage.map(playerFactory::mapToDto);
     }
 
     /**

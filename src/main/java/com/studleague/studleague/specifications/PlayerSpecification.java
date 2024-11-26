@@ -5,8 +5,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerSpecification {
 
@@ -45,7 +43,7 @@ public class PlayerSpecification {
     }
 
 
-    public static Specification<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter) {
+    public static Specification<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort) {
         Specification<Player> spec = Specification.where(null);
 
         if (name != null && !name.isEmpty()) {
@@ -68,22 +66,17 @@ public class PlayerSpecification {
             spec = spec.and(bornAfter(bornAfter));
         }
 
-        return spec;
-    }
-
-
-    public static Sort sortBy(List<String> sortBy, List<String> sortOrder) {
-        List<Sort.Order> orders = new ArrayList<>();
-
-        if (sortBy != null && !sortBy.isEmpty()) {
-            for (int i = 0; i < sortBy.size(); i++) {
-                String field = sortBy.get(i);
-                String order = (sortOrder != null && sortOrder.size() > i) ? sortOrder.get(i) : "asc"; // По умолчанию сортировка по возрастанию
-                orders.add(new Sort.Order(order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, field));
+        Specification<Player> finalSpec = spec;
+        return (root, query, criteriaBuilder) -> {
+            if (sort != null) {
+                query.orderBy(sort.stream()
+                        .map(order -> order.isAscending()
+                                ? criteriaBuilder.asc(root.get(order.getProperty()))
+                                : criteriaBuilder.desc(root.get(order.getProperty())))
+                        .toList());
             }
-        }
-
-        return Sort.by(orders);
+            return finalSpec.toPredicate(root, query, criteriaBuilder);
+        };
     }
 }
 

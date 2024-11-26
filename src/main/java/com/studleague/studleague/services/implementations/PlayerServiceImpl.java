@@ -12,6 +12,8 @@ import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import com.studleague.studleague.specifications.PlayerSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -160,10 +162,9 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, List<String> sortBy, List<String> sortOrder) {
-        Specification<Player> spec = PlayerSpecification.searchPlayers(name, surname, teamId, bornBefore, bornAfter);
-        Sort sort = PlayerSpecification.sortBy(sortBy, sortOrder);
-        return playerRepository.findAll(spec, sort);
+    public Page<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable) {
+        Specification<Player> spec = PlayerSpecification.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort);
+        return playerRepository.findAll(spec, pageable);
     }
 
 

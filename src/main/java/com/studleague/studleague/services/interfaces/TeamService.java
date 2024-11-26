@@ -3,6 +3,8 @@ package com.studleague.studleague.services.interfaces;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.Team;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -46,6 +48,6 @@ public interface TeamService {
 
     boolean isManager(Long userId, TeamDTO teamDTO);
 
-    List<Team> searchTeams(String name, Long leagueId, List<Long> flagIds, Sort sort);
+    Page<Team> searchTeams(String name, Long leagueId, List<Long> flagIds, Sort sort, Pageable pageable);
 
 }
