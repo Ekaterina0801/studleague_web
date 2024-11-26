@@ -2,6 +2,9 @@ package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.entities.Player;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,5 +28,5 @@ public interface PlayerService {
 
     boolean isManager(Long userId, PlayerDTO playerDTO);
 
-    List<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, List<String> sortBy, List<String> sortOrder);
+    Page<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable);
 }

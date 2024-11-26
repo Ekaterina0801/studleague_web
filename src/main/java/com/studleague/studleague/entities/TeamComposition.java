@@ -32,7 +32,7 @@ public class TeamComposition {
     @NotNull
     private Tournament tournament;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teamCompositions_players",
             joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     @Builder.Default

@@ -9,6 +9,8 @@ import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import com.studleague.studleague.specifications.TournamentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -256,9 +258,9 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
-    public List<Tournament> searchTournaments(String name, Long leagueId, LocalDateTime startDate, LocalDateTime endDate, Sort sort) {
+    public Page<Tournament> searchTournaments(String name, Long leagueId, LocalDateTime startDate, LocalDateTime endDate, Sort sort, Pageable pageable) {
         Specification<Tournament> spec = TournamentSpecification.searchTournaments(name, leagueId, startDate, endDate, sort);
-        return tournamentRepository.findAll(spec);
+        return tournamentRepository.findAll(spec, pageable);
     }
 
 

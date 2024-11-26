@@ -1,5 +1,6 @@
 package com.studleague.studleague.controllers;
 
+import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.factory.TeamFactory;
@@ -7,6 +8,9 @@ import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,12 +57,13 @@ public class TeamController {
                     """
     )
     @GetMapping
-    public List<TeamDTO> getTeams(
+    public Page<TeamDTO> getTeams(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long leagueId,
             @RequestParam(required = false) List<Long> flagIds,
             @RequestParam(required = false) String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            Pageable pageable
     ) {
         Sort sort = null;
         if (sortField != null && !sortField.isEmpty()) {
@@ -67,9 +72,13 @@ public class TeamController {
                             ? Sort.Order.asc(sortField)
                             : Sort.Order.desc(sortField)
             );
+
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
 
-        return teamService.searchTeams(name, leagueId, flagIds, sort).stream().map(x -> teamFactory.mapToDto(x)).toList();
+        Page<Team> teamPage = teamService.searchTeams(name, leagueId, flagIds, sort, pageable);
+
+        return teamPage.map(teamFactory::mapToDto);
     }
 
 
@@ -86,6 +95,22 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable long id) {
         return ResponseEntity.ok(teamFactory.mapToDto(teamService.getTeamById(id)));
+    }
+
+    /**
+     * Обрабатывает GET запрос на получение команды по ID.
+     *
+     * @param id идентификатор команды
+     * @return ResponseEntity<TeamDTO>, содержащий данные запрашиваемого TeamDTO
+     */
+    @Operation(
+            summary = "Получить команду по айди",
+            description = "Использовать для получения команды по id"
+    )
+    @GetMapping("/{id}/results")
+    public ResponseEntity<List<InfoTeamResults>> getTeamResults(@PathVariable long id) {
+        List<InfoTeamResults> results = teamService.getInfoTeamResultsByTeam(id);
+        return ResponseEntity.ok(teamService.getInfoTeamResultsByTeam(id));
     }
 
     /**
@@ -212,5 +237,6 @@ public class TeamController {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
         return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
     }
+
 
 }

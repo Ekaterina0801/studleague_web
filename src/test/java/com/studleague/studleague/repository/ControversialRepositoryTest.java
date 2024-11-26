@@ -6,24 +6,22 @@ import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
@@ -47,6 +45,9 @@ public class ControversialRepositoryTest {
 
     @Autowired
     private TournamentRepository tournamentRepository;
+
+    @Autowired
+    private EntityRetrievalUtils entityRetrievalUtils;
 
     @AfterEach
     void cleanUp() {
@@ -83,14 +84,14 @@ public class ControversialRepositoryTest {
 
     @Test
     public void testFindAllByTeamId() {
-        Team team = EntityRetrievalUtils.getEntityOrThrow(teamRepository.findByIdSite(12L), "Team", 12L);
+        Team team = entityRetrievalUtils.getTeamOrThrow(12L);
         List<Controversial> results = controversialRepository.findAllByTeamId(team.getId());
         assertThat(results).isNotEmpty();
     }
 
     @Test
     public void testFindAllByTournamentId() {
-        Tournament tournament = EntityRetrievalUtils.getEntityOrThrow(tournamentRepository.findByIdSite(12L), "Tournament", 12L);
+        Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(12L);
         List<Controversial> results = controversialRepository.findAllByTournamentId(tournament.getId());
         assertThat(results).isNotEmpty();
     }

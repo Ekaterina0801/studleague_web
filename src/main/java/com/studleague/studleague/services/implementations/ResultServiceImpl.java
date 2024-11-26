@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("resultService")
 public class ResultServiceImpl implements ResultService {
@@ -62,27 +60,6 @@ public class ResultServiceImpl implements ResultService {
         return resultRepository.findAll();
     }
 
-   /* @Override
-    @Transactional
-    public void saveFullResult(FullResult fullResult) {
-        for (Controversial controversial : fullResult.getControversials()) {
-            controversial.setFullResult(fullResult);
-        }
-        Long teamId = fullResult.getTeam().getId();
-        Long tournamentId = fullResult.getTournament().getId();
-        Long resultId = fullResult.getId();
-        if (resultId != null) {
-            if (resultRepository.existsById(resultId)) {
-                FullResult existingResult = entityRetrievalUtils.getResultOrThrow(resultId);
-                updateFullResult(existingResult, fullResult);
-            }
-        } else if (resultRepository.existsByTeamIdAndTournamentId(teamId, tournamentId)) {
-            FullResult existingFullResult = entityRetrievalUtils.getResultByTeamIdAndTournamentIdOrThrow(teamId, tournamentId);
-            updateFullResult(existingFullResult, fullResult);
-        } else {
-            resultRepository.save(fullResult);
-        }
-    }*/
    @Override
    @Transactional
    public void saveFullResult(FullResult fullResult) {
@@ -201,7 +178,7 @@ public class ResultServiceImpl implements ResultService {
     //async
     private InfoTeamResults createInfoTeamResults(FullResult fullResult, int counter) {
         InfoTeamResults resultRow = new InfoTeamResults();
-        resultRow.setNumber(counter);
+        resultRow.setId(counter);
         resultRow.setTeam(fullResult.getTeam());
 
         String maskResults = fullResult.getMask_results();

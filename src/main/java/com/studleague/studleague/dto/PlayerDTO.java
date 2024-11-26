@@ -47,6 +47,7 @@ public class PlayerDTO {
     @JsonProperty("teams")
     private List<TeamDTO> teams = new ArrayList<>();
 
+    @JsonProperty("teamCompositions")
     private List<TeamCompositionDTO> teamsCompositions = new ArrayList<>();
 
     @Override
