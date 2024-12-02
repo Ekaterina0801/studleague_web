@@ -138,4 +138,5 @@ public class ControversialController {
         return ResponseEntity.ok("Controversials were deleted");
     }
 
+
 }

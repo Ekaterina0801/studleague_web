@@ -50,6 +50,10 @@ public class SiteService {
 
     private final LeagueFactory leagueFactory;
 
+    private final TeamCompositionService teamCompositionService;
+
+    private final LeagueMainInfoFactory leagueMainInfoFactory;
+
 
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
         HttpHeaders headers = createHeaders();
@@ -117,7 +121,7 @@ public class SiteService {
     }
 
     private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, Long leagueId) {
-        teamDetails.getTeam().setLeague(leagueFactory.mapToDto(entityRetrievalUtils.getLeagueOrThrow(leagueId)));
+        teamDetails.getTeam().setLeague(leagueMainInfoFactory.mapToDto(entityRetrievalUtils.getLeagueOrThrow(leagueId)));
         teamDetails.setLeagueId(leagueId);
         teamDetails.getTeam().setIdSite(teamDetails.getTeam().getId());
 
@@ -135,7 +139,7 @@ public class SiteService {
             fullResult.setTeam(teamEntity);
             List<Controversial> controversials = new ArrayList<>();
             for (ControversialDTO controversial : teamDetails.getControversials()) {
-                    controversial.setSiteId(null);
+                controversial.setId(null);
                     Controversial controversialEntity = controversialFactory.mapToEntity(controversial);
                     controversialEntity.setFullResult(fullResult);
                     controversials.add(controversialEntity);
@@ -171,7 +175,7 @@ public class SiteService {
         for (TeamMemberDTO member : teamMembers) {
             Player playerEntity = findOrCreatePlayer(member.getPlayer());
             teamEntity.addPlayerToTeam(playerEntity);
-            tournament.addPlayer(playerEntity);
+            //tournament.addPlayer(playerEntity);
             playersEntity.add(playerEntity);
         }
         TeamComposition teamComposition =
@@ -181,7 +185,7 @@ public class SiteService {
                         .parentTeam(teamEntity)
                         .tournament(tournament)
                         .build();
-        //teamCompositionService.save(teamComposition);
+        teamCompositionService.save(teamComposition);
         tournament.addTeamComposition(teamComposition);
         return playersEntity;
     }

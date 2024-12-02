@@ -2,16 +2,14 @@ package com.studleague.studleague.services;
 
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.TransferFactory;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-
-import org.springframework.stereotype.Component;
 
 
 @Component
@@ -131,9 +129,17 @@ public class EntityRetrievalUtils {
         return getEntityByNameOrThrow(flagRepository.findByNameIgnoreCase(name), "Flag", name);
     }
 
+    public Team getTeamByTeamNameIgnoreCaseAndLeagueIdOrThrow(String name, Long leagueId) {
+        return teamRepository.findByTeamNameIgnoreCaseAndLeagueId(name, leagueId).orElseThrow();
+    }
+
     public League getLeagueByNameOrThrow(String name)
     {
         return getEntityByNameOrThrow(leagueRepository.findByNameIgnoreCase(name), "League", name);
+    }
+
+    public Tournament getTournamentByNameOrThrow(String name) {
+        return getEntityByNameOrThrow(tournamentRepository.findByNameIgnoreCase(name), "Tournament", name);
     }
 
     public SystemResult getSystemResultByNameOrThrow(String name)

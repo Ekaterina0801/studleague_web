@@ -1,8 +1,10 @@
 package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.PlayerDTO;
+import com.studleague.studleague.dto.PlayerMainInfoDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.factory.PlayerFactory;
+import com.studleague.studleague.factory.PlayerMainInfoFactory;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +33,9 @@ public class PlayerController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PlayerMainInfoFactory playerMainInfoFactory;
+
     /**
      * Обрабатывает GET запрос на получение всех игроков.
      *
@@ -56,7 +61,7 @@ public class PlayerController {
                     """
     )
     @GetMapping
-    public Page<PlayerDTO> getPlayers(
+    public Page<PlayerMainInfoDTO> getPlayers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
             @RequestParam(required = false) Long teamId,
@@ -76,7 +81,7 @@ public class PlayerController {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
         Page<Player> playerPage = playerService.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort, pageable);
-        return playerPage.map(playerFactory::mapToDto);
+        return playerPage.map(playerMainInfoFactory::mapToDto);
     }
 
     /**

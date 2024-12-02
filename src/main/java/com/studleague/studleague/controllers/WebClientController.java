@@ -125,7 +125,7 @@ public class WebClientController {
         List<LeagueDTO> leagues = fetchLeagues();
         List<SystemResult> availableSystems = systemResultService.findAll();
         model.addAttribute("league", league);
-        List<LeagueResult> standings = resultService.calculateResultsBySystem(league_id, league.getSystemResult().getName(), league.getSystemResult().getCountNotIncludedGames());
+        List<LeagueResult> standings = resultService.calculateResultsBySystem(league_id);
         model.addAttribute("standings", standings);
         model.addAttribute("leagues", leagues);
         var countGames = IntStream.rangeClosed(1, league.getTournaments().toArray().length).toArray();

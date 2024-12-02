@@ -36,7 +36,7 @@ public class ControversialServiceImpl implements ControversialService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Controversial> getAllControversials() {
         return controversialRepository.findAll();
     }
@@ -81,7 +81,7 @@ public class ControversialServiceImpl implements ControversialService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Controversial getControversialById(Long id) {
         return entityRetrievalUtils.getControversialOrThrow(id);
     }
@@ -101,20 +101,20 @@ public class ControversialServiceImpl implements ControversialService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Controversial> getControversialsByTeamId(Long teamId) {
         return controversialRepository.findAllByTeamId(teamId);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public HashMap<Integer, Controversial> getControversialsByTournamentIdWithQuestionNumber(Long tournamentId) {
         List<Controversial> controversials = controversialRepository.findAllByTournamentId(tournamentId);
         return mapControversialsByNumber(controversials);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Controversial> getControversialsByTournamentId(Long tournamentId) {
         return controversialRepository.findAllByTournamentId(tournamentId);
     }
@@ -152,6 +152,7 @@ public class ControversialServiceImpl implements ControversialService {
     }
 
     @Override
+    @Transactional
     public List<Controversial> searchControversials(Integer questionNumber, List<String> statuses, LocalDateTime startDate, LocalDateTime endDate, Long fullResultId, List<String> sortBy, List<String> sortOrder) {
         Specification<Controversial> spec = ControversialSpecification.searchControversials(questionNumber, statuses, startDate, endDate, fullResultId);
         Sort sort = ControversialSpecification.sortBy(sortBy, sortOrder);

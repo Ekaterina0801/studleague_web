@@ -19,7 +19,7 @@ public class FullResultDTO {
     private Long id;
 
     @JsonProperty("team")
-    private Long teamId;
+    private TeamMainInfoDTO team;
 
     @JsonProperty("tournament")
     private Long tournamentId;

@@ -1,6 +1,9 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.security.*;
+import com.studleague.studleague.dto.security.JwtAuthenticationResponse;
+import com.studleague.studleague.dto.security.RefreshTokenRequest;
+import com.studleague.studleague.dto.security.SignInRequest;
+import com.studleague.studleague.dto.security.SignUpRequest;
 import com.studleague.studleague.services.implementations.security.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация")
 public class AuthController {

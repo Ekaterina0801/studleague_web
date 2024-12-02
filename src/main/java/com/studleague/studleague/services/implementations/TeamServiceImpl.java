@@ -3,6 +3,7 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.*;
+import com.studleague.studleague.factory.PlayerMainInfoFactory;
 import com.studleague.studleague.factory.TeamFactory;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
@@ -58,15 +60,18 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private TeamFactory teamFactory;
 
+    @Autowired
+    private PlayerMainInfoFactory playerMainInfoFactory;
+
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Team getTeamById(Long id) {
         return entityRetrievalUtils.getTeamOrThrow(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
     }
@@ -85,12 +90,17 @@ public class TeamServiceImpl implements TeamService {
                 return;
             }
         }
-
+        if (teamRepository.existsByTeamNameIgnoreCase(team.getTeamName())) {
+            Team existingTeam = entityRetrievalUtils.getTeamByTeamNameIgnoreCaseAndLeagueIdOrThrow(team.getTeamName(), team.getLeague().getId());
+            updateTeam(existingTeam, team);
+            return;
+        }
         if (id != null && teamRepository.existsById(id)) {
             Team existingTeam = entityRetrievalUtils.getTeamOrThrow(id);
             updateTeam(existingTeam, team);
             return;
         }
+
         teamRepository.save(team);
     }
     private boolean leagueContainsTeam(Long leagueId, Long idSite) {
@@ -126,7 +136,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Team> teamsByLeague(Long leagueId) {
         return teamRepository.findAllByLeagueId(leagueId);
     }
@@ -229,7 +239,7 @@ public class TeamServiceImpl implements TeamService {
         for (TeamComposition teamComposition : teamCompositions) {
             InfoTeamResults row = new InfoTeamResults();
             row.setId(counter++);
-            row.setPlayers(teamComposition.getPlayers());
+            row.setPlayers(teamComposition.getPlayers().stream().map(x -> playerMainInfoFactory.mapToDto(x)).collect(Collectors.toList()));
             row.setTeam(team);
             row.setTournament(teamComposition.getTournament());
 
@@ -279,6 +289,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Team> getTeamsByFlagId(Long flagId) {
         Flag flag = entityRetrievalUtils.getFlagOrThrow(flagId);
         return flag.getTeams();
@@ -291,7 +302,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Team> getTeamsByPlayerIdAndLeagueId(Long playerId, Long leagueId) {
         return teamRepository.findAllByPlayerIdAndLeagueId(playerId, leagueId);
     }

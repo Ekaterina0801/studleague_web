@@ -25,6 +25,7 @@ public class LeagueDTO {
     private String name;
     private List<Long> tournamentsIds = new ArrayList<>();
     private List<Long> teamsIds = new ArrayList<>();
+    private Integer countExcludedGames;
     private Long systemResultId;
     private Long createdById;
     private List<Long> managersIds = new ArrayList<>();

@@ -30,7 +30,7 @@ public class FlagServiceImpl implements FlagService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Flag> getAllFlags() {
         return flagRepository.findAll();
     }
@@ -63,7 +63,7 @@ public class FlagServiceImpl implements FlagService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Flag getFlagById(Long id) {
         return entityRetrievalUtils.getFlagOrThrow(id);
     }

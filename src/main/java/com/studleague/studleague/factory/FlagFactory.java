@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -42,7 +43,7 @@ public class FlagFactory implements DTOFactory<FlagDTO, Flag>{
 
     public FlagDTO mapToDto(Flag flag) {
         List<Long> teamIds = flag.getTeams() != null ?
-                flag.getTeams().stream().map(Team::getId).toList() :
+                flag.getTeams().stream().map(Team::getId).collect(Collectors.toList()) :
                 new ArrayList<>();
 
         return FlagDTO.builder()

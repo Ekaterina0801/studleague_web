@@ -45,13 +45,13 @@ public class LeagueServiceImpl implements LeagueService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public League getLeagueById(Long id) {
         return entityRetrievalUtils.getLeagueOrThrow(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<League> getAllLeagues() {
         return leagueRepository.findAll();
     }
@@ -121,7 +121,7 @@ public class LeagueServiceImpl implements LeagueService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<League> getLeaguesForCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
@@ -147,6 +147,7 @@ public class LeagueServiceImpl implements LeagueService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public League getLeagueWithResults(Long leagueId) {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         for (Team team : league.getTeams()) {

@@ -45,7 +45,7 @@ public class PlayerDTO {
     private Long idSite;
 
     @JsonProperty("teams")
-    private List<TeamDTO> teams = new ArrayList<>();
+    private List<TeamMainInfoDTO> teams = new ArrayList<>();
 
     @JsonProperty("teamCompositions")
     private List<TeamCompositionDTO> teamsCompositions = new ArrayList<>();

@@ -28,7 +28,7 @@ public class TeamComposition {
     @NotNull
     private Team parentTeam;
 
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @NotNull
     private Tournament tournament;
 

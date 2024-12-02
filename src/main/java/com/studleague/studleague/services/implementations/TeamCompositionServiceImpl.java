@@ -32,7 +32,7 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
     private TeamCompositionFactory teamCompositionFactory;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TeamComposition findById(Long id) {
         return entityRetrievalUtils.getTeamCompositionOrThrow(id);
     }
@@ -67,19 +67,19 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         existingTeamComposition.setPlayers(teamComposition.getPlayers());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<TeamComposition> findByTournamentId(Long tournamentId) {
         return teamCompositionRepository.findAllByTournamentId(tournamentId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<TeamComposition> findByParentTeamId(Long parentTeamId) {
         return teamCompositionRepository.findAllByParentTeamId(parentTeamId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<TeamComposition> findAll() {
         return teamCompositionRepository.findAll();

@@ -1,7 +1,6 @@
 package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.LeagueDTO;
-
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
@@ -48,6 +47,7 @@ public class LeagueFactory implements DTOFactory<LeagueDTO, League>{
                 .id(leagueDTO.getId())
                 .name(leagueDTO.getName())
                 .teams(teams)
+                .countExcludedGames(leagueDTO.getCountExcludedGames())
                 .systemResult(entityRetrievalUtils.getSystemResultOrThrow(leagueDTO.getSystemResultId()))
                 .managers(leagueDTO.getManagersIds().stream().map(x->entityRetrievalUtils.getUserOrThrow(x)).toList())
                 .tournaments(tournaments)
@@ -62,6 +62,7 @@ public class LeagueFactory implements DTOFactory<LeagueDTO, League>{
                 .id(league.getId())
                 .name(league.getName())
                 .teamsIds(teamIds)
+                .countExcludedGames(league.getCountExcludedGames())
                 .createdById(league.getCreatedBy().getId())
                 .managersIds(league.getManagers().stream().map(User::getId).toList())
                 .systemResultId(league.getSystemResult().getId())

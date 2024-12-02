@@ -2,10 +2,10 @@ package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.entities.FullResult;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
@@ -14,21 +14,19 @@ public class ControversialFactory implements DTOFactory<ControversialDTO, Contro
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
+    @Autowired
+    @Lazy
+    private ResultMainInfoFactory resultMainInfoFactory;
+
+
     public Controversial mapToEntity(ControversialDTO controversialDTO) {
-        FullResult fullResult = null;
-        Long resultId = controversialDTO.getFullResultId();
-
-        if (resultId != null) {
-            fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
-        }
-
         return Controversial.builder()
-                .id(controversialDTO.getSiteId())
+                .id(controversialDTO.getId())
                 .answer(controversialDTO.getAnswer())
                 .appealJuryComment(controversialDTO.getAppealJuryComment())
                 .comment(controversialDTO.getComment())
                 .status(controversialDTO.getStatus())
-                .fullResult(fullResult)
+                .fullResult(resultMainInfoFactory.mapToEntity(controversialDTO.getFullResult()))
                 .questionNumber(controversialDTO.getQuestionNumber())
                 .issuedAt(controversialDTO.getIssuedAt())
                 .resolvedAt(controversialDTO.getResolvedAt())
@@ -38,11 +36,11 @@ public class ControversialFactory implements DTOFactory<ControversialDTO, Contro
 
     public ControversialDTO mapToDto(Controversial controversial) {
         return ControversialDTO.builder()
-                .siteId(controversial.getId())
+                .id(controversial.getId())
                 .answer(controversial.getAnswer())
                 .appealJuryComment(controversial.getAppealJuryComment())
                 .comment(controversial.getComment())
-                .fullResultId(controversial.getFullResult().getId())
+                .fullResult(resultMainInfoFactory.mapToDto(controversial.getFullResult()))
                 .status(controversial.getStatus())
                 .questionNumber(controversial.getQuestionNumber())
                 .issuedAt(controversial.getIssuedAt())

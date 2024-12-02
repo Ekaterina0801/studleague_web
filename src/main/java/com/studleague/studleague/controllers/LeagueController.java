@@ -1,15 +1,14 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.LeagueDTO;
-import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.dto.TournamentDTO;
+import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.LeagueFactory;
-import com.studleague.studleague.factory.TeamFactory;
-import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.factory.*;
+import com.studleague.studleague.services.LeagueResult;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.LeagueService;
+import com.studleague.studleague.services.interfaces.ResultService;
+import com.studleague.studleague.services.interfaces.SystemResultService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,21 @@ public class LeagueController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ResultService resultService;
+
+    @Autowired
+    private LeagueResultsFactory leagueResultsFactory;
+
+    @Autowired
+    private SystemResultService systemResultService;
+
+    @Autowired
+    private SystemResultFactory systemResultFactory;
+
+    @Autowired
+    private LeagueMainInfoFactory leagueMainInfoFactory;
+
 
     /**
      * Обрабатывает GET запрос на получение всех лиг.
@@ -71,8 +85,13 @@ public class LeagueController {
             description = "Использовать для получения лиги по id"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<LeagueDTO> getLeague(@PathVariable long id) {
-        return ResponseEntity.ok(leagueFactory.mapToDto(leagueService.getLeagueById(id)));
+    public ResponseEntity<LeagueMainInfoDTO> getLeague(@PathVariable long id) {
+        return ResponseEntity.ok(leagueMainInfoFactory.mapToDto(leagueService.getLeagueById(id)));
+    }
+
+    @GetMapping("/system-results")
+    public ResponseEntity<List<SystemResultDTO>> getSystems() {
+        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.mapToDto(x)).toList());
     }
 
     /**
@@ -227,6 +246,12 @@ public class LeagueController {
     public ResponseEntity<String> deleteAllLeagues() {
         leagueService.deleteAllLeagues();
         return ResponseEntity.ok("Leagues were deleted");
+    }
+
+    @GetMapping("/{leagueId}/results")
+    public ResponseEntity<List<LeagueResultsDTO>> getLeagueResults(@PathVariable long leagueId) {
+        List<LeagueResult> results = resultService.calculateResultsBySystem(leagueId);
+        return ResponseEntity.ok(results.stream().map(x -> leagueResultsFactory.mapToDto(x)).toList());
     }
 
 }
