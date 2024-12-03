@@ -1,4 +1,5 @@
 package com.studleague.studleague.services.implementations;
+
 import com.studleague.studleague.dto.TeamCompositionDTO;
 import com.studleague.studleague.entities.TeamComposition;
 import com.studleague.studleague.factory.TeamCompositionFactory;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -37,12 +39,13 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
         return entityRetrievalUtils.getTeamCompositionOrThrow(id);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public void save(TeamComposition teamComposition) {
         Long tournamentId = teamComposition.getTournament().getId();
         Long parentTeamId = teamComposition.getParentTeam().getId();
         Long id = teamComposition.getId();
+
         Optional<TeamComposition> existingOpt =
                 id != null ? teamCompositionRepository.findById(id)
                         : teamCompositionRepository.findByTournamentIdAndParentTeamId(tournamentId, parentTeamId);
@@ -52,9 +55,19 @@ public class TeamCompositionServiceImpl implements TeamCompositionService {
             update(existingTeamComposition, teamComposition);
             teamCompositionRepository.saveAndFlush(existingTeamComposition);
         } else {
+            if (teamCompositionRepository.existsByTournamentIdAndParentTeamId(tournamentId, parentTeamId)) {
+                return;
+            }
             teamCompositionRepository.save(teamComposition);
         }
     }
+
+    @Override
+    public boolean existsByTeamAndTournament(Long tournamentId, Long teamId) {
+        return teamCompositionRepository.existsByTournamentIdAndParentTeamId(tournamentId, teamId);
+    }
+
+
 
 
 

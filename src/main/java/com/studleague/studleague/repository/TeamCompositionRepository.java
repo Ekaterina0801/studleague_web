@@ -17,4 +17,6 @@ public interface TeamCompositionRepository extends JpaRepository<TeamComposition
 
     Optional<TeamComposition> findByTournamentIdAndParentTeamId(Long tournamentId, Long parentTeamId);
 
+    boolean existsByTournamentIdAndParentTeamId(Long tournamentId, Long parentTeamId);
+
 }

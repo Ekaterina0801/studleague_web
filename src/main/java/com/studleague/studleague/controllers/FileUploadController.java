@@ -1,6 +1,7 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.utils.ExcelProcessor;
+import com.studleague.studleague.services.implementations.TeamResultService;
+import com.studleague.studleague.utils.ExcelParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +16,16 @@ import java.io.File;
 @RequestMapping("/api")
 public class FileUploadController {
 
-    private final ExcelProcessor excelProcessor;
 
-    public FileUploadController(ExcelProcessor excelProcessor) {
-        this.excelProcessor = excelProcessor;
+    private final TeamResultService teamResultService;
+
+    private final ExcelParser excelParser;
+
+    public FileUploadController(
+            TeamResultService teamResultService,
+            ExcelParser excelParser) {
+        this.teamResultService = teamResultService;
+        this.excelParser = excelParser;
     }
 
     @PostMapping("/upload-results")
@@ -32,7 +39,7 @@ public class FileUploadController {
             file.transferTo(tempFile);
 
             System.out.println("Processing file: " + tempFile.getAbsolutePath());
-            excelProcessor.processExcelFile(tempFile, leagueId, tournamentId);
+            teamResultService.processTeamResults(excelParser.parseExcelFile(tempFile), leagueId, tournamentId);
 
             return ResponseEntity.ok("File processed successfully: " + file.getOriginalFilename());
         } catch (Exception e) {
