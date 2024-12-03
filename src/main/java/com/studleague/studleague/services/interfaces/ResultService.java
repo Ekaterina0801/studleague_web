@@ -3,11 +3,9 @@ package com.studleague.studleague.services.interfaces;
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.services.LeagueResult;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ResultService {
 
@@ -33,7 +31,7 @@ public interface ResultService {
 
     boolean isManager(Long userId, FullResultDTO resultDTO);
 
-    List<LeagueResult> calculateResultsBySystem(Long leagueId, String system,int numWorstGamesToExclude);
+    List<LeagueResult> calculateResultsBySystem(Long leagueId);
 
 
 }

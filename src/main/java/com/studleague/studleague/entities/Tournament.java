@@ -46,7 +46,7 @@ public class Tournament {
     @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfEnd;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH}
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE}
     )
     @JoinTable(name="leagues_tournaments",
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
@@ -59,7 +59,7 @@ public class Tournament {
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinTable(
             name = "tournaments_teams",
             joinColumns = @JoinColumn(name = "tournament_id", referencedColumnName = "id"),
@@ -69,7 +69,7 @@ public class Tournament {
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinTable(
             name = "tournaments_players",
             joinColumns = @JoinColumn(name = "tournament_id"),
@@ -147,11 +147,11 @@ public class Tournament {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tournament that = (Tournament) o;
-        return Objects.equals(id, that.id) && Objects.equals(idSite, that.idSite) && Objects.equals(name, that.name) && Objects.equals(dateOfStart, that.dateOfStart) && Objects.equals(dateOfEnd, that.dateOfEnd);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, idSite, dateOfStart, dateOfEnd);
+        return Objects.hashCode(id);
     }
 }

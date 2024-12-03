@@ -28,4 +28,6 @@ public interface TeamCompositionService {
 
     List<TeamComposition> searchTeamCompositions(Long teamId, Long tournamentId, Sort sort);
 
+    boolean existsByTeamAndTournament(Long tournamentId, Long teamId);
+
 }

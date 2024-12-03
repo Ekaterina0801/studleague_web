@@ -39,14 +39,14 @@ public class Team {
     @JoinColumn(name="leagueId")
     private League league;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="teams_players",
     joinColumns = {@JoinColumn(name="team_id")}, inverseJoinColumns={@JoinColumn(name="player_id")})
     @Builder.Default
     @ToString.Exclude
     private List<Player> players = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
     @Builder.Default
@@ -69,17 +69,13 @@ public class Team {
     private List<TeamComposition> teamCompositions = new ArrayList<>();
 
 
-
-    public void addPlayerToTeam(Player player)
-    {
-        if(!players.contains(player))
-        {
+    public void addPlayerToTeam(Player player) {
+        if (!players.contains(player)) {
             players.add(player);
             player.addTeamToPlayer(this);
         }
-
-
     }
+
 
     public void deletePlayerFromTeam(Player player)
     {
@@ -125,11 +121,11 @@ public class Team {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Team team = (Team) o;
-        return Objects.equals(id, team.id) && Objects.equals(idSite, team.idSite) && Objects.equals(teamName, team.teamName) && Objects.equals(university, team.university) && Objects.equals(league, team.league);
+        return Objects.equals(id, team.id) && Objects.equals(teamName, team.teamName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, teamName, university, idSite, league);
+        return Objects.hash(id, teamName);
     }
 }

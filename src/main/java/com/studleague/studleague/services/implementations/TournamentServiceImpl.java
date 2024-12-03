@@ -49,49 +49,48 @@ public class TournamentServiceImpl implements TournamentService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Tournament getTournamentById(Long id) {
         return entityRetrievalUtils.getTournamentOrThrow(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
-
     @Override
     @Transactional
     public void saveTournament(Tournament tournament) {
-
         Long idSite = tournament.getIdSite();
         Long id = tournament.getId();
         if (id != null) {
             if (tournamentRepository.existsById(id)) {
                 Tournament existingTournament = entityRetrievalUtils.getTournamentOrThrow(id);
                 updateTournament(existingTournament, tournament);
+            } else if (tournamentRepository.existsByNameIgnoreCase(tournament.getName())) {
+                Tournament existingTournament = entityRetrievalUtils.getTournamentByNameOrThrow(tournament.getName());
+                updateTournament(existingTournament, tournament);
             }
-        } else if (idSite != 0) {
+        } else if (idSite != null) {
             if (tournamentRepository.existsByIdSite(idSite)) {
                 Tournament existingTournament = entityRetrievalUtils.getTournamentByIdSiteOrThrow(idSite);
                 updateTournament(existingTournament, tournament);
-
             } else {
                 tournamentRepository.save(tournament);
             }
         } else {
-            tournamentRepository.save(tournament);
+            if (tournamentRepository.existsByNameIgnoreCase(tournament.getName())) {
+                Tournament existingTournament = entityRetrievalUtils.getTournamentByNameOrThrow(tournament.getName());
+                updateTournament(existingTournament, tournament);
+            } else tournamentRepository.save(tournament);
         }
     }
 
     @Transactional
     private void updateTournament(Tournament existingTournament, Tournament tournament) {
         existingTournament.setIdSite(tournament.getIdSite());
-        existingTournament.setPlayers(tournament.getPlayers());
-        existingTournament.setTeams(tournament.getTeams());
-        existingTournament.setResults(tournament.getResults());
         existingTournament.setName(tournament.getName());
-        existingTournament.setLeagues(tournament.getLeagues());
         existingTournament.setDateOfEnd(tournament.getDateOfEnd());
         existingTournament.setDateOfStart(tournament.getDateOfStart());
         tournamentRepository.save(existingTournament);
@@ -163,8 +162,14 @@ public class TournamentServiceImpl implements TournamentService {
     public Tournament addTeamToTournament(Long tournamentId, Long teamId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
+        TeamComposition teamComposition =
+                TeamComposition.builder().
+                        parentTeam(team).
+                        build();
         tournament.addTeam(team);
+        tournament.addTeamComposition(teamComposition);
         team.addTournamentToTeam(tournament);
+        tournamentRepository.save(tournament);
         return tournament;
     }
 
@@ -205,6 +210,7 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Tournament getTournamentBySiteId(Long idSite) {
         return entityRetrievalUtils.getTournamentByIdSiteOrThrow(idSite);
     }
@@ -222,7 +228,7 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public HashMap<Team, List<Player>> getTeamsPlayersByTournamentId(Long tournamentId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         HashMap<Team, List<Player>> teamsPlayers = new HashMap<>();

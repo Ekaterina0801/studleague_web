@@ -25,4 +25,8 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long>, J
 
     Page<Tournament> findAll(Specification<Tournament> specification, Pageable pageable);
 
+    boolean existsByNameIgnoreCase(String name);
+
+    Optional<Tournament> findByNameIgnoreCase(String name);
+
 }

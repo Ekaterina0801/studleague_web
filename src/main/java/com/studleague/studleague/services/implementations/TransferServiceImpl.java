@@ -41,7 +41,7 @@ public class TransferServiceImpl implements TransferService {
     private TransferFactory transferFactory;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Transfer> getAllTransfers() {
         return transferRepository.findAll();
     }
@@ -77,7 +77,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Transfer getTransfer(Long id) {
         return entityRetrievalUtils.getTransferOrThrow(id);
     }
@@ -89,13 +89,13 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Transfer> getTransfersForPlayer(Long playerId) {
         return transferRepository.findAllByPlayerId(playerId);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Transfer> getTransfersForTeam(Long teamId) {
         return transferRepository.findAllByTeamId(teamId);
     }

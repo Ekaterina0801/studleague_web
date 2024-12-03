@@ -1,8 +1,8 @@
 package com.studleague.studleague.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import lombok.*;
@@ -19,6 +19,7 @@ import java.util.List;
 public class InfoTeamResults {
     private int id;
 
+    @JsonIgnore
     private Team team;
 
     private List<Integer> answers = new ArrayList<>();
@@ -31,6 +32,6 @@ public class InfoTeamResults {
 
     private Tournament tournament;
 
-    private List<Player> players = new ArrayList<>();
+    private List<PlayerMainInfoDTO> players = new ArrayList<>();
 }
 

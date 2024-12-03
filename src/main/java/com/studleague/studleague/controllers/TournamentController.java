@@ -1,11 +1,18 @@
 package com.studleague.studleague.controllers;
 
+import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.dto.TournamentDTO;
+import com.studleague.studleague.dto.TournamentMainInfoDTO;
 import com.studleague.studleague.entities.Tournament;
+import com.studleague.studleague.factory.ControversialFactory;
 import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.factory.TournamentMainInfoFactory;
 import com.studleague.studleague.services.implementations.security.UserService;
+import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,9 +22,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tournaments")
@@ -31,6 +42,9 @@ public class TournamentController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TournamentMainInfoFactory tournamentMainInfoFactory;
 
 
     /**
@@ -63,7 +77,7 @@ public class TournamentController {
                     """
     )
     @GetMapping
-    public Page<TournamentDTO> getTournaments(
+    public Page<TournamentMainInfoDTO> getTournaments(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long leagueId,
             @RequestParam(required = false) LocalDateTime startDate,
@@ -83,7 +97,7 @@ public class TournamentController {
         }
 
         Page<Tournament> tournamentPage = tournamentService.searchTournaments(name, leagueId, startDate, endDate, sort, pageable);
-        return tournamentPage.map(tournamentFactory::mapToDto);
+        return tournamentPage.map(tournamentMainInfoFactory::mapToDto);
     }
 
     /**
@@ -148,11 +162,31 @@ public class TournamentController {
             description = "Использовать для добавления результата в турнир"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
-    @PutMapping("/tournaments/{tournamentId}/results/{resultId}")
+    @PutMapping("/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId, resultId);
         return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
     }
+
+    //@PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
+    private static final Logger logger = LoggerFactory.getLogger(TournamentController.class);
+
+    @Autowired
+    private ControversialService controversialService;
+
+    @Autowired
+    private ControversialFactory controversialFactory;
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
+    @PutMapping("/{tournamentId}/teams/{teamId}")
+    public ResponseEntity<TournamentDTO> addTeamToTournament(@PathVariable long tournamentId, @PathVariable long teamId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        logger.debug("Authentication Principal: {}", authentication.getPrincipal());
+
+        Tournament updatedTournament = tournamentService.addTeamToTournament(tournamentId, teamId);
+        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+    }
+
 
     /**
      * Обрабатывает DELETE запрос для удаления результата из турнира.
@@ -190,6 +224,11 @@ public class TournamentController {
     public ResponseEntity<TournamentDTO> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId) {
         Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId, teamId, playerId);
         return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+    }
+
+    @GetMapping("/{tournamentId}/controversials")
+    public ResponseEntity<List<ControversialDTO>> getControversialsByTournamentId(@PathVariable long tournamentId) {
+        return ResponseEntity.ok(controversialService.getControversialsByTournamentId(tournamentId).stream().map(x -> controversialFactory.mapToDto(x)).collect(Collectors.toList()));
     }
 
 }

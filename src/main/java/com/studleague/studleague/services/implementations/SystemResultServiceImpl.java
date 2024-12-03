@@ -21,11 +21,13 @@ public class SystemResultServiceImpl implements SystemResultService {
     private SystemResultRepository systemResultRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public SystemResult findById(Long id) {
         return entityRetrievalUtils.getSystemResultOrThrow(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SystemResult> findAll() {
         return systemResultRepository.findAll();
     }
@@ -35,6 +37,7 @@ public class SystemResultServiceImpl implements SystemResultService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SystemResult findByName(String name) {
         return entityRetrievalUtils.getSystemResultByNameOrThrow(name);
     }

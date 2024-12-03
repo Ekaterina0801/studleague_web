@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String[] excludedPaths = {
                 "/results",
                 "/teams",
-                "/tournaments",
+                //"/tournaments",
                 "/auth/**",
                 "/leagues/**"
         };
@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if ("PUT".equalsIgnoreCase(request.getMethod())) {
-            return true;
+            return false;
         }
 
         if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".gif")) {

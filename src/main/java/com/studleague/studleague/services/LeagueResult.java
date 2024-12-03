@@ -2,10 +2,7 @@ package com.studleague.studleague.services;
 
 
 import com.studleague.studleague.entities.Team;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -15,6 +12,7 @@ import java.util.HashMap;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class LeagueResult {
 
     private Team team;

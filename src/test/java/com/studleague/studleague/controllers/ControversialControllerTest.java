@@ -144,7 +144,7 @@ public class ControversialControllerTest {
     void shouldGetControversialById() throws Exception {
         long id = 1L;
         ControversialDTO controversialDTO = ControversialDTO.builder()
-                .siteId(id)
+                .id(id)
                 .questionNumber(2)
                 .appealJuryComment("ok")
                 .comment("ok")

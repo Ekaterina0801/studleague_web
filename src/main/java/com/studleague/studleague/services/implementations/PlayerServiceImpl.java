@@ -51,13 +51,13 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Player getPlayerById(Long id) {
         return entityRetrievalUtils.getPlayerOrThrow(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
     }
@@ -119,7 +119,7 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Player getPlayerByIdSite(Long idSite) {
         return entityRetrievalUtils.getPlayerByIdSiteOrThrow(idSite);
     }
@@ -162,6 +162,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable) {
         Specification<Player> spec = PlayerSpecification.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort);
         return playerRepository.findAll(spec, pageable);

@@ -27,6 +27,10 @@ public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificat
 
     boolean existsByIdSite(Long idSite);
 
+    boolean existsByTeamNameIgnoreCase(String teamName);
+
+    Optional<Team> findByTeamNameIgnoreCaseAndLeagueId(String teamName, Long leagueId);
+
     boolean existsByIdSiteAndLeagueId(Long idSite, Long leagueId);
 
     Page<Team> findAll(Specification<Team> specification, Pageable pageable);

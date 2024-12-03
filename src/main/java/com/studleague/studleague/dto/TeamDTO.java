@@ -25,18 +25,18 @@ public class TeamDTO {
 
     private String university;
 
-    private LeagueDTO league;
+    private LeagueMainInfoDTO league;
 
     private Long idSite;
 
     @Builder.Default
-    private List<PlayerDTO> players = new ArrayList<>();
+    private List<PlayerMainInfoDTO> players = new ArrayList<>();
 
     @Builder.Default
     private List<FlagDTO> flags = new ArrayList<>();
 
     @Builder.Default
-    private List<TournamentDTO> tournaments = new ArrayList<>();
+    private List<TournamentMainInfoDTO> tournaments = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

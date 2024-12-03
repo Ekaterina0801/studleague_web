@@ -20,11 +20,11 @@ public class TeamCompositionDTO {
 
     private Long id;
 
-    private TeamDTO parentTeam;
+    private TeamMainInfoDTO parentTeam;
 
-    private TournamentDTO tournament;
+    private TournamentMainInfoDTO tournament;
 
-    private List<PlayerDTO> players;
+    private List<PlayerMainInfoDTO> players;
 
     @Override
     public boolean equals(Object o) {

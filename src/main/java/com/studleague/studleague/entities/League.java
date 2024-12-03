@@ -30,6 +30,9 @@ public class League {
     @NotBlank
     private String name;
 
+    @Column(name = "countExcludedGames")
+    private Integer countExcludedGames;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @NotNull
@@ -55,6 +58,7 @@ public class League {
     @JoinColumn(name="system_result_id")
     @ToString.Exclude
     private SystemResult systemResult;
+
 
     public void addTournamentToLeague(Tournament tournament){
         if(!tournaments.contains(tournament))

@@ -4,6 +4,7 @@ import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.factory.FullResultFactory;
+import com.studleague.studleague.factory.PlayerMainInfoFactory;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.LeagueResult;
@@ -47,15 +48,18 @@ public class ResultServiceImpl implements ResultService {
     @Autowired
     private FullResultFactory fullResultFactory;
 
+    @Autowired
+    private PlayerMainInfoFactory playerMainInfoFactory;
+
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public FullResult getFullResultById(Long id) {
         return entityRetrievalUtils.getResultOrThrow(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FullResult> getAllFullResults() {
         return resultRepository.findAll();
     }
@@ -94,18 +98,6 @@ public class ResultServiceImpl implements ResultService {
         existingFullResult.setTotalScore(fullResult.getTotalScore());
     }
 
-
-
-    @Transactional
-    private void updateFullResult(FullResult existingFullResult, FullResult newFullResult) {
-        existingFullResult.setMask_results(newFullResult.getMask_results());
-        existingFullResult.setControversials(newFullResult.getControversials());
-        existingFullResult.setTournament(newFullResult.getTournament());
-        existingFullResult.setTeam(newFullResult.getTeam());
-        existingFullResult.setTotalScore(newFullResult.getTotalScore());
-        resultRepository.save(existingFullResult);
-    }
-
     @Override
     @Transactional
     public void deleteFullResult(Long id) {
@@ -132,7 +124,7 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FullResult> getResultsForTeam(Long teamId) {
         return resultRepository.findAllByTeamId(teamId);
     }
@@ -174,8 +166,6 @@ public class ResultServiceImpl implements ResultService {
         return fullResultsTable;
     }
 
-    //PageRequest
-    //async
     private InfoTeamResults createInfoTeamResults(FullResult fullResult, int counter) {
         InfoTeamResults resultRow = new InfoTeamResults();
         resultRow.setId(counter);
@@ -195,7 +185,7 @@ public class ResultServiceImpl implements ResultService {
             }
             countQuestions = maskResults.length();
         }
-        resultRow.setPlayers(players);
+        resultRow.setPlayers(players.stream().map(x -> playerMainInfoFactory.mapToDto(x)).collect(Collectors.toList()));
         resultRow.setAnswers(answers);
         resultRow.setTotalScore(totalScore);
         resultRow.setCountQuestions(countQuestions);
@@ -216,9 +206,11 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public List<LeagueResult> calculateResultsBySystem(Long leagueId, String system, int numWorstGamesToExclude) {
+    public List<LeagueResult> calculateResultsBySystem(Long leagueId) {
         List<LeagueResult> standings = new ArrayList<>();
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        String system = league.getSystemResult().getName();
+        int numWorstGamesToExclude = league.getCountExcludedGames();
         List<Tournament> tournaments = league.getTournaments()
                 .stream()
                 .sorted(Comparator.comparing(Tournament::getDateOfStart))

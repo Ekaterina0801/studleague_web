@@ -2,16 +2,16 @@ package com.studleague.studleague.factory;
 
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.League;
-import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -22,7 +22,11 @@ public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
     private final EntityRetrievalUtils entityRetrievalUtils;
 
     @Autowired
+    @Lazy
     private final FullResultFactory fullResultFactory;
+
+    @Lazy
+    private final TeamCompositionFactory teamCompositionFactory;
 
 
     public Tournament mapToEntity(TournamentDTO tournamentDto) {
@@ -30,11 +34,10 @@ public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
                 .id(tournamentDto.getId())
                 .name(tournamentDto.getName())
                 .idSite(tournamentDto.getIdSite())
-                .players(tournamentDto.getPlayerIds().stream().map(entityRetrievalUtils::getPlayerOrThrow).toList())
-                .teams(tournamentDto.getTeamIds().stream().map(entityRetrievalUtils::getTeamOrThrow).toList())
                 .dateOfStart(tournamentDto.getDateOfStart())
                 .dateOfEnd(tournamentDto.getDateOfEnd())
-                .results(tournamentDto.getResults().stream().map(fullResultFactory::mapToEntity).toList())
+                .teamCompositions(tournamentDto.getTeamCompositions().stream().map(teamCompositionFactory::mapToEntity).collect(Collectors.toList()))
+                .results(tournamentDto.getResults().stream().map(fullResultFactory::mapToEntity).collect(Collectors.toList()))
                 .leagues(new ArrayList<>())
                 .build();
 
@@ -56,11 +59,10 @@ public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
                 .id(tournament.getId())
                 .name(tournament.getName())
                 .idSite(tournament.getIdSite())
-                .playerIds(tournament.getPlayers().stream().map(Player::getId).toList())
-                .teamIds(tournament.getTeams().stream().map(Team::getId).toList())
                 .dateOfStart(tournament.getDateOfStart())
+                .teamCompositions(tournament.getTeamCompositions().stream().map(teamCompositionFactory::mapToDto).collect(Collectors.toList()))
                 .dateOfEnd(tournament.getDateOfEnd())
-                .results(tournament.getResults().stream().map(fullResultFactory::mapToDto).toList())
+                .results(tournament.getResults().stream().map(fullResultFactory::mapToDto).collect(Collectors.toList()))
                 .leaguesIds(leaguesIds)
                 .build();
     }

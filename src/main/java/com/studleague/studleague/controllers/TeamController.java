@@ -2,8 +2,10 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
+import com.studleague.studleague.dto.TeamMainInfoDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.factory.TeamFactory;
+import com.studleague.studleague.factory.TeamMainInfoFactory;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,9 @@ public class TeamController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TeamMainInfoFactory teamMainInfoFactory;
 
 
     /**
@@ -57,7 +61,7 @@ public class TeamController {
                     """
     )
     @GetMapping
-    public Page<TeamDTO> getTeams(
+    public Page<TeamMainInfoDTO> getTeams(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long leagueId,
             @RequestParam(required = false) List<Long> flagIds,
@@ -78,7 +82,7 @@ public class TeamController {
 
         Page<Team> teamPage = teamService.searchTeams(name, leagueId, flagIds, sort, pageable);
 
-        return teamPage.map(teamFactory::mapToDto);
+        return teamPage.map(teamMainInfoFactory::mapToDto);
     }
 
 
@@ -124,9 +128,9 @@ public class TeamController {
             description = "Использовать для создания новой команды"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamDTO)")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TeamDTO> addNewTeam(@RequestBody TeamDTO teamDTO) {
-        Team team = teamFactory.mapToEntity(teamDTO);
+    @PostMapping()
+    public ResponseEntity<TeamMainInfoDTO> addNewTeam(@RequestBody TeamMainInfoDTO teamDTO) {
+        Team team = teamMainInfoFactory.mapToEntity(teamDTO);
         teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }

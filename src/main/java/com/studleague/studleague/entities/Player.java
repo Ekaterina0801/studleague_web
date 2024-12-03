@@ -48,7 +48,7 @@ public class Player {
     @Column(name = "id_site")
     private Long idSite;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
@@ -70,7 +70,7 @@ public class Player {
     @Builder.Default
     private List<TeamComposition> teamsCompositions = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "players", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,})
+    @ManyToMany(mappedBy = "players", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
@@ -82,7 +82,6 @@ public class Player {
 
 
     public void addTeamToPlayer(Team team) {
-
         if (!teams.contains(team)) {
             teams.add(team);
         }
