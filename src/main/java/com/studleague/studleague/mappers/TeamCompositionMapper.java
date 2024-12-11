@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.TeamCompositionDTO;
 import com.studleague.studleague.entities.TeamComposition;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
-public class TeamCompositionFactory implements DTOFactory<TeamCompositionDTO, TeamComposition>{
+public class TeamCompositionMapper implements DTOMapper<TeamCompositionDTO, TeamComposition> {
 
 
     @Autowired
@@ -20,23 +20,23 @@ public class TeamCompositionFactory implements DTOFactory<TeamCompositionDTO, Te
 
 
     @Autowired
-    private TournamentMainInfoFactory tournamentMainInfoFactory;
+    private TournamentMainInfoMapper tournamentMainInfoMapper;
 
     @Autowired
     @Lazy
-    private TeamMainInfoFactory teamMainInfoFactory;
+    private TeamMainInfoMapper teamMainInfoMapper;
 
     @Autowired
     @Lazy
-    private PlayerMainInfoFactory playerMainInfoFactory;
+    private PlayerMainInfoMapper playerMainInfoMapper;
 
 
     public TeamCompositionDTO mapToDto(TeamComposition teamComposition) {
         return TeamCompositionDTO.builder()
                 .id(teamComposition.getId())
-                .parentTeam(teamMainInfoFactory.mapToDto(teamComposition.getParentTeam()))
-                .tournament(tournamentMainInfoFactory.mapToDto(teamComposition.getTournament()))
-                .players(teamComposition.getPlayers().stream().map(x -> playerMainInfoFactory.mapToDto(x)).collect(Collectors.toList()))
+                .parentTeam(teamMainInfoMapper.mapToDto(teamComposition.getParentTeam()))
+                .tournament(tournamentMainInfoMapper.mapToDto(teamComposition.getTournament()))
+                .players(teamComposition.getPlayers().stream().map(x -> playerMainInfoMapper.mapToDto(x)).collect(Collectors.toList()))
                 .build();
     }
 
@@ -44,9 +44,9 @@ public class TeamCompositionFactory implements DTOFactory<TeamCompositionDTO, Te
     {
         return TeamComposition.builder()
                 .id(teamCompositionDTO.getId())
-                .parentTeam(teamMainInfoFactory.mapToEntity(teamCompositionDTO.getParentTeam()))
-                .players(teamCompositionDTO.getPlayers().stream().map(x -> playerMainInfoFactory.mapToEntity(x)).toList())
-                .tournament(tournamentMainInfoFactory.mapToEntity(teamCompositionDTO.getTournament()))
+                .parentTeam(teamMainInfoMapper.mapToEntity(teamCompositionDTO.getParentTeam()))
+                .players(teamCompositionDTO.getPlayers().stream().map(x -> playerMainInfoMapper.mapToEntity(x)).toList())
+                .tournament(tournamentMainInfoMapper.mapToEntity(teamCompositionDTO.getTournament()))
                 .build();
     }
 

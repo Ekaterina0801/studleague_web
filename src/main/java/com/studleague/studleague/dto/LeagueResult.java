@@ -1,4 +1,4 @@
-package com.studleague.studleague.services;
+package com.studleague.studleague.dto;
 
 
 import com.studleague.studleague.entities.Team;

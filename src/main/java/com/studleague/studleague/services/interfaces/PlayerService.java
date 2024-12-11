@@ -28,5 +28,5 @@ public interface PlayerService {
 
     boolean isManager(Long userId, PlayerDTO playerDTO);
 
-    Page<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable);
+    Page<Player> searchPlayers(String name, String patronymic, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable);
 }

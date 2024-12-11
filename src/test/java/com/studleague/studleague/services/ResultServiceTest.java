@@ -2,7 +2,7 @@ package com.studleague.studleague.services;
 
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.FullResultFactory;
+import com.studleague.studleague.mappers.FullResultMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
@@ -50,7 +50,7 @@ public class ResultServiceTest {
     private LeagueService leagueService;
 
     @MockBean
-    private FullResultFactory fullResultFactory;
+    private FullResultMapper fullResultMapper;
 
     @Autowired
     private ResultService resultService;
@@ -247,7 +247,7 @@ public class ResultServiceTest {
         fullResultEntity.setId(1L);
         fullResultEntity.setTeam(new Team());
         fullResultEntity.getTeam().setLeague(new League());
-        when(fullResultFactory.mapToEntity(any(FullResultDTO.class))).thenReturn(fullResultEntity);
+        when(fullResultMapper.mapToEntity(any(FullResultDTO.class))).thenReturn(fullResultEntity);
         when(leagueService.isManager(anyLong(), anyLong())).thenReturn(true);
 
         // Act

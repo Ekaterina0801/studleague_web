@@ -20,7 +20,6 @@ public class JwtRequestInterceptor implements ClientHttpRequestInterceptor {
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         String token = (String) session.getAttribute("jwtToken");
 
-        // Если токен существует, добавляем его в заголовок Authorization
         if (token != null) {
             request.getHeaders().add("Authorization", "Bearer " + token);
         }

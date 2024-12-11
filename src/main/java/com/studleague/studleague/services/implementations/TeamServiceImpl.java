@@ -3,8 +3,8 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.PlayerMainInfoFactory;
-import com.studleague.studleague.factory.TeamFactory;
+import com.studleague.studleague.mappers.PlayerMainInfoMapper;
+import com.studleague.studleague.mappers.TeamMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -58,10 +58,13 @@ public class TeamServiceImpl implements TeamService {
     private LeagueService leagueService;
 
     @Autowired
-    private TeamFactory teamFactory;
+    private TeamMapper teamMapper;
 
     @Autowired
-    private PlayerMainInfoFactory playerMainInfoFactory;
+    private PlayerMainInfoMapper playerMainInfoMapper;
+
+    @Autowired
+    private TransferRepository transferRepository;
 
 
     @Override
@@ -90,7 +93,7 @@ public class TeamServiceImpl implements TeamService {
                 return;
             }
         }
-        if (teamRepository.existsByTeamNameIgnoreCase(team.getTeamName())) {
+        if (teamRepository.existsByTeamNameIgnoreCaseAndLeagueId(team.getTeamName(), leagueId)) {
             Team existingTeam = entityRetrievalUtils.getTeamByTeamNameIgnoreCaseAndLeagueIdOrThrow(team.getTeamName(), team.getLeague().getId());
             updateTeam(existingTeam, team);
             return;
@@ -126,14 +129,24 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public void deleteTeam(Long id) {
         Team team = entityRetrievalUtils.getTeamOrThrow(id);
+
         if (!team.getTournaments().isEmpty()) {
-            for (Tournament tournament : team.getTournaments()) {
+            for (Tournament tournament : new ArrayList<>(team.getTournaments())) {
                 tournament.deleteTeam(team);
             }
         }
-        teamRepository.delete(team);
-        //teamRepository.deleteById(id);
+
+        if (!team.getPlayers().isEmpty()) {
+            List<Player> playersToRemove = new ArrayList<>(team.getPlayers());
+            for (Player player : playersToRemove) {
+                team.deletePlayerFromTeam(player);
+            }
+        }
+        List<Transfer> transfers = transferRepository.findAllByTeamId(id);
+        transferRepository.deleteAll(transfers);
+        teamRepository.deleteById(id);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -217,7 +230,7 @@ public class TeamServiceImpl implements TeamService {
     public boolean isManager(Long userId, TeamDTO teamDTO) {
         if (userId == null)
             return false;
-        Team team = teamFactory.mapToEntity(teamDTO);
+        Team team = teamMapper.mapToEntity(teamDTO);
         return leagueService.isManager(userId, team.getLeague().getId());
     }
 
@@ -239,7 +252,7 @@ public class TeamServiceImpl implements TeamService {
         for (TeamComposition teamComposition : teamCompositions) {
             InfoTeamResults row = new InfoTeamResults();
             row.setId(counter++);
-            row.setPlayers(teamComposition.getPlayers().stream().map(x -> playerMainInfoFactory.mapToDto(x)).collect(Collectors.toList()));
+            row.setPlayers(teamComposition.getPlayers().stream().map(x -> playerMainInfoMapper.mapToDto(x)).collect(Collectors.toList()));
             row.setTeam(team);
             row.setTournament(teamComposition.getTournament());
 

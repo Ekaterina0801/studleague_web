@@ -2,7 +2,7 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.TransferDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Transfer;
-import com.studleague.studleague.factory.TransferFactory;
+import com.studleague.studleague.mappers.TransferMapper;
 import com.studleague.studleague.repository.PlayerRepository;
 import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.repository.TransferRepository;
@@ -38,7 +38,7 @@ public class TransferServiceImpl implements TransferService {
     private LeagueService leagueService;
 
     @Autowired
-    private TransferFactory transferFactory;
+    private TransferMapper transferMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -120,7 +120,7 @@ public class TransferServiceImpl implements TransferService {
     public boolean isManager(Long userId, TransferDTO transferDTO) {
         if (userId==null)
             return false;
-        Transfer transfer = transferFactory.mapToEntity(transferDTO);
+        Transfer transfer = transferMapper.mapToEntity(transferDTO);
         Long leagueId = transfer.getOldTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

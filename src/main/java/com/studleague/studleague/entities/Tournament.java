@@ -79,7 +79,7 @@ public class Tournament {
     @Builder.Default
     private List<Player> players = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<TeamComposition> teamCompositions = new ArrayList<>();

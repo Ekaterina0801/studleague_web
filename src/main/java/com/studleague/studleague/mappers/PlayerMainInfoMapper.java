@@ -1,14 +1,14 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.PlayerMainInfoDTO;
 import com.studleague.studleague.entities.Player;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PlayerMainInfoFactory implements DTOFactory<PlayerMainInfoDTO, Player> {
+public class PlayerMainInfoMapper implements DTOMapper<PlayerMainInfoDTO, Player> {
 
 
-    public PlayerMainInfoFactory() {
+    public PlayerMainInfoMapper() {
     }
 
     public Player mapToEntity(PlayerMainInfoDTO playerDTO) {

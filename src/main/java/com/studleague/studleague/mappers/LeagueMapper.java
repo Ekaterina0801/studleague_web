@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.LeagueDTO;
 import com.studleague.studleague.entities.League;
@@ -14,12 +14,12 @@ import java.util.List;
 
 
 @Component
-public class LeagueFactory implements DTOFactory<LeagueDTO, League>{
+public class LeagueMapper implements DTOMapper<LeagueDTO, League> {
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
-    public LeagueFactory() {
+    public LeagueMapper() {
     }
 
     public League mapToEntity(LeagueDTO leagueDTO) {

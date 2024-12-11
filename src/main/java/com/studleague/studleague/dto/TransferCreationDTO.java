@@ -1,5 +1,6 @@
 package com.studleague.studleague.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,8 +18,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIdentityInfo(scope = TransferDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class TransferDTO {
+@JsonIdentityInfo(scope = TransferCreationDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class TransferCreationDTO {
 
     @Id
     private Long id;
@@ -28,13 +29,13 @@ public class TransferDTO {
     private LocalDate transferDate;
 
     @JsonProperty("playerId")
-    private PlayerDTO player;
+    private Long playerId;
 
     @JsonProperty("oldTeamId")
-    private TeamDTO oldTeam;
+    private Long oldTeamId;
 
     @JsonProperty("newTeamId")
-    private TeamDTO newTeam;
+    private Long newTeamId;
 
     private String comments;
 
@@ -42,12 +43,13 @@ public class TransferDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransferDTO that = (TransferDTO) o;
-        return Objects.equals(transferDate, that.transferDate) && Objects.equals(player, that.player) && Objects.equals(oldTeam, that.oldTeam) && Objects.equals(newTeam, that.newTeam) && Objects.equals(comments, that.comments);
+        TransferCreationDTO that = (TransferCreationDTO) o;
+        return Objects.equals(transferDate, that.transferDate) && Objects.equals(playerId, that.playerId) && Objects.equals(oldTeamId, that.oldTeamId) && Objects.equals(newTeamId, that.newTeamId) && Objects.equals(comments, that.comments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transferDate, player, oldTeam, newTeam, comments);
+        return Objects.hash(transferDate, playerId, oldTeamId, newTeamId, comments);
     }
 }
+

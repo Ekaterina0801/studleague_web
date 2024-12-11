@@ -4,7 +4,7 @@ import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.mappers.TournamentMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
@@ -39,7 +39,7 @@ public class TournamentServiceTest {
     private TeamRepository teamRepository;
 
     @MockBean
-    private TournamentFactory tournamentFactory;
+    private TournamentMapper tournamentMapper;
 
     @MockBean
     private LeagueRepository leagueRepository;

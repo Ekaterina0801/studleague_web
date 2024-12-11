@@ -17,7 +17,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
-//@JsonIdentityInfo(scope=Flag.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Flag {
 
     @Id
@@ -29,7 +28,7 @@ public class Flag {
     @NotBlank
     private String name;
 
-    @ManyToMany(mappedBy = "flags", cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "flags", cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST})
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
@@ -41,8 +40,11 @@ public class Flag {
 
     public void addTeamToFlag(Team team)
     {
-        if (!teams.contains(team))
+        if (!teams.contains(team)) {
             teams.add(team);
+            team.addFlagToTeam(this);
+        }
+
     }
 
     @Override

@@ -24,7 +24,7 @@ public class InfoTeamResults {
 
     private List<Integer> answers = new ArrayList<>();
 
-    private int totalScore = 0;
+    private Integer totalScore = 0;
 
     private List<Integer> questionNumbers = new ArrayList<>();
 

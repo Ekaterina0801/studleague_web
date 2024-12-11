@@ -2,7 +2,7 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.SystemResultDTO;
 import com.studleague.studleague.entities.SystemResult;
-import com.studleague.studleague.factory.SystemResultFactory;
+import com.studleague.studleague.mappers.SystemResultMapper;
 import com.studleague.studleague.services.interfaces.SystemResultService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +22,7 @@ public class SystemResultController {
     SystemResultService systemResultService;
 
     @Autowired
-    SystemResultFactory systemResultFactory;
+    SystemResultMapper systemResultMapper;
 
     @Autowired
     TeamCompositionService teamCompositionService;
@@ -38,7 +38,7 @@ public class SystemResultController {
     )
     @GetMapping
     public ResponseEntity<List<SystemResultDTO>> getSystemResults() {
-        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.mapToDto(x)).toList());
+        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultMapper.mapToDto(x)).toList());
     }
 
     /**
@@ -53,7 +53,7 @@ public class SystemResultController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<SystemResultDTO> getSystemResult(@PathVariable long id) {
-        return ResponseEntity.ok(systemResultFactory.mapToDto(systemResultService.findById(id)));
+        return ResponseEntity.ok(systemResultMapper.mapToDto(systemResultService.findById(id)));
     }
 
     /**
@@ -66,10 +66,10 @@ public class SystemResultController {
             summary = "Создать новую систему результатов",
             description = "Использовать для создания новой системы результатов"
     )
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<SystemResultDTO> addNewSystemResult(@RequestBody SystemResultDTO systemResultDTO) {
-        SystemResult systemResult = systemResultFactory.mapToEntity(systemResultDTO);
+        SystemResult systemResult = systemResultMapper.mapToEntity(systemResultDTO);
         systemResultService.save(systemResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(systemResultDTO);
     }

@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.ResultMainInfoDTO;
 import com.studleague.studleague.entities.FullResult;
@@ -8,20 +8,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
-public class ResultMainInfoFactory implements DTOFactory<ResultMainInfoDTO, FullResult> {
+public class ResultMainInfoMapper implements DTOMapper<ResultMainInfoDTO, FullResult> {
 
     @Autowired
-    private TeamMainInfoFactory teamMainInfoFactory;
+    private TeamMainInfoMapper teamMainInfoMapper;
 
     @Override
     public FullResult mapToEntity(ResultMainInfoDTO dto) {
         return FullResult.builder()
-                .team(teamMainInfoFactory.mapToEntity(dto.getTeam()))
+                .team(teamMainInfoMapper.mapToEntity(dto.getTeam()))
                 .build();
     }
 
     @Override
     public ResultMainInfoDTO mapToDto(FullResult entity) {
-        return ResultMainInfoDTO.builder().team(teamMainInfoFactory.mapToDto(entity.getTeam())).build();
+        return ResultMainInfoDTO.builder().team(teamMainInfoMapper.mapToDto(entity.getTeam())).build();
     }
 }

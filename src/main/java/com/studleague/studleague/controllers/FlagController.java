@@ -2,9 +2,8 @@ package com.studleague.studleague.controllers;
 
 
 import com.studleague.studleague.dto.FlagDTO;
-import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.factory.FlagFactory;
-import com.studleague.studleague.factory.TeamFactory;
+import com.studleague.studleague.mappers.FlagMapper;
+import com.studleague.studleague.mappers.TeamMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.FlagService;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -39,10 +38,10 @@ public class FlagController {
 
 
     @Autowired
-    public TeamFactory teamFactory;
+    public TeamMapper teamMapper;
 
     @Autowired
-    private FlagFactory flagFactory;
+    private FlagMapper flagMapper;
 
     @Autowired
     private UserService userService;
@@ -59,7 +58,7 @@ public class FlagController {
     )
     @GetMapping
     public ResponseEntity<List<FlagDTO>> getFlags() {
-        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagFactory.mapToDto(x)).toList());
+        return ResponseEntity.ok(flagService.getAllFlags().stream().map(x -> flagMapper.mapToDto(x)).toList());
     }
 
     /**
@@ -74,7 +73,7 @@ public class FlagController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<FlagDTO> getFlag(@PathVariable long id) {
-        return ResponseEntity.ok(flagFactory.mapToDto(flagService.getFlagById(id)));
+        return ResponseEntity.ok(flagMapper.mapToDto(flagService.getFlagById(id)));
     }
 
     /**
@@ -116,7 +115,7 @@ public class FlagController {
             });
         }
 
-        flagService.saveFlag(flagFactory.mapToEntity(flagDto));
+        flagService.saveFlag(flagMapper.mapToEntity(flagDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(flagDto);
     }
 
@@ -134,21 +133,6 @@ public class FlagController {
     public ResponseEntity<String> deleteAllFlags() {
         flagService.deleteAllFlags();
         return ResponseEntity.ok("Flags were deleted");
-    }
-
-    /**
-     * Обрабатывает GET запрос на получение команд по Flag.
-     *
-     * @param id идентификатор флага
-     * @return ResponseEntity<List < TeamDTO>>, содержащий данные TeamDTO по флагу
-     */
-    @Operation(
-            summary = "Получить флаг по айди",
-            description = "Использовать для получения флага по id"
-    )
-    @GetMapping("/{id}/teams")
-    public ResponseEntity<List<TeamDTO>> getTeamsByFlagId(@PathVariable long id) {
-        return ResponseEntity.ok(teamService.getTeamsByFlagId(id).stream().map(x -> teamFactory.mapToDto(x)).toList());
     }
 
 }

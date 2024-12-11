@@ -6,8 +6,8 @@ import com.studleague.studleague.dto.TeamDetailsDTO;
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.factory.TeamFactory;
-import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.mappers.TeamMapper;
+import com.studleague.studleague.mappers.TournamentMapper;
 import com.studleague.studleague.services.implementations.SiteService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import com.studleague.studleague.services.interfaces.TournamentService;
@@ -33,9 +33,9 @@ public class RatingSiteController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String authToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MjgwNzAyMjYsImV4cCI6MTcyODA3MzgyNiwicm9sZXMiOltdLCJ1c2VybmFtZSI6ImRzLmthdHJpbkBtYWlsLnJ1In0.J9sp_b_nlSCQLaHkaN79MFrhMM8HSGTDj_fqhm0-DUNEWA9CakwJinqqCmYJnY0GNKLocd6-sxaKUVz_zpzVcZKAKBDR3purJVdXQ8bVuPTWktOOremEMrJqJGxHGPU6ZyYddsT2oxEbeDyPomiPMZg_GQiR4bdTXmYCxw0c0cYkiS3hHnHsELwlrkJzNU6DL4nZlm4yto8jir9mb51BYIk8rS9jQXgG-8reB8sYf4i_K6GE5STpve3hFfr4C64S9aIu_uQSxcnD8BxLkmLVFHarf0v5BKkjcmgYMNh2ymR-1KHMDyqkoZ58DaXPQEsV1wE6YZZR9PTn94MtqNZpog";
     @Autowired
-    private final TournamentFactory tournamentFactory;
+    private final TournamentMapper tournamentMapper;
     @Autowired
-    private final TeamFactory teamFactory;
+    private final TeamMapper teamMapper;
     @Autowired
     private final TournamentService tournamentService;
     @Autowired
@@ -67,7 +67,7 @@ public class RatingSiteController {
         TournamentDTO tournamentDto1 = responseEntityTournament.getBody();
         tournamentDto1.setLeaguesIds(tournamentDto.getLeaguesIds());
         tournamentDto1.setIdSite(tournamentDto1.getId());
-        Tournament tournament = tournamentFactory.mapToEntity(tournamentDto1);
+        Tournament tournament = tournamentMapper.mapToEntity(tournamentDto1);
         tournamentService.saveTournament(tournament);
         return tournamentDto1;
     }
@@ -96,7 +96,7 @@ public class RatingSiteController {
         TeamDTO teamDto1 = responseEntityTeam.getBody();
         teamDto1.setLeague(teamDto.getLeague());
         teamDto1.setIdSite(teamDto1.getId());
-        Team team = teamFactory.mapToEntity(teamDto1);
+        Team team = teamMapper.mapToEntity(teamDto1);
         teamService.saveTeam(team);
         return teamDto1;
     }

@@ -29,4 +29,6 @@ public interface LeagueService {
     League getLeagueWithResults(Long leagueId);
 
     League changeSystemResultOfLeague(Long leagueId, Long systemResultId);
+
+    League deleteTeamFromLeague(Long leagueId, Long teamId);
 }

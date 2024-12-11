@@ -1,11 +1,11 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 /**
  * Interface for classes designed for mapping entity objects to their corresponding dto classes
  * @param <D> Dto class
  * @param <E> Entity class
  */
-public interface DTOFactory<D, E> {
+public interface DTOMapper<D, E> {
     /**
      * Map Dto to Entity
      * @param dto Dto object to be mapped

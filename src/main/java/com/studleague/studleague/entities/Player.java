@@ -52,7 +52,8 @@ public class Player {
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
-                    CascadeType.DETACH
+                    CascadeType.DETACH,
+                    CascadeType.PERSIST
             },
             mappedBy = "players")
     @ToString.Exclude
@@ -63,7 +64,7 @@ public class Player {
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.REFRESH,
-                    CascadeType.DETACH,
+                    CascadeType.DETACH
             },
             mappedBy = "players")
     @ToString.Exclude

@@ -2,9 +2,10 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.factory.ControversialFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,20 +18,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/controversials")
+@Tag(name = "Спорные")
 public class ControversialController {
 
     @Autowired
-    public ControversialFactory controversialFactory;
+    public ControversialMapper controversialMapper;
 
     @Autowired
     public ControversialService controversialService;
 
-
-    /**
-     * Обрабатывает GET запрос на получение всех Controversial.
-     *
-     * @return ResponseEntity<List < ControversialDTO>>, содержащий все ControversialDTO
-     */
     /**
      * Обрабатывает GET запрос на получение всех Controversial.
      *
@@ -65,7 +61,7 @@ public class ControversialController {
             @RequestParam(required = false) List<String> sortOrder
     ) {
 
-        return controversialService.searchControversials(questionNumber, statuses, startDate, endDate, fullResultId, sortBy, sortOrder).stream().map(x -> controversialFactory.mapToDto(x)).toList();
+        return controversialService.searchControversials(questionNumber, statuses, startDate, endDate, fullResultId, sortBy, sortOrder).stream().map(x -> controversialMapper.mapToDto(x)).toList();
     }
 
 
@@ -82,7 +78,7 @@ public class ControversialController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN') or @controversialService.isManager(authentication.principal.id, #controversialDto)")
     public ResponseEntity<ControversialDTO> addNewControversial(@RequestBody ControversialDTO controversialDto) {
-        Controversial controversial = controversialFactory.mapToEntity(controversialDto);
+        Controversial controversial = controversialMapper.mapToEntity(controversialDto);
         controversialService.saveControversial(controversial);
         return ResponseEntity.status(HttpStatus.CREATED).body(controversialDto);
     }
@@ -100,7 +96,7 @@ public class ControversialController {
     @GetMapping("/{id}")
     public ResponseEntity<ControversialDTO> controversialById(@PathVariable long id) {
         Controversial controversial = controversialService.getControversialById(id);
-        ControversialDTO controversialDTO = controversialFactory.mapToDto(controversial);
+        ControversialDTO controversialDTO = controversialMapper.mapToDto(controversial);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(controversialDTO);
     }
 

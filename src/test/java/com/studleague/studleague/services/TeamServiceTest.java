@@ -2,7 +2,7 @@ package com.studleague.studleague.services;
 
 import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.TeamFactory;
+import com.studleague.studleague.mappers.TeamMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
@@ -55,7 +55,7 @@ public class TeamServiceTest {
     private LeagueService leagueService;
 
     @MockBean
-    private TeamFactory teamFactory;
+    private TeamMapper teamMapper;
 
     @Autowired
     private TeamService teamService;

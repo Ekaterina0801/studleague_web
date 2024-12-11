@@ -2,7 +2,8 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.FlagDTO;
 import com.studleague.studleague.entities.Flag;
-import com.studleague.studleague.factory.FlagFactory;
+import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.mappers.FlagMapper;
 import com.studleague.studleague.repository.FlagRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.FlagService;
@@ -26,7 +27,7 @@ public class FlagServiceImpl implements FlagService {
     private LeagueService leagueService;
 
     @Autowired
-    private FlagFactory flagFactory;
+    private FlagMapper flagMapper;
 
 
     @Override
@@ -40,6 +41,7 @@ public class FlagServiceImpl implements FlagService {
     public void saveFlag(Flag flag) {
         String name = flag.getName();
         Long id = flag.getId();
+
         if (id != null) {
             if (flagRepository.existsById(id)) {
                 Flag existingFlag = entityRetrievalUtils.getFlagOrThrow(id);
@@ -49,15 +51,25 @@ public class FlagServiceImpl implements FlagService {
             Flag existingFlag = entityRetrievalUtils.getFlagByNameOrThrow(name);
             updateFlag(existingFlag, flag);
         } else {
+
+            for (Team team : flag.getTeams()) {
+                team.addFlagToTeam(flag);
+            }
             flagRepository.save(flag);
         }
     }
-
     @Transactional
     private void updateFlag(Flag existingFlag, Flag newFlag) {
         existingFlag.setName(newFlag.getName());
         existingFlag.setLeague(newFlag.getLeague());
-        existingFlag.setTeams(newFlag.getTeams());
+
+        for (Team team : newFlag.getTeams()) {
+            if (!existingFlag.getTeams().contains(team)) {
+                existingFlag.addTeamToFlag(team);
+                team.addFlagToTeam(existingFlag);
+            }
+        }
+
         flagRepository.save(existingFlag);
     }
 
@@ -93,7 +105,7 @@ public class FlagServiceImpl implements FlagService {
     public boolean isManager(Long userId, FlagDTO flagDTO) {
         if (userId == null)
             return false;
-        Flag flag = flagFactory.mapToEntity(flagDTO);
+        Flag flag = flagMapper.mapToEntity(flagDTO);
         Long leagueId = flag.getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }

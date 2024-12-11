@@ -14,6 +14,11 @@ public class PlayerSpecification {
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
 
+    public static Specification<Player> patronymicContains(String patronymic) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("patronymic")), "%" + patronymic.toLowerCase() + "%");
+    }
+
 
     public static Specification<Player> surnameContains(String surname) {
         return (root, query, criteriaBuilder) ->
@@ -23,7 +28,7 @@ public class PlayerSpecification {
 
     public static Specification<Player> belongsToTeam(Long teamId) {
         return (root, query, criteriaBuilder) -> {
-            query.distinct(true); // Для устранения дубликатов
+            query.distinct(true);
             return criteriaBuilder.equal(
                     root.join("teams").get("id"), teamId
             );

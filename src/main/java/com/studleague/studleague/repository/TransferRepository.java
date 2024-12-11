@@ -15,4 +15,5 @@ public interface TransferRepository extends JpaRepository<Transfer, Long>, JpaSp
     @Query("select t from Transfer t left join fetch t.oldTeam o left join fetch t.newTeam n where o.id=:teamId or n.id=:teamId")
     List<Transfer> findAllByTeamId(@Param("teamId")Long teamId);
 
+
 }

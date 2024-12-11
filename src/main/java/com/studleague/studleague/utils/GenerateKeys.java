@@ -1,4 +1,4 @@
-package com.studleague.studleague.dto.security;
+package com.studleague.studleague.utils;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

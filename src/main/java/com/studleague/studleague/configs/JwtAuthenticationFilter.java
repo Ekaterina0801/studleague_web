@@ -3,6 +3,7 @@ package com.studleague.studleague.configs;
 import com.studleague.studleague.services.implementations.security.JwtService;
 import com.studleague.studleague.services.implementations.security.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,17 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            return true;
+            return !path.startsWith("/api/leagues/") || !path.contains("/is-manager");
         }
-
-        if ("PUT".equalsIgnoreCase(request.getMethod())) {
-            return false;
-        }
-
-        if (path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".gif")) {
-            return true;
-        }
-
         for (String excludedPath : excludedPaths) {
             if (path.startsWith(excludedPath.replace("**", ""))) {
                 return true;
@@ -72,13 +64,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         var authHeader = request.getHeader(HEADER_NAME);
-        if ((StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX))&&!request.getRequestURL().toString().contains("/sign-in")) {
+        if ((StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) &&
+                !request.getRequestURL().toString().contains("/sign-in")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Authorization token is missing");
             return;
         }
 
-        if (request.getRequestURL().toString().contains("/sign-in"))
-        {
+        if (request.getRequestURL().toString().contains("/sign-in")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -92,13 +84,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             tokenExpired = true;
             username = e.getClaims().getSubject();
+        } catch (JwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Invalid access token");
+            return;
         }
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.findUserByUsername(username);
 
             if (!tokenExpired && jwtService.isTokenValid(jwt, userDetails)) {
-                // Если токен валиден и не истек, аутентифицируем пользователя
                 authenticateUser(userDetails, request);
             } else if (tokenExpired) {
                 String refreshToken = request.getHeader(REFRESH_HEADER_NAME);
@@ -107,12 +101,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                // Проверяем валидность refresh токена
-                if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                    String newAccessToken = jwtService.generateAccessToken(userDetails);
-                    response.setHeader("Authorization", "Bearer " + newAccessToken);
-                    authenticateUser(userDetails, request);
-                } else {
+                try {
+                    if (jwtService.isTokenValid(refreshToken, userDetails)) {
+                        String newAccessToken = jwtService.generateAccessToken(userDetails);
+                        response.setHeader("Authorization", "Bearer " + newAccessToken);
+                        authenticateUser(userDetails, request);
+                    } else {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Invalid refresh token");
+                        return;
+                    }
+                } catch (JwtException e) {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Invalid refresh token");
                     return;
                 }
@@ -121,6 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 
     private void authenticateUser(UserDetails userDetails, HttpServletRequest request) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();

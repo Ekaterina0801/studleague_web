@@ -4,9 +4,9 @@ import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.dto.TournamentMainInfoDTO;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.factory.ControversialFactory;
-import com.studleague.studleague.factory.TournamentFactory;
-import com.studleague.studleague.factory.TournamentMainInfoFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
+import com.studleague.studleague.mappers.TournamentMainInfoMapper;
+import com.studleague.studleague.mappers.TournamentMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.TournamentService;
@@ -38,13 +38,21 @@ public class TournamentController {
     public TournamentService tournamentService;
 
     @Autowired
-    public TournamentFactory tournamentFactory;
+    public TournamentMapper tournamentMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private TournamentMainInfoFactory tournamentMainInfoFactory;
+    private TournamentMainInfoMapper tournamentMainInfoMapper;
+
+    @Autowired
+    private ControversialService controversialService;
+
+    @Autowired
+    private ControversialMapper controversialMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(TournamentController.class);
 
 
     /**
@@ -97,7 +105,7 @@ public class TournamentController {
         }
 
         Page<Tournament> tournamentPage = tournamentService.searchTournaments(name, leagueId, startDate, endDate, sort, pageable);
-        return tournamentPage.map(tournamentMainInfoFactory::mapToDto);
+        return tournamentPage.map(tournamentMainInfoMapper::mapToDto);
     }
 
     /**
@@ -112,7 +120,7 @@ public class TournamentController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<TournamentDTO> getTournament(@PathVariable long id) {
-        return ResponseEntity.ok(tournamentFactory.mapToDto(tournamentService.getTournamentById(id)));
+        return ResponseEntity.ok(tournamentMapper.mapToDto(tournamentService.getTournamentById(id)));
     }
 
     /**
@@ -128,7 +136,7 @@ public class TournamentController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentDTO)")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TournamentDTO> addNewTournament(@RequestBody TournamentDTO tournamentDto) {
-        Tournament tournament = tournamentFactory.mapToEntity(tournamentDto);
+        Tournament tournament = tournamentMapper.mapToEntity(tournamentDto);
         tournamentService.saveTournament(tournament);
         return ResponseEntity.status(HttpStatus.CREATED).body(tournamentDto);
     }
@@ -165,26 +173,16 @@ public class TournamentController {
     @PutMapping("/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> addResultToTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.addResultToTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+        return ResponseEntity.ok(tournamentMapper.mapToDto(updatedTournament));
     }
-
-    //@PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
-    private static final Logger logger = LoggerFactory.getLogger(TournamentController.class);
-
-    @Autowired
-    private ControversialService controversialService;
-
-    @Autowired
-    private ControversialFactory controversialFactory;
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
     @PutMapping("/{tournamentId}/teams/{teamId}")
     public ResponseEntity<TournamentDTO> addTeamToTournament(@PathVariable long tournamentId, @PathVariable long teamId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         logger.debug("Authentication Principal: {}", authentication.getPrincipal());
-
         Tournament updatedTournament = tournamentService.addTeamToTournament(tournamentId, teamId);
-        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+        return ResponseEntity.ok(tournamentMapper.mapToDto(updatedTournament));
     }
 
 
@@ -200,10 +198,10 @@ public class TournamentController {
             description = "Использовать для удаления результата из турнира"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
-    @DeleteMapping("/tournaments/{tournamentId}/results/{resultId}")
+    @DeleteMapping("/{tournamentId}/results/{resultId}")
     public ResponseEntity<TournamentDTO> deleteResultFromTournament(@PathVariable long tournamentId, @PathVariable long resultId) {
         Tournament updatedTournament = tournamentService.deleteResultFromTournament(tournamentId, resultId);
-        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+        return ResponseEntity.ok(tournamentMapper.mapToDto(updatedTournament));
     }
 
 
@@ -220,15 +218,15 @@ public class TournamentController {
             description = "Использовать для добавления команд и игроков в турнир"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @tournamentService.isManager(authentication.principal.id, #tournamentId)")
-    @PutMapping("/tournaments/{tournamentId}/teams/{teamId}/players/{playerId}")
+    @PutMapping("/{tournamentId}/teams/{teamId}/players/{playerId}")
     public ResponseEntity<TournamentDTO> addPlayersTeamsToTournament(@PathVariable long tournamentId, @PathVariable long teamId, @PathVariable long playerId) {
         Tournament updatedTournament = tournamentService.addTeamAndPlayerToTournament(tournamentId, teamId, playerId);
-        return ResponseEntity.ok(tournamentFactory.mapToDto(updatedTournament));
+        return ResponseEntity.ok(tournamentMapper.mapToDto(updatedTournament));
     }
 
     @GetMapping("/{tournamentId}/controversials")
     public ResponseEntity<List<ControversialDTO>> getControversialsByTournamentId(@PathVariable long tournamentId) {
-        return ResponseEntity.ok(controversialService.getControversialsByTournamentId(tournamentId).stream().map(x -> controversialFactory.mapToDto(x)).collect(Collectors.toList()));
+        return ResponseEntity.ok(controversialService.getControversialsByTournamentId(tournamentId).stream().map(x -> controversialMapper.mapToDto(x)).collect(Collectors.toList()));
     }
 
 }

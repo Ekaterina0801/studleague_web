@@ -76,6 +76,12 @@ public class League {
         }
     }
 
+    public void deleteTeamFromLeague(Team team) {
+        if (teams != null) {
+            teams.remove(team);
+        }
+    }
+
     public void addManager(User user)
     {
         if (!managers.contains(user))

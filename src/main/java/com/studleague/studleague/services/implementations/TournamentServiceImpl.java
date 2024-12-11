@@ -2,7 +2,7 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.TournamentFactory;
+import com.studleague.studleague.mappers.TournamentMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -36,7 +36,7 @@ public class TournamentServiceImpl implements TournamentService {
     private TeamRepository teamRepository;
 
     @Autowired
-    private TournamentFactory tournamentFactory;
+    private TournamentMapper tournamentMapper;
 
     @Autowired
     private LeagueRepository leagueRepository;
@@ -256,7 +256,7 @@ public class TournamentServiceImpl implements TournamentService {
     public boolean isManager(Long userId, TournamentDTO tournamentDTO) {
         if (userId == null)
             return false;
-        Tournament tournament = tournamentFactory.mapToEntity(tournamentDTO);
+        Tournament tournament = tournamentMapper.mapToEntity(tournamentDTO);
         for (League league : tournament.getLeagues())
             if (leagueService.isManager(userId, league.getId()))
                 return true;

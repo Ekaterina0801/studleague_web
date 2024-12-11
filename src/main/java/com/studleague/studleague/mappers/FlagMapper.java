@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.FlagDTO;
 import com.studleague.studleague.entities.Flag;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
-public class FlagFactory implements DTOFactory<FlagDTO, Flag>{
+public class FlagMapper implements DTOMapper<FlagDTO, Flag> {
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;

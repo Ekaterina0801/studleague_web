@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.TournamentMainInfoDTO;
 import com.studleague.studleague.entities.Tournament;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 
 @Component
-public class TournamentMainInfoFactory implements DTOFactory<TournamentMainInfoDTO, Tournament> {
+public class TournamentMainInfoMapper implements DTOMapper<TournamentMainInfoDTO, Tournament> {
 
     public Tournament mapToEntity(TournamentMainInfoDTO tournamentDto) {
         return Tournament.builder()

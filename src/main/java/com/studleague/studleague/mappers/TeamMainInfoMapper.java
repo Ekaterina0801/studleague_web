@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.TeamMainInfoDTO;
 import com.studleague.studleague.entities.Team;
@@ -11,25 +11,25 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class TeamMainInfoFactory implements DTOFactory<TeamMainInfoDTO, Team> {
+public class TeamMainInfoMapper implements DTOMapper<TeamMainInfoDTO, Team> {
 
     @Autowired
     @Lazy
-    private PlayerFactory playerFactory;
+    private PlayerMapper playerMapper;
 
     @Autowired
-    private TournamentFactory tournamentFactory;
+    private TournamentMapper tournamentMapper;
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
     @Autowired
-    private LeagueFactory leagueFactory;
+    private LeagueMapper leagueMapper;
 
     @Autowired
-    private FlagFactory flagFactory;
+    private FlagMapper flagMapper;
 
-    public TeamMainInfoFactory() {
+    public TeamMainInfoMapper() {
     }
 
     public Team mapToEntity(TeamMainInfoDTO teamDTO) {
@@ -39,7 +39,7 @@ public class TeamMainInfoFactory implements DTOFactory<TeamMainInfoDTO, Team> {
                 .teamName(teamDTO.getTeamName())
                 .university(teamDTO.getUniversity())
                 .idSite(teamDTO.getIdSite())
-                .league(leagueFactory.mapToEntity(teamDTO.getLeague()))
+                .league(leagueMapper.mapToEntity(teamDTO.getLeague()))
                 .tournaments(teamDTO.getTournamentIds().stream().map(x -> entityRetrievalUtils.getTournamentOrThrow(x)).collect(Collectors.toList()))
                 .build();
     }
@@ -49,7 +49,7 @@ public class TeamMainInfoFactory implements DTOFactory<TeamMainInfoDTO, Team> {
                 .id(team.getId())
                 .teamName(team.getTeamName())
                 .university(team.getUniversity())
-                .league(leagueFactory.mapToDto(team.getLeague()))
+                .league(leagueMapper.mapToDto(team.getLeague()))
                 .tournamentIds(team.getTournaments().stream().map(Tournament::getId).collect(Collectors.toList()))
                 .idSite(team.getIdSite())
                 .build();

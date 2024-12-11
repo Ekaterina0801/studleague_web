@@ -6,6 +6,7 @@ import com.studleague.studleague.entities.TeamComposition;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TeamCompositionService {
     TeamComposition findById(Long id);
@@ -29,5 +30,7 @@ public interface TeamCompositionService {
     List<TeamComposition> searchTeamCompositions(Long teamId, Long tournamentId, Sort sort);
 
     boolean existsByTeamAndTournament(Long tournamentId, Long teamId);
+
+    List<TeamCompositionDTO> processTeamCompositions(List<Map<String, Object>> data, Long leagueId, Long tournamentId);
 
 }
