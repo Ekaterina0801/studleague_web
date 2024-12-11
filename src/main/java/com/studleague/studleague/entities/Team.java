@@ -46,7 +46,7 @@ public class Team {
     @ToString.Exclude
     private List<Player> players = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinTable(name="teams_flags",
             joinColumns = @JoinColumn(name="team_id"), inverseJoinColumns=@JoinColumn(name="flag_id"))
     @Builder.Default
@@ -58,12 +58,12 @@ public class Team {
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();
 
-    @OneToMany(mappedBy="parentTeam",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentTeam", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<TeamComposition> teamCompositions = new ArrayList<>();
@@ -81,6 +81,7 @@ public class Team {
     {
         if (players != null) {
             players.remove(player);
+            player.getTeams().remove(this);
         }
     }
 

@@ -2,9 +2,9 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.League;
+import com.studleague.studleague.entities.security.Role;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.*;
-import com.studleague.studleague.services.LeagueResult;
+import com.studleague.studleague.mappers.*;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/leagues")
@@ -33,13 +34,13 @@ public class LeagueController {
     public TeamService teamService;
 
     @Autowired
-    public TeamFactory teamFactory;
+    public TeamMapper teamMapper;
 
     @Autowired
-    public TournamentFactory tournamentFactory;
+    public TournamentMapper tournamentMapper;
 
     @Autowired
-    private LeagueFactory leagueFactory;
+    private LeagueMapper leagueMapper;
 
     @Autowired
     private UserService userService;
@@ -48,16 +49,16 @@ public class LeagueController {
     private ResultService resultService;
 
     @Autowired
-    private LeagueResultsFactory leagueResultsFactory;
+    private LeagueResultsMapper leagueResultsMapper;
 
     @Autowired
     private SystemResultService systemResultService;
 
     @Autowired
-    private SystemResultFactory systemResultFactory;
+    private SystemResultMapper systemResultMapper;
 
     @Autowired
-    private LeagueMainInfoFactory leagueMainInfoFactory;
+    private LeagueMainInfoMapper leagueMainInfoMapper;
 
 
     /**
@@ -70,8 +71,8 @@ public class LeagueController {
             description = "Использовать для получения всех лиг"
     )
     @GetMapping
-    public ResponseEntity<List<LeagueDTO>> getLeagues() {
-        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueFactory.mapToDto(x)).toList());
+    public ResponseEntity<List<LeagueMainInfoDTO>> getLeagues() {
+        return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueMainInfoMapper.mapToDto(x)).toList());
     }
 
     /**
@@ -86,13 +87,10 @@ public class LeagueController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<LeagueMainInfoDTO> getLeague(@PathVariable long id) {
-        return ResponseEntity.ok(leagueMainInfoFactory.mapToDto(leagueService.getLeagueById(id)));
+        return ResponseEntity.ok(leagueMainInfoMapper.mapToDto(leagueService.getLeagueById(id)));
     }
 
-    @GetMapping("/system-results")
-    public ResponseEntity<List<SystemResultDTO>> getSystems() {
-        return ResponseEntity.ok(systemResultService.findAll().stream().map(x -> systemResultFactory.mapToDto(x)).toList());
-    }
+
 
     /**
      * Обрабатывает PUT запрос на изменение системы результатов по ID лиги и ID системы результатов.
@@ -102,14 +100,14 @@ public class LeagueController {
      * @return ResponseEntity<LeagueDTO>, содержащий данные запрашиваемого LeagueDTO
      */
     @Operation(
-            summary = "Получить лигу по айди",
-            description = "Использовать для получения лиги по id"
+            summary = "Получить системы результатов лиги",
+            description = "Использовать для получения системы результатов лиги"
     )
-    //@PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
     @PutMapping("/{leagueId}/system-results")
     public ResponseEntity<LeagueDTO> changeSystemResult(@PathVariable long leagueId, @RequestParam long systemResultId) {
         League league = leagueService.changeSystemResultOfLeague(leagueId, systemResultId);
-        return ResponseEntity.ok(leagueFactory.mapToDto(league));
+        return ResponseEntity.ok(leagueMapper.mapToDto(league));
     }
 
     /**
@@ -128,7 +126,7 @@ public class LeagueController {
         User user = (User) authentication.getPrincipal();
         leagueDto.setCreatedById(user.getId());
         leagueDto.setManagersIds(new ArrayList<>(Collections.singletonList(user.getId())));
-        leagueService.saveLeague(leagueFactory.mapToEntity(leagueDto));
+        leagueService.saveLeague(leagueMapper.mapToEntity(leagueDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(leagueDto);
     }
 
@@ -164,7 +162,7 @@ public class LeagueController {
     @PutMapping("/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> addTournamentToLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.addTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueFactory.mapToDto(updatedLeague));
+        return ResponseEntity.ok(leagueMapper.mapToDto(updatedLeague));
     }
 
     /**
@@ -178,27 +176,20 @@ public class LeagueController {
             summary = "Удалить турнир из лиги",
             description = "Использовать для удаления турнира из лиги"
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @flagService.isManager(authentication.principal.id, #leagueId)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
     @DeleteMapping("/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
         League updatedLeague = leagueService.deleteTournamentToLeague(leagueId, tournamentId);
-        return ResponseEntity.ok(leagueFactory.mapToDto(updatedLeague));
+        return ResponseEntity.ok(leagueMapper.mapToDto(updatedLeague));
     }
 
-    /**
-     * Обрабатывает GET запрос на получение всех турниров из лиги.
-     *
-     * @param leagueId идентификатор лиги
-     * @return ResponseEntity<List < TournamentDTO>>, содержащий все TournamentDTO из лиги
-     */
-    @Operation(
-            summary = "Все турниры из лиги",
-            description = "Использовать для получения всех турниров из лиги"
-    )
-    @GetMapping("/{leagueId}/tournaments")
-    public ResponseEntity<List<TournamentDTO>> allTournamentsFromLeague(@PathVariable long leagueId) {
-        League league = leagueService.getLeagueById(leagueId);
-        return ResponseEntity.ok(league.getTournaments().stream().map(x -> tournamentFactory.mapToDto(x)).toList());
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
+    @DeleteMapping("/{leagueId}/teams/{teamId}")
+    public ResponseEntity<LeagueDTO> deleteTeamFromLeague(@PathVariable long leagueId, @PathVariable long teamId) {
+        League updatedLeague = leagueService.deleteTeamFromLeague(leagueId, teamId);
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.ok(leagueMapper.mapToDto(updatedLeague));
     }
 
     /**
@@ -213,24 +204,10 @@ public class LeagueController {
             description = "Использовать для получения команды игрока из лиги"
     )
     @GetMapping("/{leagueId}/players/{playerId}/team")
-    public ResponseEntity<List<TeamDTO>> teamFromLeague(@PathVariable long leagueId, @PathVariable long playerId) {
-        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x -> teamFactory.mapToDto(x)).toList());
+    public ResponseEntity<List<TeamDTO>> getTeamFromLeagueByPlayerId(@PathVariable long leagueId, @PathVariable long playerId) {
+        return ResponseEntity.ok(teamService.getTeamsByPlayerIdAndLeagueId(leagueId, playerId).stream().map(x -> teamMapper.mapToDto(x)).toList());
     }
 
-    /**
-     * Обрабатывает GET запрос на получение всех команд из лиги.
-     *
-     * @param leagueId идентификатор лиги
-     * @return ResponseEntity<List < TeamDTO>>, содержащий все TeamDTO из лиги
-     */
-    @Operation(
-            summary = "Все команды из лиги",
-            description = "Использовать для получения всех команд из лиги"
-    )
-    @GetMapping("/{leagueId}/teams")
-    public ResponseEntity<List<TeamDTO>> allTeamsFromLeague(@PathVariable long leagueId) {
-        return ResponseEntity.ok(teamService.teamsByLeague(leagueId).stream().map(x -> teamFactory.mapToDto(x)).toList());
-    }
 
     /**
      * Обрабатывает DELETE запрос для удаления всех лиг.
@@ -248,10 +225,35 @@ public class LeagueController {
         return ResponseEntity.ok("Leagues were deleted");
     }
 
+    /**
+     * Обрабатывает GET запрос для получения результатов лиги
+     *
+     * @return ResponseEntity<List < LeagueResultDTO>
+     */
+    @Operation(
+            summary = "Получить результаты лиги",
+            description = "Использовать для получения результатов лиги"
+    )
     @GetMapping("/{leagueId}/results")
     public ResponseEntity<List<LeagueResultsDTO>> getLeagueResults(@PathVariable long leagueId) {
         List<LeagueResult> results = resultService.calculateResultsBySystem(leagueId);
-        return ResponseEntity.ok(results.stream().map(x -> leagueResultsFactory.mapToDto(x)).toList());
+        return ResponseEntity.ok(results.stream().map(x -> leagueResultsMapper.mapToDto(x)).toList());
     }
+
+    @Operation(
+            summary = "Проверить, является ли пользователь менеджером лиги",
+            description = "Проверяет, является ли текущий пользователь менеджером лиги по id"
+    )
+    @GetMapping("/{leagueId}/is-manager")
+    public ResponseEntity<Boolean> isManager(@PathVariable long leagueId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.ok(false);
+        }
+
+        User user = (User) authentication.getPrincipal();
+        boolean isManager = leagueService.isManager(user.getId(), leagueId) || Objects.equals(user.getRole(), Role.adminRole());
+        return ResponseEntity.ok(isManager);
+    }
+
 
 }

@@ -11,7 +11,6 @@ public class LocalDateDeserializer extends JsonDeserializer<LocalDateTime> {
     @Override
     public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         String dateTimeString = p.getText().split("\\+")[0];
-                //.split("T")[0]; // Get the date part before 'T'
         return LocalDateTime.parse(dateTimeString);
     }
 }

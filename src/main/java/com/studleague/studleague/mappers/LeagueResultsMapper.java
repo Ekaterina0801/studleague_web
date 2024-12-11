@@ -1,15 +1,15 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
+import com.studleague.studleague.dto.LeagueResult;
 import com.studleague.studleague.dto.LeagueResultsDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.services.EntityRetrievalUtils;
-import com.studleague.studleague.services.LeagueResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LeagueResultsFactory implements DTOFactory<LeagueResultsDTO, LeagueResult> {
+public class LeagueResultsMapper implements DTOMapper<LeagueResultsDTO, LeagueResult> {
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 

@@ -13,7 +13,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PasswordResetListener {
     private final JavaMailSender mailSender;
-    private String resetPasswordUrl = "http://localhost:8080/reset-password";
 
     @RabbitListener(queues = RabbitMQConfig.RESET_PASSWORD_QUEUE)
     public void handlePasswordResetRequest(Map<String, Object> message) {
@@ -21,6 +20,7 @@ public class PasswordResetListener {
         String email = (String) message.get("email");
         String token = (String) message.get("token");
 
+        String resetPasswordUrl = "http://localhost:8080/reset-password";
         String resetLink = String.format("%s?token=%s", resetPasswordUrl, token);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();

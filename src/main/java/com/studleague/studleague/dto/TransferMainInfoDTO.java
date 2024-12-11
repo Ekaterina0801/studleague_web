@@ -17,8 +17,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIdentityInfo(scope = TransferDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class TransferDTO {
+@JsonIdentityInfo(scope = TransferMainInfoDTO.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class TransferMainInfoDTO {
 
     @Id
     private Long id;
@@ -28,13 +28,13 @@ public class TransferDTO {
     private LocalDate transferDate;
 
     @JsonProperty("playerId")
-    private PlayerDTO player;
+    private PlayerMainInfoDTO player;
 
-    @JsonProperty("oldTeamId")
-    private TeamDTO oldTeam;
+    @JsonProperty("oldTeam")
+    private TeamMainInfoDTO oldTeam;
 
-    @JsonProperty("newTeamId")
-    private TeamDTO newTeam;
+    @JsonProperty("newTeam")
+    private TeamMainInfoDTO newTeam;
 
     private String comments;
 
@@ -42,7 +42,7 @@ public class TransferDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransferDTO that = (TransferDTO) o;
+        TransferMainInfoDTO that = (TransferMainInfoDTO) o;
         return Objects.equals(transferDate, that.transferDate) && Objects.equals(player, that.player) && Objects.equals(oldTeam, that.oldTeam) && Objects.equals(newTeam, that.newTeam) && Objects.equals(comments, that.comments);
     }
 

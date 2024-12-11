@@ -6,9 +6,9 @@ import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.TeamComposition;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.factory.FullResultFactory;
-import com.studleague.studleague.factory.ResultMainInfoFactory;
-import com.studleague.studleague.factory.TeamMainInfoFactory;
+import com.studleague.studleague.mappers.FullResultMapper;
+import com.studleague.studleague.mappers.ResultMainInfoMapper;
+import com.studleague.studleague.mappers.TeamMainInfoMapper;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ResultService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
@@ -37,16 +37,16 @@ public class TeamResultService {
     private ResultService resultService;
 
     @Autowired
-    private FullResultFactory fullResultFactory;
+    private FullResultMapper fullResultMapper;
 
     @Autowired
-    private TeamMainInfoFactory teamMainInfoFactory;
+    private TeamMainInfoMapper teamMainInfoMapper;
 
     @Autowired
     private TournamentService tournamentService;
 
     @Autowired
-    private ResultMainInfoFactory resultMainInfoFactory;
+    private ResultMainInfoMapper resultMainInfoMapper;
 
     @Autowired
     private TeamCompositionService teamCompositionService;
@@ -64,7 +64,7 @@ public class TeamResultService {
             Team team = resolveOrCreateTeam(teamName, leagueId, tournament);
 
             FullResultDTO fullResult = processRowData(row, team, tournamentId);
-            resultService.saveFullResult(fullResultFactory.mapToEntity(fullResult));
+            resultService.saveFullResult(fullResultMapper.mapToEntity(fullResult));
             results.add(fullResult);
         }
 
@@ -74,14 +74,17 @@ public class TeamResultService {
     private Team resolveOrCreateTeam(String teamName, Long leagueId, Tournament tournament) {
         Pageable pageable = PageRequest.of(0, 1);
         Page<Team> teamPage = teamService.searchTeams(teamName, leagueId, null, null, pageable);
-
-        Team team = teamPage.isEmpty()
-                ? createNewTeam(teamName, leagueId, tournament)
-                : teamPage.getContent().get(0);
+        Team team;
+        if (teamPage.getContent().isEmpty()) {
+            team = createNewTeam(teamName, leagueId, tournament);
+        } else {
+            team = teamPage.getContent().get(0);
+        }
 
         linkTeamToTournament(team, tournament);
         return team;
     }
+
 
     private Team createNewTeam(String teamName, Long leagueId, Tournament tournament) {
         Team team = Team.builder()
@@ -103,6 +106,7 @@ public class TeamResultService {
                 .build();
         team.getTeamCompositions().add(teamComposition);
         tournament.addTeamComposition(teamComposition);
+        tournament.addTeam(team);
         teamCompositionService.save(teamComposition);
     }
 
@@ -112,10 +116,10 @@ public class TeamResultService {
         int totalScore = 0;
         List<ControversialDTO> controversials = new ArrayList<>();
         FullResultDTO fullResult = FullResultDTO.builder()
-                .team(teamMainInfoFactory.mapToDto(team))
+                .team(teamMainInfoMapper.mapToDto(team))
                 .tournamentId(tournamentId)
                 .maskResults("")
-                .totalScore(0)
+                .totalScore(0.0)
                 .controversials(new ArrayList<>())
                 .build();
         for (Map.Entry<String, Object> entry : row.entrySet()) {
@@ -149,7 +153,7 @@ public class TeamResultService {
             }
         }
         fullResult.setMaskResults(maskResults.toString());
-        fullResult.setTotalScore(totalScore);
+        fullResult.setTotalScore((double) totalScore);
 
         return fullResult;
 

@@ -2,8 +2,8 @@ package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.factory.ControversialFactory;
-import com.studleague.studleague.factory.FullResultFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
+import com.studleague.studleague.mappers.FullResultMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.ResultService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,13 +23,13 @@ public class ResultController {
     public ResultService resultService;
 
     @Autowired
-    public FullResultFactory fullResultFactory;
+    public FullResultMapper fullResultMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private ControversialFactory controversialFactory;
+    private ControversialMapper controversialMapper;
 
     /**
      * Обрабатывает GET запрос на получение всех результатов.
@@ -42,7 +42,7 @@ public class ResultController {
     )
     @GetMapping
     public ResponseEntity<List<FullResultDTO>> getResults() {
-        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultFactory.mapToDto(x)).toList());
+        return ResponseEntity.ok(resultService.getAllFullResults().stream().map(x -> fullResultMapper.mapToDto(x)).toList());
     }
 
     /**
@@ -57,7 +57,7 @@ public class ResultController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<FullResultDTO> getResult(@PathVariable long id) {
-        return ResponseEntity.ok(fullResultFactory.mapToDto(resultService.getFullResultById(id)));
+        return ResponseEntity.ok(fullResultMapper.mapToDto(resultService.getFullResultById(id)));
     }
 
     /**
@@ -76,7 +76,7 @@ public class ResultController {
         if (fullResultDTO == null) {
             return ResponseEntity.badRequest().build();
         }
-        FullResult fullResult = fullResultFactory.mapToEntity(fullResultDTO);
+        FullResult fullResult = fullResultMapper.mapToEntity(fullResultDTO);
         resultService.saveFullResult(fullResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(fullResultDTO);
     }
@@ -113,7 +113,7 @@ public class ResultController {
     @PutMapping("/{resultId}/controversials/{controversialId}")
     public ResponseEntity<FullResultDTO> addControversialToResult(@PathVariable long resultId, @PathVariable long controversialId) {
         FullResult fullResult = resultService.addControversialToResult(resultId, controversialId);
-        return ResponseEntity.ok(fullResultFactory.mapToDto(fullResult));
+        return ResponseEntity.ok(fullResultMapper.mapToDto(fullResult));
     }
 
     /**

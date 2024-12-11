@@ -2,8 +2,8 @@ package com.studleague.studleague.services.interfaces;
 
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.dto.LeagueResult;
 import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.services.LeagueResult;
 
 import java.util.List;
 

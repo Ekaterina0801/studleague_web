@@ -17,4 +17,5 @@ public class JwtAuthenticationResponse {
     private String accessToken;
     @Schema(description = "Refresh токен", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
     private String refreshToken;
+    private long refreshTokenExpiresAt;
 }

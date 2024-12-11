@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
@@ -7,16 +7,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
 @Component
 @RequiredArgsConstructor
-public class ControversialFactory implements DTOFactory<ControversialDTO, Controversial> {
+public class ControversialMapper implements DTOMapper<ControversialDTO, Controversial> {
 
     @Autowired
     private EntityRetrievalUtils entityRetrievalUtils;
 
     @Autowired
     @Lazy
-    private ResultMainInfoFactory resultMainInfoFactory;
+    private ResultMainInfoMapper resultMainInfoMapper;
 
     public Controversial mapToEntity(ControversialDTO controversialDTO) {
         return Controversial.builder()
@@ -26,7 +27,7 @@ public class ControversialFactory implements DTOFactory<ControversialDTO, Contro
                 .comment(controversialDTO.getComment())
                 .status(controversialDTO.getStatus())
                 .fullResult(controversialDTO.getFullResult() != null ?
-                        resultMainInfoFactory.mapToEntity(controversialDTO.getFullResult()) : null)
+                        resultMainInfoMapper.mapToEntity(controversialDTO.getFullResult()) : null)
                 .questionNumber(controversialDTO.getQuestionNumber())
                 .issuedAt(controversialDTO.getIssuedAt())
                 .resolvedAt(controversialDTO.getResolvedAt())
@@ -40,7 +41,7 @@ public class ControversialFactory implements DTOFactory<ControversialDTO, Contro
                 .appealJuryComment(controversial.getAppealJuryComment())
                 .comment(controversial.getComment())
                 .fullResult(controversial.getFullResult() != null ?
-                        resultMainInfoFactory.mapToDto(controversial.getFullResult()) : null)
+                        resultMainInfoMapper.mapToDto(controversial.getFullResult()) : null)
                 .status(controversial.getStatus())
                 .questionNumber(controversial.getQuestionNumber())
                 .issuedAt(controversial.getIssuedAt())

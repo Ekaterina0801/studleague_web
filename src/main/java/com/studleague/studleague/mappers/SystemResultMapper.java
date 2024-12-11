@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.SystemResultDTO;
 import com.studleague.studleague.entities.League;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class SystemResultFactory implements DTOFactory<SystemResultDTO, SystemResult>{
+public class SystemResultMapper implements DTOMapper<SystemResultDTO, SystemResult> {
 
     @Autowired
     private final EntityRetrievalUtils entityRetrievalUtils;

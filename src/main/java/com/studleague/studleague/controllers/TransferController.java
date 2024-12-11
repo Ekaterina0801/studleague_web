@@ -1,8 +1,12 @@
 package com.studleague.studleague.controllers;
 
+import com.studleague.studleague.dto.TransferCreationDTO;
 import com.studleague.studleague.dto.TransferDTO;
+import com.studleague.studleague.dto.TransferMainInfoDTO;
 import com.studleague.studleague.entities.Transfer;
-import com.studleague.studleague.factory.TransferFactory;
+import com.studleague.studleague.mappers.TransferCreationMapper;
+import com.studleague.studleague.mappers.TransferMainInfoMapper;
+import com.studleague.studleague.mappers.TransferMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,10 +29,16 @@ public class TransferController {
     public TransferService transferService;
 
     @Autowired
-    public TransferFactory transferFactory;
+    public TransferMapper transferMapper;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TransferCreationMapper transferCreationMapper;
+
+    @Autowired
+    private TransferMainInfoMapper transferMainInfoMapper;
 
 
     /**
@@ -84,7 +94,7 @@ public class TransferController {
             );
         }
 
-        return transferService.searchTransfers(playerId, oldTeamId, newTeamId, leagueId, startDate, endDate, sort).stream().map(x -> transferFactory.mapToDto(x)).toList();
+        return transferService.searchTransfers(playerId, oldTeamId, newTeamId, leagueId, startDate, endDate, sort).stream().map(x -> transferMapper.mapToDto(x)).toList();
     }
 
     /**
@@ -98,8 +108,8 @@ public class TransferController {
             description = "Использовать для получения трансфера по id"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<TransferDTO> getTransfer(@PathVariable long id) {
-        return ResponseEntity.ok(transferFactory.mapToDto(transferService.getTransfer(id)));
+    public ResponseEntity<TransferMainInfoDTO> getTransfer(@PathVariable long id) {
+        return ResponseEntity.ok(transferMainInfoMapper.mapToDto(transferService.getTransfer(id)));
     }
 
     /**
@@ -114,8 +124,8 @@ public class TransferController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @transferService.isManager(authentication.principal.id, #transferDTO)")
     @PostMapping
-    public ResponseEntity<TransferDTO> addNewTransfer(@RequestBody TransferDTO transferDTO) {
-        Transfer transfer = transferFactory.mapToEntity(transferDTO);
+    public ResponseEntity<TransferCreationDTO> addNewTransfer(@RequestBody TransferCreationDTO transferDTO) {
+        Transfer transfer = transferCreationMapper.mapToEntity(transferDTO);
         transferService.saveTransfer(transfer);
         return ResponseEntity.status(HttpStatus.CREATED).body(transferDTO);
     }

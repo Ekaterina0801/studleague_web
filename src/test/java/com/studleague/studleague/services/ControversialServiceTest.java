@@ -1,7 +1,7 @@
 package com.studleague.studleague.services;
 
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.factory.ControversialFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
 import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -33,7 +33,7 @@ public class ControversialServiceTest {
     private LeagueService leagueService;
 
     @MockBean
-    private ControversialFactory controversialFactory;
+    private ControversialMapper controversialMapper;
 
     @Autowired
     private ControversialService controversialService;

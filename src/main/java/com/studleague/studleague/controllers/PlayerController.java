@@ -1,10 +1,12 @@
 package com.studleague.studleague.controllers;
 
+import com.studleague.studleague.dto.PlayerCreationDTO;
 import com.studleague.studleague.dto.PlayerDTO;
 import com.studleague.studleague.dto.PlayerMainInfoDTO;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.factory.PlayerFactory;
-import com.studleague.studleague.factory.PlayerMainInfoFactory;
+import com.studleague.studleague.mappers.PlayerCreationMapper;
+import com.studleague.studleague.mappers.PlayerMainInfoMapper;
+import com.studleague.studleague.mappers.PlayerMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,13 +30,16 @@ public class PlayerController {
     public PlayerService playerService;
 
     @Autowired
-    public PlayerFactory playerFactory;
+    public PlayerMapper playerMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private PlayerMainInfoFactory playerMainInfoFactory;
+    private PlayerMainInfoMapper playerMainInfoMapper;
+
+    @Autowired
+    private PlayerCreationMapper playerCreationMapper;
 
     /**
      * Обрабатывает GET запрос на получение всех игроков.
@@ -63,6 +68,7 @@ public class PlayerController {
     @GetMapping
     public Page<PlayerMainInfoDTO> getPlayers(
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String patronymic,
             @RequestParam(required = false) String surname,
             @RequestParam(required = false) Long teamId,
             @RequestParam(required = false) LocalDate bornBefore,
@@ -80,8 +86,8 @@ public class PlayerController {
             );
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
-        Page<Player> playerPage = playerService.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort, pageable);
-        return playerPage.map(playerMainInfoFactory::mapToDto);
+        Page<Player> playerPage = playerService.searchPlayers(name, patronymic, surname, teamId, bornBefore, bornAfter, sort, pageable);
+        return playerPage.map(playerMainInfoMapper::mapToDto);
     }
 
     /**
@@ -96,8 +102,7 @@ public class PlayerController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<PlayerDTO> getPlayer(@PathVariable long id) {
-        PlayerDTO player = playerFactory.mapToDto(playerService.getPlayerById(id));
-        return ResponseEntity.ok(playerFactory.mapToDto(playerService.getPlayerById(id)));
+        return ResponseEntity.ok(playerMapper.mapToDto(playerService.getPlayerById(id)));
     }
 
     /**
@@ -112,9 +117,8 @@ public class PlayerController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @playerService.isManager(authentication.principal.id, #playerDTO)")
     @PostMapping
-    public ResponseEntity<PlayerDTO> addNewPlayer(@RequestBody PlayerDTO playerDTO) {
-        Player player = playerFactory.mapToEntity(playerDTO);
-        playerService.savePlayer(player);
+    public ResponseEntity<PlayerCreationDTO> addNewPlayer(@RequestBody PlayerCreationDTO playerDTO) {
+        playerService.savePlayer(playerCreationMapper.mapToEntity(playerDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(playerDTO);
     }
 

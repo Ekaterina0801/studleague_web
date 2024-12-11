@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 
 import com.studleague.studleague.dto.PlayerDTO;
@@ -10,22 +10,26 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class PlayerFactory implements DTOFactory<PlayerDTO, Player>{
+public class PlayerMapper implements DTOMapper<PlayerDTO, Player> {
 
 
     @Autowired
     @Lazy
-    private TeamCompositionFactory teamCompositionFactory;
+    private TeamCompositionMapper teamCompositionMapper;
 
 
     @Autowired
     @Lazy
-    private TeamFactory teamFactory;
+    private TeamMapper teamMapper;
 
     @Autowired
-    private TeamMainInfoFactory teamMainInfoFactory;
+    private TeamMainInfoMapper teamMainInfoMapper;
 
-    public PlayerFactory() {
+    @Autowired
+    private TransferMainInfoMapper transferMainInfoMapper;
+
+
+    public PlayerMapper() {
     }
 
     public Player mapToEntity(PlayerDTO playerDTO) {
@@ -34,10 +38,11 @@ public class PlayerFactory implements DTOFactory<PlayerDTO, Player>{
                 .name(playerDTO.getName())
                 .patronymic(playerDTO.getPatronymic())
                 .surname(playerDTO.getSurname())
+                .transfers(playerDTO.getTransfers().stream().map(x -> transferMainInfoMapper.mapToEntity(x)).collect(Collectors.toList()))
                 .university(playerDTO.getUniversity())
-                .teamsCompositions(playerDTO.getTeamsCompositions().stream().map(x -> teamCompositionFactory.mapToEntity(x)).collect(Collectors.toList()))
+                .teamsCompositions(playerDTO.getTeamsCompositions().stream().map(x -> teamCompositionMapper.mapToEntity(x)).collect(Collectors.toList()))
                 .dateOfBirth(playerDTO.getDateOfBirth())
-                .teams(playerDTO.getTeams().stream().map(x -> teamMainInfoFactory.mapToEntity(x)).collect(Collectors.toList()))
+                .teams(playerDTO.getTeams().stream().map(x -> teamMainInfoMapper.mapToEntity(x)).collect(Collectors.toList()))
                 .build();
     }
 
@@ -48,10 +53,11 @@ public class PlayerFactory implements DTOFactory<PlayerDTO, Player>{
                 .patronymic(player.getPatronymic())
                 .surname(player.getSurname())
                 .university(player.getUniversity())
-                .teamsCompositions(player.getTeamsCompositions().stream().map(x -> teamCompositionFactory.mapToDto(x)).collect(Collectors.toList()))
+                .transfers(player.getTransfers().stream().map(x -> transferMainInfoMapper.mapToDto(x)).collect(Collectors.toList()))
+                .teamsCompositions(player.getTeamsCompositions().stream().map(x -> teamCompositionMapper.mapToDto(x)).collect(Collectors.toList()))
                 .dateOfBirth(player.getDateOfBirth())
                 .idSite(player.getIdSite())
-                .teams(player.getTeams().stream().map(x -> teamMainInfoFactory.mapToDto(x)).collect(Collectors.toList()))
+                .teams(player.getTeams().stream().map(x -> teamMainInfoMapper.mapToDto(x)).collect(Collectors.toList()))
                 .build();
     }
 }

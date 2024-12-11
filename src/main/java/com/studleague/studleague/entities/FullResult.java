@@ -38,7 +38,7 @@ public class FullResult {
     private String mask_results;
 
     @Column(name="total_score")
-    private Integer totalScore;
+    private Double totalScore;
 
     @OneToMany(mappedBy = "fullResult", cascade = CascadeType.ALL
             ,orphanRemoval=true)
@@ -66,11 +66,11 @@ public class FullResult {
 
     public void updateTotalScoreFromMaskResults() {
         if (mask_results != null && !mask_results.isEmpty()) {
-            totalScore = (int) mask_results.chars()
+            totalScore = (double) mask_results.chars()
                     .filter(c -> c == '1')
                     .count();
         } else {
-            totalScore = 0;
+            totalScore = 0.0;
         }
     }
 

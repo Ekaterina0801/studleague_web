@@ -1,10 +1,7 @@
 package com.studleague.studleague.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
 import lombok.*;
@@ -38,6 +35,7 @@ public class PlayerDTO {
     private String university;
 
     @JsonProperty("dateOfBirth")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
 
@@ -49,6 +47,9 @@ public class PlayerDTO {
 
     @JsonProperty("teamCompositions")
     private List<TeamCompositionDTO> teamsCompositions = new ArrayList<>();
+
+    @JsonProperty("transfers")
+    private List<TransferMainInfoDTO> transfers = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

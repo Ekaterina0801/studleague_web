@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.TournamentDTO;
 import com.studleague.studleague.entities.League;
@@ -16,17 +16,17 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
+public class TournamentMapper implements DTOMapper<TournamentDTO, Tournament> {
 
     @Autowired
     private final EntityRetrievalUtils entityRetrievalUtils;
 
     @Autowired
     @Lazy
-    private final FullResultFactory fullResultFactory;
+    private final FullResultMapper fullResultMapper;
 
     @Lazy
-    private final TeamCompositionFactory teamCompositionFactory;
+    private final TeamCompositionMapper teamCompositionMapper;
 
 
     public Tournament mapToEntity(TournamentDTO tournamentDto) {
@@ -36,8 +36,8 @@ public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
                 .idSite(tournamentDto.getIdSite())
                 .dateOfStart(tournamentDto.getDateOfStart())
                 .dateOfEnd(tournamentDto.getDateOfEnd())
-                .teamCompositions(tournamentDto.getTeamCompositions().stream().map(teamCompositionFactory::mapToEntity).collect(Collectors.toList()))
-                .results(tournamentDto.getResults().stream().map(fullResultFactory::mapToEntity).collect(Collectors.toList()))
+                .teamCompositions(tournamentDto.getTeamCompositions().stream().map(teamCompositionMapper::mapToEntity).collect(Collectors.toList()))
+                .results(tournamentDto.getResults().stream().map(fullResultMapper::mapToEntity).collect(Collectors.toList()))
                 .leagues(new ArrayList<>())
                 .build();
 
@@ -60,9 +60,9 @@ public class TournamentFactory implements DTOFactory<TournamentDTO, Tournament>{
                 .name(tournament.getName())
                 .idSite(tournament.getIdSite())
                 .dateOfStart(tournament.getDateOfStart())
-                .teamCompositions(tournament.getTeamCompositions().stream().map(teamCompositionFactory::mapToDto).collect(Collectors.toList()))
+                .teamCompositions(tournament.getTeamCompositions().stream().map(teamCompositionMapper::mapToDto).collect(Collectors.toList()))
                 .dateOfEnd(tournament.getDateOfEnd())
-                .results(tournament.getResults().stream().map(fullResultFactory::mapToDto).collect(Collectors.toList()))
+                .results(tournament.getResults().stream().map(fullResultMapper::mapToDto).collect(Collectors.toList()))
                 .leaguesIds(leaguesIds)
                 .build();
     }

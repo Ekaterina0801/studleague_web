@@ -3,17 +3,13 @@ package com.studleague.studleague.services.implementations.security;
 import com.studleague.studleague.entities.security.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.validation.Payload;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +20,12 @@ public class JwtService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 минут
-    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 дней
+    /*private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 минут
+    public static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 дней
+    private static final long RESET_PASSWORD_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 час
+*/
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 10 * 10; // 100 минута
+    public static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 2 * 10 * 10; // 200 минуты
     private static final long RESET_PASSWORD_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 час
 
     // Извлечение имени пользователя из токена
@@ -47,6 +47,7 @@ public class JwtService {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
+
 
     // Генерация токена для сброса пароля
     public String generateResetPasswordToken(User user) {
@@ -91,7 +92,7 @@ public class JwtService {
     }
 
     // Извлечение даты истечения токена
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 

@@ -5,7 +5,7 @@ import com.studleague.studleague.configs.SecurityConfig;
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.ControversialFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
 import com.studleague.studleague.services.implementations.security.AuthenticationService;
 import com.studleague.studleague.services.implementations.security.JwtService;
 import com.studleague.studleague.services.implementations.security.UserService;
@@ -56,7 +56,7 @@ public class ControversialControllerTest {
     private ControversialService controversialService;
 
     @MockBean
-    private ControversialFactory controversialFactory;
+    private ControversialMapper controversialMapper;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -154,8 +154,8 @@ public class ControversialControllerTest {
                 .issuedAt(LocalDateTime.of(2023, 11, 25, 0, 0))
                 .status("ok")
                 .build();
-        when(controversialService.getControversialById(id)).thenReturn(controversialFactory.mapToEntity(controversialDTO));
-        when(controversialFactory.mapToDto(any())).thenReturn(controversialDTO);
+        when(controversialService.getControversialById(id)).thenReturn(controversialMapper.mapToEntity(controversialDTO));
+        when(controversialMapper.mapToDto(any())).thenReturn(controversialDTO);
 
         mockMvc.perform(get("/api/controversials/{id}", id))
                 .andExpect(status().isAccepted())

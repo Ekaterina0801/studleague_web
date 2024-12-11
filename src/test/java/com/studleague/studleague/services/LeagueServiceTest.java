@@ -4,7 +4,7 @@ import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.SystemResult;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.LeagueFactory;
+import com.studleague.studleague.mappers.LeagueMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -37,7 +37,7 @@ public class LeagueServiceTest {
     private EntityRetrievalUtils entityRetrievalUtils;
 
     @MockBean
-    private LeagueFactory leagueFactory;
+    private LeagueMapper leagueMapper;
 
     @MockBean
     private ResultRepository resultRepository;

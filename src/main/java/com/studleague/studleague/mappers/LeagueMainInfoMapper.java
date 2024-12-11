@@ -1,4 +1,4 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.LeagueMainInfoDTO;
 import com.studleague.studleague.entities.League;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LeagueMainInfoFactory implements DTOFactory<LeagueMainInfoDTO, League> {
+public class LeagueMainInfoMapper implements DTOMapper<LeagueMainInfoDTO, League> {
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 

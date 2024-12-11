@@ -3,7 +3,7 @@ package com.studleague.studleague.services.implementations;
 import com.studleague.studleague.dto.LeagueDTO;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.factory.LeagueFactory;
+import com.studleague.studleague.mappers.LeagueMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("leagueService")
@@ -32,7 +33,7 @@ public class LeagueServiceImpl implements LeagueService {
     private EntityRetrievalUtils entityRetrievalUtils;
 
     @Autowired
-    private LeagueFactory leagueFactory;
+    private LeagueMapper leagueMapper;
 
     @Autowired
     private ResultRepository resultRepository;
@@ -42,6 +43,10 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private TeamCompositionRepository teamCompositionRepository;
+
 
 
     @Override
@@ -109,10 +114,56 @@ public class LeagueServiceImpl implements LeagueService {
     public League deleteTournamentToLeague(Long leagueId, Long tournamentId) {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
+        List<Team> teams = new ArrayList<>(tournament.getTeams());
+        for (TeamComposition teamComposition : new ArrayList<>(tournament.getTeamCompositions())) {
+            teamCompositionRepository.delete(teamComposition);
+            tournament.getTeamCompositions().remove(teamComposition);
+        }
+        for (Team team : teams) {
+            FullResult result = entityRetrievalUtils.getResultByTeamIdAndTournamentIdOrThrow(team.getId(), tournamentId);
+            if (result != null) {
+                resultRepository.delete(result);
+            }
+            tournament.deleteTeam(team);
+        }
+        tournament.getTeamCompositions().clear();
+
+
         league.deleteTournamentFromLeague(tournament);
+        tournamentRepository.save(tournament);
         leagueRepository.save(league);
+
         return league;
     }
+
+
+    @Override
+    @Transactional
+    public League deleteTeamFromLeague(Long leagueId, Long teamId) {
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
+
+        List<Tournament> tournaments = new ArrayList<>(team.getTournaments());
+        for (Tournament tournament : tournaments) {
+            team.deleteTournamentFromTeam(tournament);
+        }
+
+        team.getTeamCompositions().forEach(teamCompositionRepository::delete);
+        team.getTeamCompositions().clear();
+
+        team.getResults().forEach(resultRepository::delete);
+        team.getResults().clear();
+
+        league.deleteTeamFromLeague(team);
+
+        teamRepository.save(team);
+        leagueRepository.save(league);
+
+        return league;
+    }
+
+
+
 
     @Override
     @Transactional
@@ -141,7 +192,7 @@ public class LeagueServiceImpl implements LeagueService {
     public boolean isManager(Long userId, LeagueDTO leagueDTO) {
         if (userId == null)
             return false;
-        League league = leagueFactory.mapToEntity(leagueDTO);
+        League league = leagueMapper.mapToEntity(leagueDTO);
         User user = entityRetrievalUtils.getUserOrThrow(userId);
         return league.getManagers().contains(user);
     }

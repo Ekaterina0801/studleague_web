@@ -5,12 +5,10 @@ import com.studleague.studleague.dto.security.SignInRequest;
 import com.studleague.studleague.dto.security.SignUpRequest;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.RoleRepository;
-import io.netty.handler.codec.http.cookie.Cookie;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,7 +43,11 @@ public class AuthenticationService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        return new JwtAuthenticationResponse(accessToken, refreshToken);
+
+        // Вычисление времени истечения рефреш токена
+        long refreshTokenExpiresAt = System.currentTimeMillis() + JwtService.REFRESH_TOKEN_EXPIRATION;
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, refreshTokenExpiresAt);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
@@ -54,10 +56,16 @@ public class AuthenticationService {
                 request.getPassword()
         ));
         var user = userService.findUserByUsername(request.getUsername());
+
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        return new JwtAuthenticationResponse(accessToken, refreshToken);
+
+        // Вычисление времени истечения рефреш токена
+        long refreshTokenExpiresAt = System.currentTimeMillis() + JwtService.REFRESH_TOKEN_EXPIRATION;
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, refreshTokenExpiresAt);
     }
+
 
     public JwtAuthenticationResponse refreshAccessToken(String refreshToken) {
         String username = jwtService.extractUserName(refreshToken);
@@ -65,11 +73,16 @@ public class AuthenticationService {
 
         if (jwtService.isTokenValid(refreshToken, user)) {
             String newAccessToken = jwtService.generateAccessToken(user);
-            return new JwtAuthenticationResponse(newAccessToken, refreshToken);
+
+            // Вычисляем время истечения рефреш токена
+            long refreshTokenExpiresAt = jwtService.extractExpiration(refreshToken).getTime();
+
+            return new JwtAuthenticationResponse(newAccessToken, refreshToken, refreshTokenExpiresAt);
         } else {
             throw new RuntimeException("Invalid refresh token");
         }
     }
+
 
     // Запрос на сброс пароля
     public void requestPasswordReset(String email) throws NotFoundException {

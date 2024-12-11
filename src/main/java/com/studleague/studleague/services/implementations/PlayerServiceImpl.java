@@ -5,7 +5,7 @@ import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.TeamComposition;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.factory.PlayerFactory;
+import com.studleague.studleague.mappers.PlayerMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -41,7 +41,7 @@ public class PlayerServiceImpl implements PlayerService {
     private LeagueService leagueService;
 
     @Autowired
-    private PlayerFactory playerFactory;
+    private PlayerMapper playerMapper;
 
     @Autowired
     private TeamCompositionRepository teamCompositionRepository;
@@ -77,9 +77,17 @@ public class PlayerServiceImpl implements PlayerService {
                 Player existingPlayer = entityRetrievalUtils.getPlayerByIdSiteOrThrow(idSite);
                 updatePlayer(existingPlayer, player);
             } else {
+                for (Team team : player.getTeams()) {
+                    team.addPlayerToTeam(player);
+                }
+                //player.getTeams().forEach(player::addTeamToPlayer);
+                //player.getTeams().forEach(team->teamRepository.save(team));
                 playerRepository.save(player);
             }
         } else {
+            for (Team team : player.getTeams()) {
+                team.addPlayerToTeam(player);
+            }
             playerRepository.save(player);
         }
     }
@@ -153,7 +161,7 @@ public class PlayerServiceImpl implements PlayerService {
     public boolean isManager(Long userId, PlayerDTO playerDTO) {
         if (userId == null)
             return false;
-        Player player = playerFactory.mapToEntity(playerDTO);
+        Player player = playerMapper.mapToEntity(playerDTO);
         for (Team team : player.getTeams()) {
             if (leagueService.isManager(userId, team.getLeague().getId()))
                 return true;
@@ -163,7 +171,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Player> searchPlayers(String name, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable) {
+    public Page<Player> searchPlayers(String name, String patronymic, String surname, Long teamId, LocalDate bornBefore, LocalDate bornAfter, Sort sort, Pageable pageable) {
         Specification<Player> spec = PlayerSpecification.searchPlayers(name, surname, teamId, bornBefore, bornAfter, sort);
         return playerRepository.findAll(spec, pageable);
     }

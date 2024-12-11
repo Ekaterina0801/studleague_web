@@ -1,8 +1,13 @@
 package com.studleague.studleague.entities.security;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -29,5 +34,18 @@ public class Role implements GrantedAuthority {
 
     public static Role editorRole() {
         return new Role(2L, RoleName.EDITOR.getRole());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id) && Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

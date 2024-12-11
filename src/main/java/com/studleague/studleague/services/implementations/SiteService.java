@@ -3,7 +3,7 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.*;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.*;
+import com.studleague.studleague.mappers.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.*;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +28,13 @@ public class SiteService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String authToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MjgwNzAyMjYsImV4cCI6MTcyODA3MzgyNiwicm9sZXMiOltdLCJ1c2VybmFtZSI6ImRzLmthdHJpbkBtYWlsLnJ1In0.J9sp_b_nlSCQLaHkaN79MFrhMM8HSGTDj_fqhm0-DUNEWA9CakwJinqqCmYJnY0GNKLocd6-sxaKUVz_zpzVcZKAKBDR3purJVdXQ8bVuPTWktOOremEMrJqJGxHGPU6ZyYddsT2oxEbeDyPomiPMZg_GQiR4bdTXmYCxw0c0cYkiS3hHnHsELwlrkJzNU6DL4nZlm4yto8jir9mb51BYIk8rS9jQXgG-8reB8sYf4i_K6GE5STpve3hFfr4C64S9aIu_uQSxcnD8BxLkmLVFHarf0v5BKkjcmgYMNh2ymR-1KHMDyqkoZ58DaXPQEsV1wE6YZZR9PTn94MtqNZpog";
 
-    private final TeamFactory teamFactory;
+    private final TeamMapper teamMapper;
 
-    private final TournamentFactory tournamentFactory;
+    private final TournamentMapper tournamentMapper;
 
     private final TournamentService tournamentService;
 
-    private final PlayerFactory playerFactory;
+    private final PlayerMapper playerMapper;
 
     private final TeamService teamService;
 
@@ -44,15 +44,15 @@ public class SiteService {
 
     private final PlayerService playerService;
 
-    private final ControversialFactory controversialFactory;
+    private final ControversialMapper controversialMapper;
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 
-    private final LeagueFactory leagueFactory;
+    private final LeagueMapper leagueMapper;
 
     private final TeamCompositionService teamCompositionService;
 
-    private final LeagueMainInfoFactory leagueMainInfoFactory;
+    private final LeagueMainInfoMapper leagueMainInfoMapper;
 
 
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
@@ -97,7 +97,7 @@ public class SiteService {
             tournamentDto.setIdSite(tournamentDto.getId());
             tournamentDto.setId(null);
             tournamentDto.setLeaguesIds(Collections.singletonList(leagueId));
-            tournament = tournamentFactory.mapToEntity(tournamentDto);
+            tournament = tournamentMapper.mapToEntity(tournamentDto);
             league.addTournamentToLeague(tournament);
 
         } else {
@@ -121,7 +121,7 @@ public class SiteService {
     }
 
     private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, Long leagueId) {
-        teamDetails.getTeam().setLeague(leagueMainInfoFactory.mapToDto(entityRetrievalUtils.getLeagueOrThrow(leagueId)));
+        teamDetails.getTeam().setLeague(leagueMainInfoMapper.mapToDto(entityRetrievalUtils.getLeagueOrThrow(leagueId)));
         teamDetails.setLeagueId(leagueId);
         teamDetails.getTeam().setIdSite(teamDetails.getTeam().getId());
 
@@ -132,7 +132,7 @@ public class SiteService {
         if (teamDetails.getMask() != null) {
             FullResult fullResult = FullResult.builder()
                     .team(teamEntity)
-                    .totalScore(teamDetails.getQuestionsTotal())
+                    .totalScore(Double.valueOf(teamDetails.getQuestionsTotal()))
                     .tournament(tournament)
                     .mask_results(teamDetails.getMask())
                     .build();
@@ -140,7 +140,7 @@ public class SiteService {
             List<Controversial> controversials = new ArrayList<>();
             for (ControversialDTO controversial : teamDetails.getControversials()) {
                 controversial.setId(null);
-                    Controversial controversialEntity = controversialFactory.mapToEntity(controversial);
+                Controversial controversialEntity = controversialMapper.mapToEntity(controversial);
                     controversialEntity.setFullResult(fullResult);
                     controversials.add(controversialEntity);
                 }
@@ -158,7 +158,7 @@ public class SiteService {
         if (!teamService.existsByIdSite(idSite)) {
             teamDto.setId(null);
             teamDto.setIdSite(idSite);
-            teamEntity = teamFactory.mapToEntity(teamDto);
+            teamEntity = teamMapper.mapToEntity(teamDto);
             teamService.saveTeam(teamEntity);
         } else {
             teamEntity = teamService.getTeamByIdSite(idSite);
@@ -198,9 +198,9 @@ public class SiteService {
                     playerDto.getPatronymic(),
                     playerDto.getSurname(),
                     null, null, playerDto.getId(),
-                    Collections.emptyList(), new ArrayList<>()
+                    Collections.emptyList(), new ArrayList<>(), new ArrayList<>()
             );
-            Player playerEntity = playerFactory.mapToEntity(newPlayer);
+            Player playerEntity = playerMapper.mapToEntity(newPlayer);
             playerEntity.setIdSite(playerDto.getId());
             playerService.savePlayer(playerEntity);
             return playerEntity;

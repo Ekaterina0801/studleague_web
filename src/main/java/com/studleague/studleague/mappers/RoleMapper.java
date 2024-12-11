@@ -1,11 +1,11 @@
-package com.studleague.studleague.factory;
+package com.studleague.studleague.mappers;
 
 import com.studleague.studleague.dto.RoleDTO;
 import com.studleague.studleague.entities.security.Role;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoleFactory implements DTOFactory<RoleDTO, Role>{
+public class RoleMapper implements DTOMapper<RoleDTO, Role> {
 
     public Role mapToEntity(RoleDTO roleDTO)
     {

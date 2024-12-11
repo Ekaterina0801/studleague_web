@@ -2,12 +2,12 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.FullResultDTO;
 import com.studleague.studleague.dto.InfoTeamResults;
+import com.studleague.studleague.dto.LeagueResult;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.factory.FullResultFactory;
-import com.studleague.studleague.factory.PlayerMainInfoFactory;
+import com.studleague.studleague.mappers.FullResultMapper;
+import com.studleague.studleague.mappers.PlayerMainInfoMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
-import com.studleague.studleague.services.LeagueResult;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
 import com.studleague.studleague.services.interfaces.TournamentService;
@@ -46,10 +46,10 @@ public class ResultServiceImpl implements ResultService {
     private LeagueService leagueService;
 
     @Autowired
-    private FullResultFactory fullResultFactory;
+    private FullResultMapper fullResultMapper;
 
     @Autowired
-    private PlayerMainInfoFactory playerMainInfoFactory;
+    private PlayerMainInfoMapper playerMainInfoMapper;
 
 
     @Override
@@ -148,7 +148,7 @@ public class ResultServiceImpl implements ResultService {
     public boolean isManager(Long userId, FullResultDTO resultDTO) {
         if (userId == null)
             return false;
-        FullResult result = fullResultFactory.mapToEntity(resultDTO);
+        FullResult result = fullResultMapper.mapToEntity(resultDTO);
         Long leagueId = result.getTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }
@@ -185,7 +185,7 @@ public class ResultServiceImpl implements ResultService {
             }
             countQuestions = maskResults.length();
         }
-        resultRow.setPlayers(players.stream().map(x -> playerMainInfoFactory.mapToDto(x)).collect(Collectors.toList()));
+        resultRow.setPlayers(players.stream().map(x -> playerMainInfoMapper.mapToDto(x)).collect(Collectors.toList()));
         resultRow.setAnswers(answers);
         resultRow.setTotalScore(totalScore);
         resultRow.setCountQuestions(countQuestions);
@@ -231,7 +231,7 @@ public class ResultServiceImpl implements ResultService {
 
             for (Team team : leagueTeams) {
                 LeagueResult leagueResult = teamResultsMap.get(team.getId());
-                double pointsForRound = getPointsForRound(team, tournament);
+                Double pointsForRound = getPointsForRound(team, tournament);
                 leagueResult.getResultsByTour().put(tournamentNumber, pointsForRound);
             }
         }
@@ -248,14 +248,14 @@ public class ResultServiceImpl implements ResultService {
         return standings;
     }
 
-    private double getPointsForRound(Team team, Tournament tournament) {
-        if (!tournament.getTeams().contains(team)) return 0.0;
+    private Double getPointsForRound(Team team, Tournament tournament) {
+        if (!tournament.getTeams().contains(team)) return null;
         return team.getResults().stream()
                 .filter(result -> result.getTournament().equals(tournament))
                 .map(FullResult::getTotalScore)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElse(0);
+                .orElse(null);
     }
 
     private double getMaxTournamentScore(List<Tournament> tournaments) {
@@ -264,8 +264,8 @@ public class ResultServiceImpl implements ResultService {
                 .flatMap(team -> team.getResults().stream())
                 .map(FullResult::getTotalScore)
                 .filter(Objects::nonNull)
-                .max(Integer::compareTo)
-                .orElse(0);
+                .max(Double::compareTo)
+                .orElse(0.0);
     }
 
     private double calculateTotalScore(List<Double> scores, String system, double maxTournamentScore, int numWorstGamesToExclude) {
@@ -286,7 +286,10 @@ public class ResultServiceImpl implements ResultService {
 
 
     private double calculateStandardPoints(List<Double> scores, int numWorstGamesToExclude) {
-        scores = scores.stream().sorted().collect(Collectors.toList());
+        scores = scores.stream()
+                .filter(Objects::nonNull)
+                .sorted()
+                .collect(Collectors.toList());
         int scoresLength = scores.size();
         if (scoresLength > numWorstGamesToExclude) {
             scores = scores.subList(numWorstGamesToExclude, scores.size());
@@ -295,8 +298,12 @@ public class ResultServiceImpl implements ResultService {
         return scores.stream().mapToDouble(Double::doubleValue).sum();
     }
 
+
     private double calculateNormalizedPoints(List<Double> scores, double maxTournamentScore, int numWorstGamesToExclude) {
-        scores = scores.stream().sorted().collect(Collectors.toList());
+        scores = scores.stream()
+                .filter(Objects::nonNull)
+                .sorted()
+                .collect(Collectors.toList());
 
         if (numWorstGamesToExclude > 0 && scores.size() > numWorstGamesToExclude) {
             scores = scores.subList(numWorstGamesToExclude, scores.size());

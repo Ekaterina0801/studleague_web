@@ -3,7 +3,7 @@ package com.studleague.studleague.services;
 import com.studleague.studleague.dto.FlagDTO;
 import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.League;
-import com.studleague.studleague.factory.FlagFactory;
+import com.studleague.studleague.mappers.FlagMapper;
 import com.studleague.studleague.repository.FlagRepository;
 import com.studleague.studleague.services.interfaces.FlagService;
 import com.studleague.studleague.services.interfaces.LeagueService;
@@ -35,7 +35,7 @@ public class FlagServiceTest {
     private LeagueService leagueService;
 
     @MockBean
-    private FlagFactory flagFactory;
+    private FlagMapper flagMapper;
 
     @Autowired
     private FlagService flagService;
@@ -163,7 +163,7 @@ public class FlagServiceTest {
         flagEntity.setLeague(new League());
         flagEntity.getLeague().setId(10L);
 
-        when(flagFactory.mapToEntity(any(FlagDTO.class))).thenReturn(flagEntity);
+        when(flagMapper.mapToEntity(any(FlagDTO.class))).thenReturn(flagEntity);
         when(leagueService.isManager(anyLong(), anyLong())).thenReturn(true);
 
         // Act

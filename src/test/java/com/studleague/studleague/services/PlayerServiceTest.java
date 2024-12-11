@@ -3,7 +3,7 @@ package com.studleague.studleague.services;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.factory.PlayerFactory;
+import com.studleague.studleague.mappers.PlayerMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.PlayerService;
@@ -41,7 +41,7 @@ public class PlayerServiceTest {
     private LeagueService leagueService;
 
     @MockBean
-    private PlayerFactory playerFactory;
+    private PlayerMapper playerMapper;
 
     @MockBean
     private TeamCompositionRepository teamCompositionRepository;

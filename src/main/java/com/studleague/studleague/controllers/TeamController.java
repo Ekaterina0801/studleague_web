@@ -4,8 +4,8 @@ import com.studleague.studleague.dto.InfoTeamResults;
 import com.studleague.studleague.dto.TeamDTO;
 import com.studleague.studleague.dto.TeamMainInfoDTO;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.factory.TeamFactory;
-import com.studleague.studleague.factory.TeamMainInfoFactory;
+import com.studleague.studleague.mappers.TeamMainInfoMapper;
+import com.studleague.studleague.mappers.TeamMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,13 +29,13 @@ public class TeamController {
     public TeamService teamService;
 
     @Autowired
-    public TeamFactory teamFactory;
+    public TeamMapper teamMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private TeamMainInfoFactory teamMainInfoFactory;
+    private TeamMainInfoMapper teamMainInfoMapper;
 
 
     /**
@@ -82,7 +82,7 @@ public class TeamController {
 
         Page<Team> teamPage = teamService.searchTeams(name, leagueId, flagIds, sort, pageable);
 
-        return teamPage.map(teamMainInfoFactory::mapToDto);
+        return teamPage.map(teamMainInfoMapper::mapToDto);
     }
 
 
@@ -98,7 +98,7 @@ public class TeamController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable long id) {
-        return ResponseEntity.ok(teamFactory.mapToDto(teamService.getTeamById(id)));
+        return ResponseEntity.ok(teamMapper.mapToDto(teamService.getTeamById(id)));
     }
 
     /**
@@ -130,7 +130,7 @@ public class TeamController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamDTO)")
     @PostMapping()
     public ResponseEntity<TeamMainInfoDTO> addNewTeam(@RequestBody TeamMainInfoDTO teamDTO) {
-        Team team = teamMainInfoFactory.mapToEntity(teamDTO);
+        Team team = teamMainInfoMapper.mapToEntity(teamDTO);
         teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }
@@ -164,10 +164,10 @@ public class TeamController {
             description = "Использовать для добавления игрока в команду"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
-    @PutMapping("/players/{playerId}")
+    @PutMapping("/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> addPlayerToTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
-        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
+        return ResponseEntity.ok(teamMapper.mapToDto(updatedTeam));
     }
 
     /**
@@ -182,10 +182,10 @@ public class TeamController {
             description = "Использовать для удаления игрока из команды"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
-    @DeleteMapping("/players/{playerId}")
+    @DeleteMapping("/{teamId}/players/{playerId}")
     public ResponseEntity<TeamDTO> deletePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId) {
         Team updatedTeam = teamService.deletePlayerFromTeam(teamId, playerId);
-        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
+        return ResponseEntity.ok(teamMapper.mapToDto(updatedTeam));
     }
 
     /**
@@ -200,10 +200,10 @@ public class TeamController {
             description = "Использовать для добавления флага в команду"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
-    @PutMapping("/flags/{flagId}")
+    @PutMapping("/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> addFlagToTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.addFlagToTeam(teamId, flagId);
-        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
+        return ResponseEntity.ok(teamMapper.mapToDto(updatedTeam));
     }
 
     /**
@@ -218,10 +218,10 @@ public class TeamController {
             description = "Использовать для добавления лиги в команду"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
-    @PutMapping("/leagues/{leagueId}")
+    @PutMapping("/{teamId}/leagues/{leagueId}")
     public ResponseEntity<TeamDTO> addLeagueToTeam(@PathVariable long teamId, @PathVariable long leagueId) {
         Team updatedTeam = teamService.addLeagueToTeam(teamId, leagueId);
-        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
+        return ResponseEntity.ok(teamMapper.mapToDto(updatedTeam));
     }
 
     /**
@@ -236,10 +236,10 @@ public class TeamController {
             description = "Использовать для удаления флага из команды"
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamId)")
-    @DeleteMapping("/flags/{flagId}")
+    @DeleteMapping("/{teamId}/flags/{flagId}")
     public ResponseEntity<TeamDTO> deleteFlagFromTeam(@PathVariable long teamId, @PathVariable long flagId) {
         Team updatedTeam = teamService.deleteFlagFromTeam(teamId, flagId);
-        return ResponseEntity.ok(teamFactory.mapToDto(updatedTeam));
+        return ResponseEntity.ok(teamMapper.mapToDto(updatedTeam));
     }
 
 

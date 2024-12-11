@@ -2,7 +2,7 @@ package com.studleague.studleague.services.implementations;
 
 import com.studleague.studleague.dto.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.factory.ControversialFactory;
+import com.studleague.studleague.mappers.ControversialMapper;
 import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;
@@ -32,7 +32,7 @@ public class ControversialServiceImpl implements ControversialService {
 
 
     @Autowired
-    private ControversialFactory controversialFactory;
+    private ControversialMapper controversialMapper;
 
 
     @Override
@@ -146,7 +146,7 @@ public class ControversialServiceImpl implements ControversialService {
     public boolean isManager(Long userId, ControversialDTO controversialDTO) {
         if (userId == null)
             return false;
-        Controversial controversial = controversialFactory.mapToEntity(controversialDTO);
+        Controversial controversial = controversialMapper.mapToEntity(controversialDTO);
         Long leagueId = controversial.getFullResult().getTeam().getLeague().getId();
         return leagueService.isManager(userId, leagueId);
     }
