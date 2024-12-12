@@ -29,8 +29,7 @@ public class FullResult {
     @JoinColumn(name="team_id")
     private Team team;
 
-    @ManyToOne()
-    //cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name="tournament_id")
     private Tournament tournament;
 
