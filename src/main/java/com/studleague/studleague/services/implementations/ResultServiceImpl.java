@@ -12,6 +12,8 @@ import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +68,7 @@ public class ResultServiceImpl implements ResultService {
 
    @Override
    @Transactional
+   @CacheEvict(value = "leagueResults", key = "#fullResult.team.league.id")
    public void saveFullResult(FullResult fullResult) {
        FullResult existingFullResult = findExistingFullResult(fullResult);
 
@@ -100,8 +103,10 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#result.team.league.id")
     public void deleteFullResult(Long id) {
-        resultRepository.deleteById(id);
+        FullResult result = entityRetrievalUtils.getResultOrThrow(id);
+        resultRepository.delete(result);
     }
 
     @Override
@@ -131,6 +136,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", allEntries = true)
     public void deleteAllResults() {
         resultRepository.deleteAll();
     }
@@ -206,7 +212,9 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
+    @Cacheable(cacheNames = "leagueResults", key = "#leagueId")
     public List<LeagueResult> calculateResultsBySystem(Long leagueId) {
+        System.out.println("Calculate");
         List<LeagueResult> standings = new ArrayList<>();
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         String system = league.getSystemResult().getName();

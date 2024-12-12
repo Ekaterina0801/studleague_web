@@ -15,6 +15,7 @@ import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +52,7 @@ public class TeamResultService {
     @Autowired
     private TeamCompositionService teamCompositionService;
 
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public List<FullResultDTO> processTeamResults(List<Map<String, Object>> data, Long leagueId, Long tournamentId) {
         List<FullResultDTO> results = new ArrayList<>();
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
@@ -114,7 +116,6 @@ public class TeamResultService {
     private FullResultDTO processRowData(Map<String, Object> row, Team team, Long tournamentId) {
         StringBuilder maskResults = new StringBuilder();
         int totalScore = 0;
-        List<ControversialDTO> controversials = new ArrayList<>();
         FullResultDTO fullResult = FullResultDTO.builder()
                 .team(teamMainInfoMapper.mapToDto(team))
                 .tournamentId(tournamentId)
@@ -127,9 +128,6 @@ public class TeamResultService {
             Object value = entry.getValue();
 
             try {
-                double questionNumberDouble = Double.parseDouble(key);
-                int questionNumber = (int) questionNumberDouble;
-
                 if (value instanceof Number) {
                     int score = ((Number) value).intValue();
                     maskResults.append(score);
