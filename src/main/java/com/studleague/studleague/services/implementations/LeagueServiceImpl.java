@@ -9,6 +9,9 @@ import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -57,6 +60,7 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "leagues")
     public List<League> getAllLeagues() {
         return leagueRepository.findAll();
     }
@@ -93,13 +97,17 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "leagues", allEntries = true),
+            @CacheEvict(value = "leagueResults", key = "#id")
+    })
     public void deleteLeague(Long id) {
-        League league  = entityRetrievalUtils.getLeagueOrThrow(id);
         leagueRepository.deleteById(id);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public League addTournamentToLeague(Long leagueId, Long tournamentId) {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
@@ -111,7 +119,8 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
-    public League deleteTournamentToLeague(Long leagueId, Long tournamentId) {
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
+    public League deleteTournamentFromLeague(Long leagueId, Long tournamentId) {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         List<Team> teams = new ArrayList<>(tournament.getTeams());
@@ -139,6 +148,7 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public League deleteTeamFromLeague(Long leagueId, Long teamId) {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
@@ -167,6 +177,10 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "leagues", allEntries = true),
+            @CacheEvict(value = "leagueResults", allEntries = true)
+    })
     public void deleteAllLeagues() {
         leagueRepository.deleteAll();
     }
@@ -210,6 +224,7 @@ public class LeagueServiceImpl implements LeagueService {
     }
 
     @Override
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public League changeSystemResultOfLeague(Long leagueId, Long systemResultId) {
         League league = getLeagueById(leagueId);
         if (systemResultRepository.existsById(systemResultId)) {

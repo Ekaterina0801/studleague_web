@@ -160,7 +160,7 @@ public class LeagueServiceTest {
         when(entityRetrievalUtils.getTournamentOrThrow(1L)).thenReturn(tournament);
 
         // Act
-        League result = leagueService.deleteTournamentToLeague(1L, 1L);
+        League result = leagueService.deleteTournamentFromLeague(1L, 1L);
 
         // Assert
         verify(leagueRepository, times(1)).save(league);

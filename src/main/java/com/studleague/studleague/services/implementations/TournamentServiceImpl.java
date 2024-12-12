@@ -9,6 +9,9 @@ import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.TournamentService;
 import com.studleague.studleague.specifications.TournamentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,6 +50,9 @@ public class TournamentServiceImpl implements TournamentService {
     @Autowired
     private LeagueService leagueService;
 
+    @Autowired
+    private CacheManager cacheManager;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -59,8 +65,10 @@ public class TournamentServiceImpl implements TournamentService {
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
+
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#tournament.leagues.isEmpty() ? null : #tournament.leagues[0].id")
     public void saveTournament(Tournament tournament) {
         Long idSite = tournament.getIdSite();
         Long id = tournament.getId();
@@ -98,6 +106,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", allEntries = true)
     public void deleteTournament(Long id) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(id);
         for (Team team : List.copyOf(tournament.getTeams())) {
@@ -112,6 +121,7 @@ public class TournamentServiceImpl implements TournamentService {
     public Tournament addResultToTournament(Long tournamentId, Long resultId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         FullResult fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
+        clearLeagueCaches(tournament);
         tournament.addResult(fullResult);
         tournamentRepository.save(tournament);
         return tournament;
@@ -122,9 +132,27 @@ public class TournamentServiceImpl implements TournamentService {
     public Tournament deleteResultFromTournament(Long tournamentId, Long resultId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         FullResult fullResult = entityRetrievalUtils.getResultOrThrow(resultId);
+        clearLeagueCaches(tournament);
         tournament.deleteResult(fullResult);
+        resultRepository.delete(fullResult);
         tournamentRepository.save(tournament);
         return tournament;
+    }
+
+    private void clearLeagueCaches(Tournament tournament) {
+        if (tournament.getLeagues() != null) {
+            for (League league : tournament.getLeagues()) {
+                Long leagueId = league.getId();
+                if (leagueId != null) {
+                    if (cacheManager != null) {
+                        Cache cache = cacheManager.getCache("leagueResults");
+                        if (cache != null) {
+                            cache.evict(leagueId);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -149,6 +177,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#tournamentId")
     public Tournament deleteTeamFromTournament(Long tournamentId, Long teamId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
@@ -159,6 +188,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public Tournament addTeamToTournament(Long tournamentId, Long teamId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
@@ -175,6 +205,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
     public Tournament addTeamAndPlayerToTournament(Long tournamentId, Long teamId, Long playerId) {
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
@@ -223,6 +254,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "leagueResults", allEntries = true)
     public void deleteAllTournaments() {
         tournamentRepository.deleteAll();
     }

@@ -179,7 +179,7 @@ public class LeagueController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
     @DeleteMapping("/{leagueId}/tournaments/{tournamentId}")
     public ResponseEntity<LeagueDTO> deleteTournamentFromLeague(@PathVariable long leagueId, @PathVariable long tournamentId) {
-        League updatedLeague = leagueService.deleteTournamentToLeague(leagueId, tournamentId);
+        League updatedLeague = leagueService.deleteTournamentFromLeague(leagueId, tournamentId);
         return ResponseEntity.ok(leagueMapper.mapToDto(updatedLeague));
     }
 
