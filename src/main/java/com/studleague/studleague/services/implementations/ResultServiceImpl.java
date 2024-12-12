@@ -106,8 +106,14 @@ public class ResultServiceImpl implements ResultService {
     @CacheEvict(value = "leagueResults", key = "#result.team.league.id")
     public void deleteFullResult(Long id) {
         FullResult result = entityRetrievalUtils.getResultOrThrow(id);
+        if (result.getTournament() != null) {
+            Tournament tournament = result.getTournament();
+            tournament.getResults().remove(result);
+            result.setTournament(null);
+        }
         resultRepository.delete(result);
     }
+
 
     @Override
     @Transactional
