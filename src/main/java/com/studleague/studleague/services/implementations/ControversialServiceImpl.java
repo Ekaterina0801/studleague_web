@@ -1,8 +1,8 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.ControversialDTO;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.mappers.ControversialMapper;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
 import com.studleague.studleague.repository.ControversialRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ControversialService;

@@ -4,7 +4,7 @@ import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.SystemResult;
 import com.studleague.studleague.entities.Tournament;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.mappers.LeagueMapper;
+import com.studleague.studleague.mappers.league.LeagueMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.interfaces.LeagueService;

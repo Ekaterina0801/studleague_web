@@ -1,7 +1,7 @@
 package com.studleague.studleague.services.interfaces;
 
 
-import com.studleague.studleague.dto.TeamCompositionDTO;
+import com.studleague.studleague.dto.teamComposition.TeamCompositionDTO;
 import com.studleague.studleague.entities.TeamComposition;
 import org.springframework.data.domain.Sort;
 

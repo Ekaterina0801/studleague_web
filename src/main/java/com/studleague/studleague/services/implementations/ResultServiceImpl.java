@@ -1,11 +1,11 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.FullResultDTO;
-import com.studleague.studleague.dto.InfoTeamResults;
-import com.studleague.studleague.dto.LeagueResult;
+import com.studleague.studleague.dto.result.FullResultDTO;
+import com.studleague.studleague.dto.result.InfoTeamResults;
+import com.studleague.studleague.dto.result.LeagueResult;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappers.FullResultMapper;
-import com.studleague.studleague.mappers.PlayerMainInfoMapper;
+import com.studleague.studleague.mappers.player.PlayerMainInfoMapper;
+import com.studleague.studleague.mappers.result.FullResultMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;

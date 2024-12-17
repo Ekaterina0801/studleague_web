@@ -75,6 +75,7 @@ public class SecurityConfig {
                     return corsConfiguration;
                 })) .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
                         .requestMatchers("/auth/**","/sign-in", "/sign-up", "/error", "/leagues/*/results").permitAll()
                         .anyRequest().permitAll()
                 )

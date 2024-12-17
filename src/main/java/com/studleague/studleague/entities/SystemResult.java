@@ -16,7 +16,6 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-//@JsonIdentityInfo(scope=SystemResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SystemResult {
 
     @Id

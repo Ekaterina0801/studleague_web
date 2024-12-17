@@ -1,9 +1,9 @@
 package com.studleague.studleague.controllers;
 
 
-import com.studleague.studleague.dto.FlagDTO;
-import com.studleague.studleague.mappers.FlagMapper;
-import com.studleague.studleague.mappers.TeamMapper;
+import com.studleague.studleague.dto.flag.FlagDTO;
+import com.studleague.studleague.mappers.flag.FlagMapper;
+import com.studleague.studleague.mappers.team.TeamMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.FlagService;
 import com.studleague.studleague.services.interfaces.LeagueService;

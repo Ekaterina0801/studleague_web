@@ -1,9 +1,9 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.LeagueDTO;
+import com.studleague.studleague.dto.league.LeagueDTO;
 import com.studleague.studleague.entities.*;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.mappers.LeagueMapper;
+import com.studleague.studleague.mappers.league.LeagueMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
@@ -133,14 +133,19 @@ public class LeagueServiceImpl implements LeagueService {
             if (result != null) {
                 resultRepository.delete(result);
             }
-            tournament.deleteTeam(team);
+            team.deleteTournamentFromTeam(tournament);
+            tournament.getTeams().remove(team);
+            league.deleteTeamFromLeague(team);
+
         }
         tournament.getTeamCompositions().clear();
 
 
         league.deleteTournamentFromLeague(tournament);
         tournamentRepository.save(tournament);
+        teamRepository.saveAll(teams);
         leagueRepository.save(league);
+
 
         return league;
     }
@@ -153,26 +158,40 @@ public class LeagueServiceImpl implements LeagueService {
         League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
         Team team = entityRetrievalUtils.getTeamOrThrow(teamId);
 
+
         List<Tournament> tournaments = new ArrayList<>(team.getTournaments());
         for (Tournament tournament : tournaments) {
             team.deleteTournamentFromTeam(tournament);
+            tournament.getTeams().remove(team);
         }
 
-        team.getTeamCompositions().forEach(teamCompositionRepository::delete);
-        team.getTeamCompositions().clear();
 
-        team.getResults().forEach(resultRepository::delete);
-        team.getResults().clear();
+        if (!team.getTeamCompositions().isEmpty()) {
+            for (TeamComposition teamComposition : new ArrayList<>(team.getTeamCompositions())) {
+                teamComposition.setParentTeam(null);
+                teamCompositionRepository.delete(teamComposition);
+            }
+            team.getTeamCompositions().clear();
+        }
+
+
+        if (!team.getResults().isEmpty()) {
+            team.getResults().forEach(result -> {
+                result.setTeam(null);
+                resultRepository.delete(result);
+            });
+            team.getResults().clear();
+        }
+
 
         league.deleteTeamFromLeague(team);
+
 
         teamRepository.save(team);
         leagueRepository.save(league);
 
         return league;
     }
-
-
 
 
     @Override

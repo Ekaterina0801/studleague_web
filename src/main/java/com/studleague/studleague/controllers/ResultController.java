@@ -1,9 +1,9 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.FullResultDTO;
+import com.studleague.studleague.dto.result.FullResultDTO;
 import com.studleague.studleague.entities.FullResult;
-import com.studleague.studleague.mappers.ControversialMapper;
-import com.studleague.studleague.mappers.FullResultMapper;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
+import com.studleague.studleague.mappers.result.FullResultMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.ResultService;
 import io.swagger.v3.oas.annotations.Operation;

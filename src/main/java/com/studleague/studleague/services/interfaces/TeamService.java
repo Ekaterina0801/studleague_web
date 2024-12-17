@@ -1,7 +1,7 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.InfoTeamResults;
-import com.studleague.studleague.dto.TeamDTO;
+import com.studleague.studleague.dto.result.InfoTeamResults;
+import com.studleague.studleague.dto.team.TeamDTO;
 import com.studleague.studleague.entities.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

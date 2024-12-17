@@ -1,14 +1,10 @@
 package com.studleague.studleague.services.implementations;
 
 
-import com.studleague.studleague.dto.ControversialDTO;
-import com.studleague.studleague.dto.FullResultDTO;
-import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.entities.TeamComposition;
-import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.mappers.FullResultMapper;
-import com.studleague.studleague.mappers.ResultMainInfoMapper;
-import com.studleague.studleague.mappers.TeamMainInfoMapper;
+import com.studleague.studleague.entities.*;
+import com.studleague.studleague.mappers.result.FullResultMapper;
+import com.studleague.studleague.mappers.result.ResultMainInfoMapper;
+import com.studleague.studleague.mappers.team.TeamMainInfoMapper;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.ResultService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
@@ -53,8 +49,8 @@ public class TeamResultService {
     private TeamCompositionService teamCompositionService;
 
     @CacheEvict(value = "leagueResults", key = "#leagueId")
-    public List<FullResultDTO> processTeamResults(List<Map<String, Object>> data, Long leagueId, Long tournamentId) {
-        List<FullResultDTO> results = new ArrayList<>();
+    public List<FullResult> processTeamResults(List<Map<String, Object>> data, Long leagueId, Long tournamentId) {
+        List<FullResult> results = new ArrayList<>();
         Tournament tournament = entityRetrievalUtils.getTournamentOrThrow(tournamentId);
 
         for (Map<String, Object> row : data) {
@@ -65,8 +61,8 @@ public class TeamResultService {
 
             Team team = resolveOrCreateTeam(teamName, leagueId, tournament);
 
-            FullResultDTO fullResult = processRowData(row, team, tournamentId);
-            resultService.saveFullResult(fullResultMapper.mapToEntity(fullResult));
+            FullResult fullResult = processRowData(row, team, tournamentId);
+            resultService.saveFullResult(fullResult);
             results.add(fullResult);
         }
 
@@ -113,13 +109,13 @@ public class TeamResultService {
     }
 
 
-    private FullResultDTO processRowData(Map<String, Object> row, Team team, Long tournamentId) {
+    private FullResult processRowData(Map<String, Object> row, Team team, Long tournamentId) {
         StringBuilder maskResults = new StringBuilder();
         int totalScore = 0;
-        FullResultDTO fullResult = FullResultDTO.builder()
-                .team(teamMainInfoMapper.mapToDto(team))
-                .tournamentId(tournamentId)
-                .maskResults("")
+        FullResult fullResult = FullResult.builder()
+                .team(team)
+                .tournament(entityRetrievalUtils.getTournamentOrThrow(tournamentId))
+                .mask_results("")
                 .totalScore(0.0)
                 .controversials(new ArrayList<>())
                 .build();
@@ -128,6 +124,12 @@ public class TeamResultService {
             Object value = entry.getValue();
 
             try {
+                if (!key.matches("\\d+(\\.\\d+)?")) {
+                    continue;
+                }
+                if (value == null || (value instanceof String && ((String) value).trim().isEmpty())) {
+                    maskResults.append(0);
+                } else
                 if (value instanceof Number) {
                     int score = ((Number) value).intValue();
                     maskResults.append(score);
@@ -139,18 +141,18 @@ public class TeamResultService {
                 System.out.println("Ненумерованный ключ: " + key + ", значение: " + value);
             } catch (Exception e) {
                 maskResults.append("X");
-                ControversialDTO controversialDTO =
-                        ControversialDTO.builder()
+                Controversial controversial =
+                        Controversial.builder()
                                 .questionNumber(key.matches("\\d+(\\.\\d+)?") ?
                                         Integer.parseInt(key.split("\\.")[0]) : null)
                                 .answer(value.toString())
                                 .status("Pending")
                                 .comment("Спорное значение")
                                 .build();
-                fullResult.getControversials().add(controversialDTO);
+                fullResult.addControversialToFullResult(controversial);
             }
         }
-        fullResult.setMaskResults(maskResults.toString());
+        fullResult.setMask_results(maskResults.toString());
         fullResult.setTotalScore((double) totalScore);
 
         return fullResult;

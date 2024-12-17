@@ -1,12 +1,12 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.PlayerCreationDTO;
-import com.studleague.studleague.dto.PlayerDTO;
-import com.studleague.studleague.dto.PlayerMainInfoDTO;
+import com.studleague.studleague.dto.player.PlayerCreationDTO;
+import com.studleague.studleague.dto.player.PlayerDTO;
+import com.studleague.studleague.dto.player.PlayerMainInfoDTO;
 import com.studleague.studleague.entities.Player;
-import com.studleague.studleague.mappers.PlayerCreationMapper;
-import com.studleague.studleague.mappers.PlayerMainInfoMapper;
-import com.studleague.studleague.mappers.PlayerMapper;
+import com.studleague.studleague.mappers.player.PlayerCreationMapper;
+import com.studleague.studleague.mappers.player.PlayerMainInfoMapper;
+import com.studleague.studleague.mappers.player.PlayerMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;

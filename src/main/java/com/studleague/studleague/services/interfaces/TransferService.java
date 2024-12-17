@@ -1,6 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.TransferDTO;
+import com.studleague.studleague.dto.transfer.TransferDTO;
 import com.studleague.studleague.entities.Transfer;
 import org.springframework.data.domain.Sort;
 

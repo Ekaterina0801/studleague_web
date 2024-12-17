@@ -1,8 +1,8 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.ControversialDTO;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
-import com.studleague.studleague.mappers.ControversialMapper;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

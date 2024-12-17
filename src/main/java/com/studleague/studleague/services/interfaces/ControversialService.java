@@ -1,6 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.ControversialDTO;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 
 import java.time.LocalDateTime;

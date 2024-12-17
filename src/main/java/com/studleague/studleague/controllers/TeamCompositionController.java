@@ -1,7 +1,7 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.TeamCompositionDTO;
-import com.studleague.studleague.mappers.TeamCompositionMapper;
+import com.studleague.studleague.dto.teamComposition.TeamCompositionDTO;
+import com.studleague.studleague.mappers.teamComposition.TeamCompositionMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,6 +81,11 @@ public class TeamCompositionController {
         }
 
         return teamCompositionService.searchTeamCompositions(teamId, tournamentId, sort).stream().map(x -> teamCompositionMapper.mapToDto(x)).toList();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAll() {
+        return ResponseEntity.ok("All team compositions were deleted");
     }
 
 }
