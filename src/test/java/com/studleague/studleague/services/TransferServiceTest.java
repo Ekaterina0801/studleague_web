@@ -4,7 +4,7 @@ import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Transfer;
-import com.studleague.studleague.mappers.TransferMapper;
+import com.studleague.studleague.mappers.transfer.TransferMapper;
 import com.studleague.studleague.repository.PlayerRepository;
 import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.repository.TransferRepository;

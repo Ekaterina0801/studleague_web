@@ -57,11 +57,11 @@ public class TeamComposition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TeamComposition that = (TeamComposition) o;
-        return Objects.equals(parentTeam, that.parentTeam) && Objects.equals(tournament, that.tournament);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentTeam, tournament);
+        return Objects.hashCode(id);
     }
 }

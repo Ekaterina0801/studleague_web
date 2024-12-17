@@ -1,6 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.PlayerDTO;
+import com.studleague.studleague.dto.player.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

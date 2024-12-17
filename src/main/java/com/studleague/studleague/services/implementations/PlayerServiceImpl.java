@@ -1,11 +1,11 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.PlayerDTO;
+import com.studleague.studleague.dto.player.PlayerDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.TeamComposition;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.mappers.PlayerMapper;
+import com.studleague.studleague.mappers.player.PlayerMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;

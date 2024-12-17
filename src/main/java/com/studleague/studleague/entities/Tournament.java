@@ -46,8 +46,7 @@ public class Tournament {
     @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfEnd;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE}
-    )
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinTable(name="leagues_tournaments",
             joinColumns = @JoinColumn(name="tournament_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     @ToString.Exclude

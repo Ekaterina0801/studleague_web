@@ -34,11 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         String[] excludedPaths = {
-                "/results",
-                "/teams",
-                //"/tournaments",
-                "/auth/**",
-                "/leagues/**"
+                "/api/auth/sign-up",
         };
 
 

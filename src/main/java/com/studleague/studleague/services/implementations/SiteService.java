@@ -1,9 +1,19 @@
 package com.studleague.studleague.services.implementations;
 
 
-import com.studleague.studleague.dto.*;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
+import com.studleague.studleague.dto.player.PlayerDTO;
+import com.studleague.studleague.dto.team.TeamDTO;
+import com.studleague.studleague.dto.team.TeamDetailsDTO;
+import com.studleague.studleague.dto.team.TeamMemberDTO;
+import com.studleague.studleague.dto.tournament.TournamentDTO;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappers.*;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
+import com.studleague.studleague.mappers.league.LeagueMainInfoMapper;
+import com.studleague.studleague.mappers.league.LeagueMapper;
+import com.studleague.studleague.mappers.player.PlayerMapper;
+import com.studleague.studleague.mappers.team.TeamMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.*;
 import lombok.RequiredArgsConstructor;

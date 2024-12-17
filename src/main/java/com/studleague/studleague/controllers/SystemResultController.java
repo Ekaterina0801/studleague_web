@@ -1,8 +1,8 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.SystemResultDTO;
+import com.studleague.studleague.dto.systemResult.SystemResultDTO;
 import com.studleague.studleague.entities.SystemResult;
-import com.studleague.studleague.mappers.SystemResultMapper;
+import com.studleague.studleague.mappers.systemResult.SystemResultMapper;
 import com.studleague.studleague.services.interfaces.SystemResultService;
 import com.studleague.studleague.services.interfaces.TeamCompositionService;
 import io.swagger.v3.oas.annotations.Operation;

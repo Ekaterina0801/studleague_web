@@ -1,12 +1,12 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.TransferCreationDTO;
-import com.studleague.studleague.dto.TransferDTO;
-import com.studleague.studleague.dto.TransferMainInfoDTO;
+import com.studleague.studleague.dto.transfer.TransferCreationDTO;
+import com.studleague.studleague.dto.transfer.TransferDTO;
+import com.studleague.studleague.dto.transfer.TransferMainInfoDTO;
 import com.studleague.studleague.entities.Transfer;
-import com.studleague.studleague.mappers.TransferCreationMapper;
-import com.studleague.studleague.mappers.TransferMainInfoMapper;
-import com.studleague.studleague.mappers.TransferMapper;
+import com.studleague.studleague.mappers.transfer.TransferCreationMapper;
+import com.studleague.studleague.mappers.transfer.TransferMainInfoMapper;
+import com.studleague.studleague.mappers.transfer.TransferMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TransferService;
 import io.swagger.v3.oas.annotations.Operation;

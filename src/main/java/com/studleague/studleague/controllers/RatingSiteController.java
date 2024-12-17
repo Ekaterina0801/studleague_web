@@ -1,13 +1,13 @@
 package com.studleague.studleague.controllers;
 
 
-import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.dto.TeamDetailsDTO;
-import com.studleague.studleague.dto.TournamentDTO;
+import com.studleague.studleague.dto.team.TeamDTO;
+import com.studleague.studleague.dto.team.TeamDetailsDTO;
+import com.studleague.studleague.dto.tournament.TournamentDTO;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.mappers.TeamMapper;
-import com.studleague.studleague.mappers.TournamentMapper;
+import com.studleague.studleague.mappers.team.TeamMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.services.implementations.SiteService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import com.studleague.studleague.services.interfaces.TournamentService;

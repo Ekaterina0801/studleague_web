@@ -17,7 +17,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @Table(name="full_results")
-//@JsonIdentityInfo(scope=FullResult.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class FullResult {
 
     @Id

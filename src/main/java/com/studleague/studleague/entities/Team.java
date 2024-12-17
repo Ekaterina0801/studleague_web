@@ -53,7 +53,7 @@ public class Team {
     @ToString.Exclude
     private List<Flag> flags = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "teams",cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "teams", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();

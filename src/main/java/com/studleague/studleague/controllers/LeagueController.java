@@ -1,10 +1,19 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.*;
+import com.studleague.studleague.dto.league.LeagueDTO;
+import com.studleague.studleague.dto.league.LeagueMainInfoDTO;
+import com.studleague.studleague.dto.result.LeagueResult;
+import com.studleague.studleague.dto.result.LeagueResultsDTO;
+import com.studleague.studleague.dto.team.TeamDTO;
 import com.studleague.studleague.entities.League;
 import com.studleague.studleague.entities.security.Role;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.mappers.*;
+import com.studleague.studleague.mappers.league.LeagueMainInfoMapper;
+import com.studleague.studleague.mappers.league.LeagueMapper;
+import com.studleague.studleague.mappers.result.LeagueResultsMapper;
+import com.studleague.studleague.mappers.systemResult.SystemResultMapper;
+import com.studleague.studleague.mappers.team.TeamMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import com.studleague.studleague.services.interfaces.ResultService;
@@ -120,7 +129,7 @@ public class LeagueController {
             summary = "Создать новую лигу",
             description = "Использовать для создания новой лиги"
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueDto)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<LeagueDTO> addNewLeague(@RequestBody LeagueDTO leagueDto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();

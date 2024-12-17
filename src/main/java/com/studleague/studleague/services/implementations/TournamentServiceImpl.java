@@ -1,8 +1,8 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.TournamentDTO;
+import com.studleague.studleague.dto.tournament.TournamentDTO;
 import com.studleague.studleague.entities.*;
-import com.studleague.studleague.mappers.TournamentMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.LeagueService;

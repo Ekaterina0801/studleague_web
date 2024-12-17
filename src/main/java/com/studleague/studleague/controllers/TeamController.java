@@ -1,11 +1,11 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.InfoTeamResults;
-import com.studleague.studleague.dto.TeamDTO;
-import com.studleague.studleague.dto.TeamMainInfoDTO;
+import com.studleague.studleague.dto.result.InfoTeamResults;
+import com.studleague.studleague.dto.team.TeamDTO;
+import com.studleague.studleague.dto.team.TeamMainInfoDTO;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.mappers.TeamMainInfoMapper;
-import com.studleague.studleague.mappers.TeamMapper;
+import com.studleague.studleague.mappers.team.TeamMainInfoMapper;
+import com.studleague.studleague.mappers.team.TeamMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.TeamService;
 import io.swagger.v3.oas.annotations.Operation;

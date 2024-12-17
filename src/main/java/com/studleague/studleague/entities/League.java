@@ -3,7 +3,6 @@ package com.studleague.studleague.entities;
 import com.studleague.studleague.entities.security.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @Table(name="leagues")
-//@JsonIdentityInfo(scope=League.class,generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class League {
 
     @Id
@@ -35,7 +33,6 @@ public class League {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @NotNull
     private User createdBy;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "leagues", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
@@ -79,6 +76,7 @@ public class League {
     public void deleteTeamFromLeague(Team team) {
         if (teams != null) {
             teams.remove(team);
+            team.setLeague(null);
         }
     }
 

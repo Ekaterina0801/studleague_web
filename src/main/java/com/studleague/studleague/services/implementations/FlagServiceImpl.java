@@ -1,9 +1,9 @@
 package com.studleague.studleague.services.implementations;
 
-import com.studleague.studleague.dto.FlagDTO;
+import com.studleague.studleague.dto.flag.FlagDTO;
 import com.studleague.studleague.entities.Flag;
 import com.studleague.studleague.entities.Team;
-import com.studleague.studleague.mappers.FlagMapper;
+import com.studleague.studleague.mappers.flag.FlagMapper;
 import com.studleague.studleague.repository.FlagRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.FlagService;

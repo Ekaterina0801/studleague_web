@@ -1,6 +1,6 @@
 package com.studleague.studleague.services.interfaces;
 
-import com.studleague.studleague.dto.TournamentDTO;
+import com.studleague.studleague.dto.tournament.TournamentDTO;
 import com.studleague.studleague.entities.Player;
 import com.studleague.studleague.entities.Team;
 import com.studleague.studleague.entities.Tournament;

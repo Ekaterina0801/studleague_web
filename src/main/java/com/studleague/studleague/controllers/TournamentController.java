@@ -1,12 +1,12 @@
 package com.studleague.studleague.controllers;
 
-import com.studleague.studleague.dto.ControversialDTO;
-import com.studleague.studleague.dto.TournamentDTO;
-import com.studleague.studleague.dto.TournamentMainInfoDTO;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
+import com.studleague.studleague.dto.tournament.TournamentDTO;
+import com.studleague.studleague.dto.tournament.TournamentMainInfoDTO;
 import com.studleague.studleague.entities.Tournament;
-import com.studleague.studleague.mappers.ControversialMapper;
-import com.studleague.studleague.mappers.TournamentMainInfoMapper;
-import com.studleague.studleague.mappers.TournamentMapper;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMainInfoMapper;
+import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.ControversialService;
 import com.studleague.studleague.services.interfaces.TournamentService;

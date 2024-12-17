@@ -2,10 +2,10 @@ package com.studleague.studleague.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studleague.studleague.configs.SecurityConfig;
-import com.studleague.studleague.dto.ControversialDTO;
+import com.studleague.studleague.dto.controversial.ControversialDTO;
 import com.studleague.studleague.entities.Controversial;
 import com.studleague.studleague.entities.security.User;
-import com.studleague.studleague.mappers.ControversialMapper;
+import com.studleague.studleague.mappers.controversial.ControversialMapper;
 import com.studleague.studleague.services.implementations.security.AuthenticationService;
 import com.studleague.studleague.services.implementations.security.JwtService;
 import com.studleague.studleague.services.implementations.security.UserService;
