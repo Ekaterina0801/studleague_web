@@ -18,77 +18,75 @@ public class MappingUtils {
 
     private final EntityRetrievalUtils entityRetrievalUtils;
 
-    //@Lazy
-    //private final ResultMainInfoMapper resultMainInfoMapper;
 
     // ------------------------------------ Tournament Mapping ------------------------------------
     @Named("tournamentIdToTournament")
-    Tournament mapTournamentIdToTournament(Long id) {
+    public Tournament mapTournamentIdToTournament(Long id) {
         return entityRetrievalUtils.getTournamentOrThrow(id);
     }
 
     @Named("tournamentIdsToTournaments")
-    List<Tournament> mapTournamentIdsToTournaments(List<Long> tournamentIds) {
+    public List<Tournament> mapTournamentIdsToTournaments(List<Long> tournamentIds) {
         return toEntities(tournamentIds, entityRetrievalUtils::getTournamentOrThrow);
     }
 
     @Named("tournamentsToTournamentIds")
-    List<Long> mapTournamentsToTournamentIds(List<Tournament> tournaments) {
+    public List<Long> mapTournamentsToTournamentIds(List<Tournament> tournaments) {
         return toIds(tournaments, Tournament::getId);
     }
 
     // ------------------------------------ Team Mapping ------------------------------------
     @Named("teamIdToTeam")
-    Team mapTeamIdToTeam(Long teamId) {
+    public Team mapTeamIdToTeam(Long teamId) {
         return entityRetrievalUtils.getTeamOrThrow(teamId);
     }
 
     @Named("teamIdsToTeams")
-    List<Team> mapTeamIdsToTeams(List<Long> teamIds) {
+    public List<Team> mapTeamIdsToTeams(List<Long> teamIds) {
         return toEntities(teamIds, entityRetrievalUtils::getTeamOrThrow);
     }
 
     @Named("teamsToTeamIds")
-    List<Long> mapTeamsToTeamIds(List<Team> teams) {
+    public List<Long> mapTeamsToTeamIds(List<Team> teams) {
         return toIds(teams, Team::getId);
     }
 
     // ------------------------------------ League Mapping ------------------------------------
     @Named("leagueIdToLeague")
-    League leagueIdToLeague(Long leagueId) {
+    public League leagueIdToLeague(Long leagueId) {
         return entityRetrievalUtils.getLeagueOrThrow(leagueId);
     }
 
 
     @Named("leaguesIdsToEntities")
-    List<League> mapLeaguesIdsToEntities(List<Long> leagueIds) {
+    public List<League> mapLeaguesIdsToEntities(List<Long> leagueIds) {
         return toEntities(leagueIds, entityRetrievalUtils::getLeagueOrThrow);
     }
 
     @Named("leaguesToIds")
-    List<Long> mapLeaguesToIds(List<League> leagues) {
+    public List<Long> mapLeaguesToIds(List<League> leagues) {
         return toIds(leagues, League::getId);
     }
 
     // ------------------------------------ User Mapping ------------------------------------
     @Named("userIdToUser")
-    User mapUserIdToUser(Long userId) {
+    public User mapUserIdToUser(Long userId) {
         return entityRetrievalUtils.getUserOrThrow(userId);
     }
 
     @Named("userIdsToManagers")
-    List<User> mapUserIdsToManagers(List<Long> userIds) {
+    public List<User> mapUserIdsToManagers(List<Long> userIds) {
         return toEntities(userIds, entityRetrievalUtils::getUserOrThrow);
     }
 
     @Named("managersToUserIds")
-    List<Long> mapManagersToUserIds(List<User> managers) {
+    public List<Long> mapManagersToUserIds(List<User> managers) {
         return toIds(managers, User::getId);
     }
 
     // ------------------------------------ Player Mapping ------------------------------------
     @Named("playerIdToPlayer")
-    Player mapPlayerIdToPlayer(Long playerId) {
+    public Player mapPlayerIdToPlayer(Long playerId) {
         return entityRetrievalUtils.getPlayerOrThrow(playerId);
     }
 
@@ -99,7 +97,7 @@ public class MappingUtils {
 //    }
 
     @Named("systemResultIdToSystemResult")
-    SystemResult getSystemResult(Long systemResultId) {
+    public SystemResult getSystemResult(Long systemResultId) {
         return entityRetrievalUtils.getSystemResultOrThrow(systemResultId);
     }
 
