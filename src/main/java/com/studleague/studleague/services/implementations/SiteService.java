@@ -218,4 +218,33 @@ public class SiteService {
             return playerService.getPlayerByIdSite(playerDto.getId());
         }
     }
+
+
+    public TeamDTO addTeamToLeagueFromSite(long leagueId, long teamId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<TeamDTO> responseEntity = restTemplate.exchange(
+                URL + "teams/" + teamId,
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<TeamDTO>() {
+                }
+        );
+
+        TeamDTO teamDto = responseEntity.getBody();
+        if (teamDto == null) {
+            throw new RuntimeException("Не удалось получить данные команды с внешнего API");
+        }
+
+        Team team = teamMapper.mapToEntity(teamDto);
+
+        team.setLeague(entityRetrievalUtils.getLeagueOrThrow(leagueId));
+        team.setIdSite(teamId);
+
+        teamService.saveTeam(team);
+
+        return teamDto;
+    }
 }

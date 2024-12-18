@@ -17,7 +17,5 @@ public interface LeagueMainInfoMapper {
     @Mapping(target = "systemResultId", source = "systemResult.id")
     @Mapping(target = "createdById", source = "createdBy.id")
     LeagueMainInfoDTO mapToDto(League entity);
-
-
 }
 

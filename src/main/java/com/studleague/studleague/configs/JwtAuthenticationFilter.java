@@ -39,7 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            return !path.startsWith("/api/leagues/") || !path.contains("/is-manager");
+            if (path.startsWith("/api/users/leagues")) {
+                return false;
+            }
+            return !path.startsWith("/api/leagues/") || !path.contains("/is-manager") || path.contains("/users/leagues");
         }
         for (String excludedPath : excludedPaths) {
             if (path.startsWith(excludedPath.replace("**", ""))) {

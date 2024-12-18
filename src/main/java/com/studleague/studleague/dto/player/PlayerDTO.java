@@ -3,7 +3,7 @@ package com.studleague.studleague.dto.player;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateTimeDeserializer;
 import com.studleague.studleague.dto.team.TeamMainInfoDTO;
 import com.studleague.studleague.dto.teamComposition.TeamCompositionDTO;
 import com.studleague.studleague.dto.transfer.TransferMainInfoDTO;
@@ -39,7 +39,7 @@ public class PlayerDTO {
 
     @JsonProperty("dateOfBirth")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDate dateOfBirth;
 
     @JsonProperty("idSite")

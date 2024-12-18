@@ -3,7 +3,7 @@ package com.studleague.studleague.dto.player;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateTimeDeserializer;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -32,7 +32,7 @@ public class PlayerMainInfoDTO {
     private String university;
 
     @JsonProperty("dateOfBirth")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDate dateOfBirth;
 
     @JsonProperty("idSite")

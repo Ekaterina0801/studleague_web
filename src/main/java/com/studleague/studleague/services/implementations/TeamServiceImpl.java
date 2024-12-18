@@ -136,6 +136,12 @@ public class TeamServiceImpl implements TeamService {
             }
         }
 
+        if (!team.getFlags().isEmpty()) {
+            for (Flag flag : new ArrayList<>(team.getFlags())) {
+                team.deleteFlagFromTeam(flag);
+            }
+        }
+
         if (!team.getPlayers().isEmpty()) {
             List<Player> playersToRemove = new ArrayList<>(team.getPlayers());
             for (Player player : playersToRemove) {
