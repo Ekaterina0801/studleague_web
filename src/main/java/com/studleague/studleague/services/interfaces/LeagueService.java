@@ -31,4 +31,8 @@ public interface LeagueService {
     League changeSystemResultOfLeague(Long leagueId, Long systemResultId);
 
     League deleteTeamFromLeague(Long leagueId, Long teamId);
+
+    void addManager(Long leagueId, Long managerId);
+
+    void deleteManager(Long leagueId, Long managerId);
 }

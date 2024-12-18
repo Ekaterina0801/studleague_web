@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @JoinColumn(name="role_id")
     private Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name="users_leagues",
             joinColumns = @JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="league_id"))
     @ToString.Exclude
@@ -80,6 +80,13 @@ public class User implements UserDetails {
         return true;
     }
 
+    public void addLeague(League league) {
+        if (!leagues.contains(league)) {
+            leagues.add(league);
+            league.addManager(this);
+        }
+
+    }
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

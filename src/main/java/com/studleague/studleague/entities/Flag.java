@@ -34,7 +34,7 @@ public class Flag {
     private List<Team> teams = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", nullable = false)
     private League league;
 
 

@@ -1,7 +1,10 @@
 package com.studleague.studleague.dto.league;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.studleague.studleague.dto.security.UserMainInfoDTO;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,4 +20,5 @@ public class LeagueMainInfoDTO {
     private Integer countExcludedGames;
     private Long systemResultId;
     private Long createdById;
+    private List<UserMainInfoDTO> managers;
 }

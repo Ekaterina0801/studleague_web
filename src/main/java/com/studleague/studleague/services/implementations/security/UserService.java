@@ -3,12 +3,18 @@ package com.studleague.studleague.services.implementations.security;
 import com.studleague.studleague.entities.security.User;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.specifications.UserSpecification;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -90,6 +96,12 @@ public class UserService {
             return ((User) authentication.getPrincipal()).getId();
         }
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> searchUsers(String username, Sort sort) {
+        Specification<User> spec = UserSpecification.searchUsers(username, sort);
+        return repository.findAll(spec);
     }
 
 

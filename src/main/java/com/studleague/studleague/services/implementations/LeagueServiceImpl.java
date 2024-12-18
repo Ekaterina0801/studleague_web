@@ -7,6 +7,7 @@ import com.studleague.studleague.mappers.league.LeagueMapper;
 import com.studleague.studleague.repository.*;
 import com.studleague.studleague.repository.security.UserRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
+import com.studleague.studleague.services.implementations.security.UserService;
 import com.studleague.studleague.services.interfaces.LeagueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,6 +51,9 @@ public class LeagueServiceImpl implements LeagueService {
     @Autowired
     private TeamCompositionRepository teamCompositionRepository;
 
+    @Autowired
+    private UserService userService;
+
 
 
     @Override
@@ -71,6 +75,9 @@ public class LeagueServiceImpl implements LeagueService {
 
         String name = league.getName();
         Long id = league.getId();
+        for (User user : league.getManagers()) {
+            user.addLeague(league);
+        }
         if (id != null) {
             if (leagueRepository.existsById(id)) {
                 League existingLeague = entityRetrievalUtils.getLeagueOrThrow(id);
@@ -99,11 +106,33 @@ public class LeagueServiceImpl implements LeagueService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "leagues", allEntries = true),
-            @CacheEvict(value = "leagueResults", key = "#id")
+            @CacheEvict(value = "leagueResults", key = "#leagueId")
     })
-    public void deleteLeague(Long id) {
-        leagueRepository.deleteById(id);
+    public void deleteLeague(Long leagueId) {
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+
+        for (Team team : new ArrayList<>(league.getTeams())) {
+            league.deleteTeamFromLeague(team);
+            for (Flag flag : new ArrayList<>(team.getFlags())) {
+                team.deleteFlagFromTeam(flag);
+            }
+            teamRepository.delete(team);
+        }
+
+        for (User user : new ArrayList<>(league.getManagers())) {
+            league.deleteManager(user);
+        }
+
+
+        for (Flag flag : new ArrayList<>(league.getFlags())) {
+            flag.getTeams().clear();
+        }
+        league.getFlags().clear();
+
+        leagueRepository.delete(league);
     }
+
+
 
     @Override
     @Transactional
@@ -254,5 +283,25 @@ public class LeagueServiceImpl implements LeagueService {
         }
         return league;
     }
+
+    @Override
+    public void addManager(Long leagueId, Long managerId) {
+        User user = entityRetrievalUtils.getUserOrThrow(managerId);
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        league.addManager(user);
+        saveLeague(league);
+    }
+
+    @Override
+    public void deleteManager(Long leagueId, Long managerId) {
+        User user = entityRetrievalUtils.getUserOrThrow(managerId);
+        League league = entityRetrievalUtils.getLeagueOrThrow(leagueId);
+        league.deleteManager(user);
+        saveLeague(league);
+    }
+
+
+
+
 
 }

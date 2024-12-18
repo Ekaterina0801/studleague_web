@@ -3,7 +3,7 @@ package com.studleague.studleague.dto.tournament;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateTimeDeserializer;
 import com.studleague.studleague.dto.result.FullResultDTO;
 import com.studleague.studleague.dto.teamComposition.TeamCompositionDTO;
 import lombok.*;
@@ -32,12 +32,12 @@ public class TournamentDTO {
 
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonProperty("dateStart")
     private LocalDateTime dateOfStart;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonProperty("dateEnd")
     private LocalDateTime dateOfEnd;
 

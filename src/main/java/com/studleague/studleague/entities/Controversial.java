@@ -1,7 +1,7 @@
 package com.studleague.studleague.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateTimeDeserializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -37,7 +37,7 @@ public class Controversial {
 
     @Column(name="issued_at")
     @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime issuedAt;
 
     @Column(name="status")

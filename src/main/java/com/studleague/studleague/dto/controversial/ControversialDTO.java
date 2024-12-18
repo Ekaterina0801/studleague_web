@@ -3,7 +3,7 @@ package com.studleague.studleague.dto.controversial;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.studleague.studleague.dto.deserializers.LocalDateDeserializer;
+import com.studleague.studleague.dto.deserializers.LocalDateTimeDeserializer;
 import com.studleague.studleague.dto.result.ResultMainInfoDTO;
 import lombok.*;
 
@@ -29,7 +29,7 @@ public class ControversialDTO {
 
     private String answer;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonProperty("issuedAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime issuedAt;

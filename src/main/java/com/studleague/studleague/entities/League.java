@@ -35,7 +35,7 @@ public class League {
     @JoinColumn(name = "user_id")
     private User createdBy;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "leagues", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "leagues", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     @Builder.Default
     private List<User> managers = new ArrayList<>();
@@ -46,7 +46,7 @@ public class League {
     private List<Tournament> tournaments = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "league", cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
@@ -56,6 +56,9 @@ public class League {
     @ToString.Exclude
     private SystemResult systemResult;
 
+    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @Builder.Default
+    private List<Flag> flags = new ArrayList<>();
 
     public void addTournamentToLeague(Tournament tournament){
         if(!tournaments.contains(tournament))

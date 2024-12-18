@@ -84,6 +84,7 @@ public class LeagueController {
         return ResponseEntity.ok(leagueService.getAllLeagues().stream().map(x -> leagueMainInfoMapper.mapToDto(x)).toList());
     }
 
+
     /**
      * Обрабатывает GET запрос на получение лиги по ID.
      *
@@ -263,6 +264,29 @@ public class LeagueController {
         boolean isManager = leagueService.isManager(user.getId(), leagueId) || Objects.equals(user.getRole(), Role.adminRole());
         return ResponseEntity.ok(isManager);
     }
+
+    @PutMapping("/{leagueId}/managers/{managerId}")
+    public ResponseEntity<String> addManager(@PathVariable long leagueId, @PathVariable long managerId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.ok("Not authenticated user");
+        }
+        leagueService.addManager(leagueId, managerId);
+        return ResponseEntity.ok("Manager with id: " + managerId + " was added");
+    }
+
+    @DeleteMapping("/{leagueId}/managers/{managerId}")
+    public ResponseEntity<String> deleteManager(@PathVariable long leagueId, @PathVariable long managerId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.ok("Not authenticated user");
+        }
+        leagueService.addManager(leagueId, managerId);
+        return ResponseEntity.ok("Manager with id: " + managerId + " was deleted");
+    }
+
+
+
+
+
 
 
 }
