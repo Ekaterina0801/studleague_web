@@ -120,6 +120,15 @@ public class LeagueController {
         return ResponseEntity.ok(leagueMapper.mapToDto(league));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @leagueService.isManager(authentication.principal.id, #leagueId)")
+    @PutMapping("/{leagueId}/excluded-games")
+    public ResponseEntity<LeagueDTO> changeCountExcludedGames(@PathVariable long leagueId, @RequestParam int countGames) {
+        League league = leagueService.changeCountExcludedGamesOfLeague(leagueId, countGames);
+        return ResponseEntity.ok(leagueMapper.mapToDto(league));
+    }
+
+
+
     /**
      * Обрабатывает POST запрос для создания новой лиги.
      *

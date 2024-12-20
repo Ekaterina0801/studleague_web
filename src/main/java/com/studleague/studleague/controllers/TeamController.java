@@ -1,9 +1,11 @@
 package com.studleague.studleague.controllers;
 
 import com.studleague.studleague.dto.result.InfoTeamResults;
+import com.studleague.studleague.dto.team.TeamCreationDTO;
 import com.studleague.studleague.dto.team.TeamDTO;
 import com.studleague.studleague.dto.team.TeamMainInfoDTO;
 import com.studleague.studleague.entities.Team;
+import com.studleague.studleague.mappers.team.TeamCreationMapper;
 import com.studleague.studleague.mappers.team.TeamMainInfoMapper;
 import com.studleague.studleague.mappers.team.TeamMapper;
 import com.studleague.studleague.services.implementations.security.UserService;
@@ -36,6 +38,9 @@ public class TeamController {
 
     @Autowired
     private TeamMainInfoMapper teamMainInfoMapper;
+
+    @Autowired
+    private TeamCreationMapper teamCreationMapper;
 
 
     /**
@@ -129,8 +134,8 @@ public class TeamController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN') or @teamService.isManager(authentication.principal.id, #teamDTO)")
     @PostMapping()
-    public ResponseEntity<TeamMainInfoDTO> addNewTeam(@RequestBody TeamMainInfoDTO teamDTO) {
-        Team team = teamMainInfoMapper.mapToEntity(teamDTO);
+    public ResponseEntity<TeamCreationDTO> addNewTeam(@RequestBody TeamCreationDTO teamDTO) {
+        Team team = teamCreationMapper.mapToEntity(teamDTO);
         teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamDTO);
     }

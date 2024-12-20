@@ -35,4 +35,6 @@ public interface LeagueService {
     void addManager(Long leagueId, Long managerId);
 
     void deleteManager(Long leagueId, Long managerId);
+
+    League changeCountExcludedGamesOfLeague(Long leagueId, Integer countGames);
 }

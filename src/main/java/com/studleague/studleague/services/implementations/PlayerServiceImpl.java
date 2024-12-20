@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("playerService")
@@ -114,11 +115,11 @@ public class PlayerServiceImpl implements PlayerService {
         {
             teamComposition.deletePlayer(player);
         }
-        for (Tournament tournament: player.getTournaments())
+        for (Tournament tournament : new ArrayList<>(player.getTournaments()))
         {
             tournament.deletePlayer(player);
         }
-        for (Team team: player.getTeams())
+        for (Team team : new ArrayList<>(player.getTeams()))
         {
             team.deletePlayerFromTeam(player);
         }

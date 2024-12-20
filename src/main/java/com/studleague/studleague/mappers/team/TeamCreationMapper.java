@@ -24,6 +24,7 @@ public interface TeamCreationMapper {
     @Mapping(target = "players", ignore = true)
     @Mapping(target = "flags", ignore = true)
     @Mapping(target = "league", source = "leagueId", qualifiedByName = "leagueIdToLeague")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "tournaments", source = "tournamentIds", qualifiedByName = "tournamentIdsToTournaments")
     Team mapToEntity(TeamCreationDTO teamDTO);
 
