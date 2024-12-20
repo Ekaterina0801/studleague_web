@@ -10,11 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Аутентификация")
 public class AuthController {
     private final AuthenticationService authenticationService;
+    //@Value("${frontend.url}")
+    private String frontendUrl = "http://localhost:5174/sign-in";
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
@@ -54,18 +56,18 @@ public class AuthController {
         return ResponseEntity.ok("Password successfully reset");
     }
 
+    @PostMapping(value = "/confirm-reset-password")
     @Operation(summary = "Подтверждение сброса пароля")
-    @PostMapping(value = "/confirm-reset-password", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<Void> confirmResetPassword(
+    public ResponseEntity<Map<String, String>> confirmResetPassword(
             @RequestParam("token") String token,
             @RequestParam("newPassword") String newPassword) {
 
         authenticationService.resetPassword(token, newPassword);
 
-        String loginPageUrl = "/sign-in";
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, loginPageUrl)
-                .build();
+        Map<String, String> response = new HashMap<>();
+        response.put("redirectUrl", frontendUrl);
+
+        return ResponseEntity.ok(response);
     }
 
 

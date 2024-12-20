@@ -35,6 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String[] excludedPaths = {
                 "/api/auth/sign-up",
+                "/api/auth/request-password-reset",
+                "/api/auth/confirm-reset-password"
         };
 
 

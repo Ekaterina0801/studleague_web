@@ -58,6 +58,7 @@ public class League {
 
     @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
     @Builder.Default
+    @ToString.Exclude
     private List<Flag> flags = new ArrayList<>();
 
     public void addTournamentToLeague(Tournament tournament){
