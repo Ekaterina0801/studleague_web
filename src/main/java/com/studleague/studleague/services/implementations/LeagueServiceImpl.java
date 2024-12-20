@@ -54,8 +54,6 @@ public class LeagueServiceImpl implements LeagueService {
     @Autowired
     private UserService userService;
 
-
-
     @Override
     @Transactional(readOnly = true)
     public League getLeagueById(Long id) {
@@ -71,6 +69,9 @@ public class LeagueServiceImpl implements LeagueService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "leagues", allEntries = true),
+    })
     public void saveLeague(League league) {
 
         String name = league.getName();
@@ -126,6 +127,10 @@ public class LeagueServiceImpl implements LeagueService {
 
         for (Flag flag : new ArrayList<>(league.getFlags())) {
             flag.getTeams().clear();
+        }
+
+        for (Tournament tournament : new ArrayList<>(league.getTournaments())) {
+            deleteTournamentFromLeague(leagueId, tournament.getId());
         }
         league.getFlags().clear();
 
@@ -281,6 +286,15 @@ public class LeagueServiceImpl implements LeagueService {
             league.setSystemResult(systemResult);
             saveLeague(league);
         }
+        return league;
+    }
+
+    @Override
+    @CacheEvict(value = "leagueResults", key = "#leagueId")
+    public League changeCountExcludedGamesOfLeague(Long leagueId, Integer countGames) {
+        League league = getLeagueById(leagueId);
+        league.setCountExcludedGames(countGames);
+        saveLeague(league);
         return league;
     }
 
