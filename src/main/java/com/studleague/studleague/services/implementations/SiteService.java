@@ -189,16 +189,20 @@ public class SiteService {
             //tournament.addPlayer(playerEntity);
             playersEntity.add(playerEntity);
         }
-        TeamComposition teamComposition =
-                TeamComposition
-                        .builder()
-                        .players(playersEntity)
-                        .parentTeam(teamEntity)
-                        .tournament(tournament)
-                        .build();
+        TeamComposition teamComposition = new TeamComposition();
+        if (teamCompositionRepository.existsByTournamentIdAndParentTeamId(tournament.getId(), teamEntity.getId())) {
+            teamComposition = teamCompositionRepository.findByTournamentIdAndParentTeamId(tournament.getId(), teamEntity.getId()).orElse(null);
+            teamComposition.setPlayers(playersEntity);
+        } else {
+            teamComposition =
+                    TeamComposition
+                            .builder()
+                            .players(playersEntity)
+                            .parentTeam(teamEntity)
+                            .tournament(tournament)
+                            .build();
+        }
 
-
-        teamCompositionService.save(teamComposition);
         tournament.addTeamComposition(teamComposition);
         return playersEntity;
     }
