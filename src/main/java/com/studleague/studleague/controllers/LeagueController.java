@@ -207,7 +207,6 @@ public class LeagueController {
     @DeleteMapping("/{leagueId}/teams/{teamId}")
     public ResponseEntity<LeagueDTO> deleteTeamFromLeague(@PathVariable long leagueId, @PathVariable long teamId) {
         League updatedLeague = leagueService.deleteTeamFromLeague(leagueId, teamId);
-        teamService.deleteTeam(teamId);
         return ResponseEntity.ok(leagueMapper.mapToDto(updatedLeague));
     }
 

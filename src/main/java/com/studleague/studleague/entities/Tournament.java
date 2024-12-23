@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,12 +37,12 @@ public class Tournament {
 
     @Column(name = "dateOfStart")
     @JsonProperty("dateOfStart")
-    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
+    //@ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfStart;
 
     @Column(name = "dateOfFinal")
     @JsonProperty("dateOfEnd")
-    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
+    //@ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     private LocalDateTime dateOfEnd;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE})
@@ -53,7 +52,7 @@ public class Tournament {
     @Builder.Default
     private List<League> leagues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<FullResult> results = new ArrayList<>();

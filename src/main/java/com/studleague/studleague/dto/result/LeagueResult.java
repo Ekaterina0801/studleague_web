@@ -19,6 +19,8 @@ public class LeagueResult {
 
     private HashMap<Integer, Double> resultsByTour = new HashMap<>();
 
+    private HashMap<Integer, Double> normalizedResultsByTour = new HashMap<>();
+
     private Double totalScore;
 
 }

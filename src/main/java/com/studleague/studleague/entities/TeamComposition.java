@@ -11,7 +11,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Table(name="team_compositions",uniqueConstraints = @UniqueConstraint(columnNames = {"tournament_id", "parent_team_id"}))
+@Table(name = "teamCompositions")
 @Builder
 @NoArgsConstructor
 @ToString
