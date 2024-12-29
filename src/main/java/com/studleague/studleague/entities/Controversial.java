@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -36,7 +35,7 @@ public class Controversial {
     private String answer;
 
     @Column(name="issued_at")
-    @ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
+    //@ColumnDefault("'2000-01-01 10:23:54'::timestamp without time zone")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime issuedAt;
 

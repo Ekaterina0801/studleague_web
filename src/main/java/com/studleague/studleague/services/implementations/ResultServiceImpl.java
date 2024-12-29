@@ -242,19 +242,24 @@ public class ResultServiceImpl implements ResultService {
         for (int i = 0; i < tournaments.size(); i++) {
             Tournament tournament = tournaments.get(i);
             int tournamentNumber = i + 1;
-
+            Double maxScore = getMaxTournamentScore(tournament, leagueId);
             for (Team team : leagueTeams) {
                 LeagueResult leagueResult = teamResultsMap.get(team.getId());
                 Double pointsForRound = getPointsForRound(team, tournament);
                 leagueResult.getResultsByTour().put(tournamentNumber, pointsForRound);
+                if (pointsForRound != null)
+                    leagueResult.getNormalizedResultsByTour().put(tournamentNumber, pointsForRound / maxScore);
+                else
+                    leagueResult.getNormalizedResultsByTour().put(tournamentNumber, null);
             }
         }
 
-        double maxTournamentScore = getMaxTournamentScore(tournaments);
-
         for (LeagueResult leagueResult : standings) {
+
             List<Double> scores = new ArrayList<>(leagueResult.getResultsByTour().values());
-            double totalScore = calculateTotalScore(scores, system, maxTournamentScore, numWorstGamesToExclude);
+            if (Objects.equals(system, "normalized"))
+                scores = new ArrayList<>(leagueResult.getNormalizedResultsByTour().values());
+            double totalScore = calculateTotalScore(scores, system, numWorstGamesToExclude);
             leagueResult.setTotalScore(totalScore);
         }
 
@@ -272,17 +277,16 @@ public class ResultServiceImpl implements ResultService {
                 .orElse(null);
     }
 
-    private double getMaxTournamentScore(List<Tournament> tournaments) {
-        return tournaments.stream()
-                .flatMap(tournament -> tournament.getTeams().stream())
-                .flatMap(team -> team.getResults().stream())
-                .map(FullResult::getTotalScore)
-                .filter(Objects::nonNull)
-                .max(Double::compareTo)
-                .orElse(0.0);
+
+    private double getMaxTournamentScore(Tournament tournament, Long leagueId) {
+        return resultRepository.findAllByTournamentIdAndLeagueId(tournament.getId(), leagueId).stream().
+                map(FullResult::getTotalScore).
+                filter(Objects::nonNull).
+                max(Double::compareTo).
+                orElse(0.0);
     }
 
-    private double calculateTotalScore(List<Double> scores, String system, double maxTournamentScore, int numWorstGamesToExclude) {
+    private double calculateTotalScore(List<Double> scores, String system, int numWorstGamesToExclude) {
         switch (system.toLowerCase()) {
             case "standard":
                 return calculateStandardPoints(scores, numWorstGamesToExclude);
@@ -291,7 +295,7 @@ public class ResultServiceImpl implements ResultService {
                 return scores.stream().mapToDouble(Double::doubleValue).sum();
 
             case "normalized":
-                return calculateNormalizedPoints(scores, maxTournamentScore, numWorstGamesToExclude);
+                return calculateNormalizedPoints(scores, numWorstGamesToExclude);
 
             default:
                 throw new IllegalArgumentException("Unknown scoring system: " + system);
@@ -313,18 +317,23 @@ public class ResultServiceImpl implements ResultService {
     }
 
 
-    private double calculateNormalizedPoints(List<Double> scores, double maxTournamentScore, int numWorstGamesToExclude) {
+    private double calculateNormalizedPoints(List<Double> scores, int numWorstGamesToExclude) {
         scores = scores.stream()
                 .filter(Objects::nonNull)
                 .sorted()
                 .collect(Collectors.toList());
 
+        if (scores.isEmpty()) {
+            return 0;
+        }
         if (numWorstGamesToExclude > 0 && scores.size() > numWorstGamesToExclude) {
-            scores = scores.subList(numWorstGamesToExclude, scores.size());
+            scores = scores.stream()
+                    .sorted()
+                    .skip(numWorstGamesToExclude)
+                    .toList();
         }
 
-        double totalPoints = scores.stream().mapToDouble(Double::doubleValue).sum();
-        return (maxTournamentScore > 0) ? totalPoints / maxTournamentScore : 0;
+        return scores.stream().mapToDouble(Double::doubleValue).sum();
     }
 
 

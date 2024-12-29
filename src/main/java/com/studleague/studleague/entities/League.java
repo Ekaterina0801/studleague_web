@@ -40,13 +40,13 @@ public class League {
     @Builder.Default
     private List<User> managers = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade={CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @ToString.Exclude
     @Builder.Default
     private List<Tournament> tournaments = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @ToString.Exclude
     @Builder.Default
     private List<Team> teams = new ArrayList<>();
@@ -56,7 +56,7 @@ public class League {
     @ToString.Exclude
     private SystemResult systemResult;
 
-    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "league", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @Builder.Default
     @ToString.Exclude
     private List<Flag> flags = new ArrayList<>();

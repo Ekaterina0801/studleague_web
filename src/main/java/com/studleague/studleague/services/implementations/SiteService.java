@@ -14,6 +14,7 @@ import com.studleague.studleague.mappers.league.LeagueMapper;
 import com.studleague.studleague.mappers.player.PlayerMapper;
 import com.studleague.studleague.mappers.team.TeamMapper;
 import com.studleague.studleague.mappers.tournament.TournamentMapper;
+import com.studleague.studleague.repository.TeamCompositionRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.*;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,8 @@ public class SiteService {
 
     private final LeagueMainInfoMapper leagueMainInfoMapper;
 
+    private final TeamCompositionRepository teamCompositionRepository;
+
 
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
         HttpHeaders headers = createHeaders();
@@ -106,15 +109,13 @@ public class SiteService {
             TournamentDTO tournamentDto = fetchTournamentFromApi(tournamentId, entity);
             tournamentDto.setIdSite(tournamentDto.getId());
             tournamentDto.setId(null);
-            tournamentDto.setLeaguesIds(Collections.singletonList(leagueId));
+            //tournamentDto.setLeaguesIds(Collections.singletonList(leagueId));
             tournament = tournamentMapper.mapToEntity(tournamentDto);
-            league.addTournamentToLeague(tournament);
-
         } else {
-
             tournament = tournamentService.getTournamentBySiteId(tournamentId);
-            league.addTournamentToLeague(tournament);
+
         }
+        league.addTournamentToLeague(tournament);
         tournamentService.saveTournament(tournament);
         return tournament;
     }
@@ -188,14 +189,20 @@ public class SiteService {
             //tournament.addPlayer(playerEntity);
             playersEntity.add(playerEntity);
         }
-        TeamComposition teamComposition =
-                TeamComposition
-                        .builder()
-                        .players(playersEntity)
-                        .parentTeam(teamEntity)
-                        .tournament(tournament)
-                        .build();
-        teamCompositionService.save(teamComposition);
+        TeamComposition teamComposition = new TeamComposition();
+        if (teamCompositionRepository.existsByTournamentIdAndParentTeamId(tournament.getId(), teamEntity.getId())) {
+            teamComposition = teamCompositionRepository.findByTournamentIdAndParentTeamId(tournament.getId(), teamEntity.getId()).orElse(null);
+            teamComposition.setPlayers(playersEntity);
+        } else {
+            teamComposition =
+                    TeamComposition
+                            .builder()
+                            .players(playersEntity)
+                            .parentTeam(teamEntity)
+                            .tournament(tournament)
+                            .build();
+        }
+
         tournament.addTeamComposition(teamComposition);
         return playersEntity;
     }
