@@ -4,6 +4,7 @@ import com.studleague.studleague.configs.RabbitMQConfig;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PasswordResetListener {
     private final JavaMailSender mailSender;
-
+    @Value("${frontend.url}/reset-password")
+    private String resetPasswordUrl;
     @RabbitListener(queues = RabbitMQConfig.RESET_PASSWORD_QUEUE)
     @RabbitListener(queues = RabbitMQConfig.RESET_PASSWORD_QUEUE)
     public void handlePasswordResetRequest(Map<String, Object> message) {
@@ -22,7 +24,6 @@ public class PasswordResetListener {
         String email = (String) message.get("email");
         String token = (String) message.get("token");
 
-        String resetPasswordUrl = "http://localhost:5174/reset-password";
         String resetLink = String.format("%s?token=%s", resetPasswordUrl, token);
 
         String htmlContent = """

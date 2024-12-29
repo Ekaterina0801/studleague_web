@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,8 @@ import java.util.Map;
 @Tag(name = "Аутентификация")
 public class AuthController {
     private final AuthenticationService authenticationService;
-    //@Value("${frontend.url}")
-    private String frontendUrl = "http://localhost:5174/sign-in";
+    @Value("${frontend.url}/sign-in")
+    private String frontendUrl;
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")

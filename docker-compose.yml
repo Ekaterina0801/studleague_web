@@ -1,16 +1,80 @@
+version: '3.8'  # Обязательно добавьте версию, если её нет.
+
 services:
   rabbitmq:
     image: rabbitmq:latest
     container_name: rabbitmq
     hostname: rabbitmq
     restart: unless-stopped
+    networks:
+      - name-of-rose-rating
     environment:
       TZ: Europe/Moscow
-      RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: 1234
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
       RABBITMQ_DEFAULT_VHOST: vhost
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  api_service:
+    container_name: api_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - name-of-rose-rating
+    environment:
+      APPLICATION_RESET_PASSWORD_URL: ${APPLICATION_RESET_PASSWORD_URL}
+      SPRING_DATASOURCE_URL: ${DATABASE_URL}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PROTOCOL: ${MAIL_PROTOCOL}
+      RABBIT_HOST: ${RABBIT_HOST}
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      RABBIT_PORT: ${RABBIT_PORT}
+      RABBIT_USERNAME: ${RABBIT_USERNAME}
+      TOKEN_KEY: ${TOKEN_KEY}
+      API_MAK_TOKEN: ${API_MAK_TOKEN}
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .m2:/root/.m2  # Maven кэш
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    networks:
+      - name-of-rose-rating
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      MYSQL_DATABASE: studleague
+      MYSQL_USER: ${DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  name-of-rose-rating:
+    driver: bridge
+
+volumes:
+  db_data:
