@@ -71,7 +71,6 @@ public class SiteService {
 
     private final TeamRepository teamRepository;
 
-
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
         HttpHeaders headers = createHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
