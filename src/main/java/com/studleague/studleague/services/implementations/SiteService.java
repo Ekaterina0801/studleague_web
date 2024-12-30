@@ -15,6 +15,7 @@ import com.studleague.studleague.mappers.player.PlayerMapper;
 import com.studleague.studleague.mappers.team.TeamMapper;
 import com.studleague.studleague.mappers.tournament.TournamentMapper;
 import com.studleague.studleague.repository.TeamCompositionRepository;
+import com.studleague.studleague.repository.TeamRepository;
 import com.studleague.studleague.services.EntityRetrievalUtils;
 import com.studleague.studleague.services.interfaces.*;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -66,6 +68,8 @@ public class SiteService {
     private final LeagueMainInfoMapper leagueMainInfoMapper;
 
     private final TeamCompositionRepository teamCompositionRepository;
+
+    private final TeamRepository teamRepository;
 
 
     public List<TeamDetailsDTO> addTeams(Long tournamentId, Long leagueId) {
@@ -166,17 +170,49 @@ public class SiteService {
         TeamDTO teamDto = teamDetails.getTeam();
         Team teamEntity;
         Long idSite = teamDto.getId();
-        if (!teamService.existsByIdSite(idSite)) {
+        Long leagueId = teamDetails.getLeagueId();
+
+        // Проверка на существование команды по idSite
+        if (!teamRepository.existsByIdSite(idSite)) {
             teamDto.setId(null);
             teamDto.setIdSite(idSite);
             teamEntity = teamMapper.mapToEntity(teamDto);
             teamService.saveTeam(teamEntity);
         } else {
-            teamEntity = teamService.getTeamByIdSite(idSite);
-            teamEntity.setLeague(entityRetrievalUtils.getLeagueOrThrow(teamDetails.getLeagueId()));
+            // Обработка случая, если команда уже существует
+            if (teamRepository.existsByIdSite(idSite) &&
+                    leagueContainsTeam(leagueId, idSite)) {
+                teamEntity = entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
+                updateTeam(teamEntity, teamDto);
+            } else if (teamRepository.existsByTeamNameIgnoreCaseAndLeagueId(teamDto.getTeamName(), leagueId)) {
+                teamEntity = entityRetrievalUtils.getTeamByTeamNameIgnoreCaseAndLeagueIdOrThrow(teamDto.getTeamName(), leagueId);
+                updateTeam(teamEntity, teamDto);
+            } else if (teamDto.getId() != null && teamRepository.existsById(teamDto.getId())) {
+                teamEntity = entityRetrievalUtils.getTeamOrThrow(teamDto.getId());
+                updateTeam(teamEntity, teamDto);
+            } else {
+
+                teamEntity = teamMapper.mapToEntity(teamDto);
+                teamService.saveTeam(teamEntity);
+            }
         }
 
+
+        teamEntity.setLeague(entityRetrievalUtils.getLeagueOrThrow(leagueId));
+
         return teamEntity;
+    }
+
+    private boolean leagueContainsTeam(Long leagueId, Long idSite) {
+        return teamRepository.existsByIdSiteAndLeagueId(idSite, leagueId);
+    }
+
+
+    @Transactional
+    private void updateTeam(Team existingTeam, TeamDTO team) {
+        existingTeam.setIdSite(team.getIdSite());
+        existingTeam.setUniversity(team.getUniversity());
+        teamRepository.save(existingTeam);
     }
 
 

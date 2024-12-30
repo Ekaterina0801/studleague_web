@@ -81,7 +81,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void saveTeam(Team team) {
+    public Team saveTeam(Team team) {
         Long idSite = team.getIdSite();
         Long id = team.getId();
         Long leagueId = team.getLeague().getId();
@@ -90,21 +90,22 @@ public class TeamServiceImpl implements TeamService {
             if (teamRepository.existsByIdSite(idSite) && leagueContainsTeam(leagueId, idSite)) {
                 Team existingTeam = entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
                 updateTeam(existingTeam, team);
-                return;
+                return existingTeam;
             }
         }
         if (teamRepository.existsByTeamNameIgnoreCaseAndLeagueId(team.getTeamName(), leagueId)) {
             Team existingTeam = entityRetrievalUtils.getTeamByTeamNameIgnoreCaseAndLeagueIdOrThrow(team.getTeamName(), team.getLeague().getId());
             updateTeam(existingTeam, team);
-            return;
+            return existingTeam;
         }
         if (id != null && teamRepository.existsById(id)) {
             Team existingTeam = entityRetrievalUtils.getTeamOrThrow(id);
             updateTeam(existingTeam, team);
-            return;
+            return existingTeam;
         }
 
         teamRepository.save(team);
+        return team;
     }
     private boolean leagueContainsTeam(Long leagueId, Long idSite) {
         return teamRepository.existsByIdSiteAndLeagueId(idSite, leagueId);
