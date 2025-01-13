@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,16 +50,20 @@ public class AuthenticationService {
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-        ));
-        var user = userService.findUserByUsername(request.getUsername());
+        System.out.println(request.getUsername());
+        System.out.println(request.getPassword());
+
+        User user = userService.findUserByUsername(request.getUsername());
+        if (user == null) {
+            throw new IllegalArgumentException("Неверные логин или пароль");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Неверные логин или пароль");
+        }
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-
-        // Вычисление времени истечения рефреш токена
         long refreshTokenExpiresAt = System.currentTimeMillis() + JwtService.REFRESH_TOKEN_EXPIRATION;
 
         return new JwtAuthenticationResponse(accessToken, refreshToken, refreshTokenExpiresAt);

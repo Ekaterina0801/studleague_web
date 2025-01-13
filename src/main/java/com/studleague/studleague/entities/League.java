@@ -107,11 +107,11 @@ public class League {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         League league = (League) o;
-        return Objects.equals(id, league.id) && Objects.equals(name, league.name);
+        return Objects.equals(id, league.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 }
