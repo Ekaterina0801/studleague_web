@@ -44,6 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (path.startsWith("/api/users/leagues")) {
                 return false;
             }
+            if (path.startsWith("/api/users/me")) {
+                return false;
+            }
             return !path.startsWith("/api/leagues/") || !path.contains("/is-manager") || path.contains("/users/leagues");
         }
         for (String excludedPath : excludedPaths) {

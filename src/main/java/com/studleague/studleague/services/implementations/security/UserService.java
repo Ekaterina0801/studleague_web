@@ -35,6 +35,12 @@ public class UserService {
         return repository.save(user);
     }
 
+
+    public List<User> findAll(Sort sort) {
+        return repository.findAll(sort);
+    }
+
+
     /**
      * Создание пользователя
      *
@@ -103,6 +109,29 @@ public class UserService {
         Specification<User> spec = UserSpecification.searchUsers(username, sort);
         return repository.findAll(spec);
     }
+
+    /**
+     * Обновление пользователя
+     *
+     * @return обновленный пользователь
+     */
+    public User update(User user) throws NotFoundException {
+        if (!repository.existsById(user.getId())) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        return save(user);
+    }
+
+    /**
+     * Удаление пользователя по ID
+     */
+    public void delete(Long userId) throws NotFoundException {
+        if (!repository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        repository.deleteById(userId);
+    }
+
 
 
 }

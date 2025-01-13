@@ -135,6 +135,7 @@ public class SiteService {
         return responseEntityTournament.getBody();
     }
 
+    @Transactional
     private void processAndSaveTeam(Tournament tournament, TeamDetailsDTO teamDetails, Long leagueId) {
         teamDetails.getTeam().setLeague(leagueMainInfoMapper.mapToDto(entityRetrievalUtils.getLeagueOrThrow(leagueId)));
         teamDetails.setLeagueId(leagueId);
@@ -165,7 +166,7 @@ public class SiteService {
         tournament.addTeam(teamEntity);
     }
 
-
+    @Transactional
     private Team mapAndSaveTeam(TeamDetailsDTO teamDetails) {
         TeamDTO teamDto = teamDetails.getTeam();
         Team teamEntity;
@@ -180,8 +181,7 @@ public class SiteService {
             teamService.saveTeam(teamEntity);
         } else {
             // Обработка случая, если команда уже существует
-            if (teamRepository.existsByIdSite(idSite) &&
-                    leagueContainsTeam(leagueId, idSite)) {
+            if (teamRepository.existsByIdSite(idSite)) {
                 teamEntity = entityRetrievalUtils.getTeamByIdSiteOrThrow(idSite);
                 updateTeam(teamEntity, teamDto);
             } else if (teamRepository.existsByTeamNameIgnoreCaseAndLeagueId(teamDto.getTeamName(), leagueId)) {
@@ -215,13 +215,14 @@ public class SiteService {
         teamRepository.save(existingTeam);
     }
 
-
+    @Transactional
     private List<Player> mapAndSavePlayers(List<TeamMemberDTO> teamMembers, Team teamEntity, Tournament tournament) {
         List<Player> playersEntity = new ArrayList<>();
 
         for (TeamMemberDTO member : teamMembers) {
             Player playerEntity = findOrCreatePlayer(member.getPlayer());
-            teamEntity.addPlayerToTeam(playerEntity);
+            playerEntity.addTeamToPlayer(teamEntity);
+            //teamEntity.addPlayerToTeam(playerEntity);
             //tournament.addPlayer(playerEntity);
             playersEntity.add(playerEntity);
         }
@@ -243,6 +244,7 @@ public class SiteService {
         return playersEntity;
     }
 
+    @Transactional
     private Player findOrCreatePlayer(PlayerDTO playerDto) {
         if (!playerService.existsByIdSite(playerDto.getId())) {
             PlayerDTO newPlayer = new PlayerDTO(

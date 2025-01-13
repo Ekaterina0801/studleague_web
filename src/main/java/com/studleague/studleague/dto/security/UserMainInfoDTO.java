@@ -19,4 +19,8 @@ public class UserMainInfoDTO {
 
     private String fullname;
 
+    private RoleDTO role;
+
+    private String email;
+
 }

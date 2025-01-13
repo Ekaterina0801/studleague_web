@@ -156,7 +156,7 @@ public class LeagueServiceImpl implements LeagueService {
         tournament.getTeamCompositions().clear();
         for (Team team : teams) {
             tournament.deleteTeam(team);
-            league.deleteTeamFromLeague(team);
+            //league.deleteTeamFromLeague(team);
         }
         league.deleteTournamentFromLeague(tournament);
         leagueRepository.save(league);
